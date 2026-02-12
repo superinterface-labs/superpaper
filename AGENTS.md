@@ -649,6 +649,8 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 Use natural, human-readable titles with spaces: `Knowledge map.md`, not `knowledge-map.md`. Dashed names only for code and scripts. Avoid characters that break links: `# | ^ : %% [[ ]]`
 
+**Don't repeat what the folder already says.** A note in `knowledge/sources/` is titled `Design of Everyday Things.md`, not `Source – Design of Everyday Things.md`. The folder *is* the type.
+
 In visible text (headings, prose, callouts), prefer spaces over dashes. Write "part of", not "part-of". Frontmatter property values may use dashes for structured data.
 
 ---
@@ -819,8 +821,6 @@ relations:
     target: "[[another-note]]"
 ---
 
-# Concept name
-
 One clear paragraph. What is this concept? Why does it matter? What does it imply? ^core-claim
 
 ## Relates
@@ -839,8 +839,6 @@ The `relations` field in frontmatter makes connections queryable by Dataview. Th
 type: daily
 created: YYYY-MM-DD
 ---
-
-# YYYY-MM-DD
 
 ## Intention
 One thing that matters today:
@@ -875,8 +873,6 @@ created: YYYY-MM-DD
 tags: []
 ---
 
-# Idea title
-
 What if...?
 
 ## Connects to
@@ -893,7 +889,7 @@ created: YYYY-MM-DD
 tags: []
 ---
 
-# What happened
+## What happened
 
 
 ## What I felt
@@ -919,8 +915,6 @@ created: YYYY-MM-DD
 tags:
   - inbox
 ---
-
-# Bookmark title
 
 (URL, text, or image reference goes here)
 ```
@@ -1293,7 +1287,12 @@ Scan the vault for existing folders, projects, notes, and files outside `superpa
 
 ### 2. Set up environment
 
-Install and configure all required plugins yourself using the CLI and online docs. Look up each plugin's settings schema, set values to match vault conventions, and verify everything works. Only ask the human for confirmation, not manual steps.
+This step is non-negotiable — do not skip or defer it.
+
+1. **Try CLI first.** Ask the human to enable it in Obsidian: Settings → General → Advanced → Command-line interface. Then use it to install each required plugin programmatically.
+2. **If CLI is unavailable,** walk the human through installing each plugin manually: open Settings → Community plugins → Browse → search → install → enable. Do this one plugin at a time, confirming each is active before moving on.
+3. **Configure every plugin.** Look up each plugin's latest docs and settings schema online before touching config. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
+4. **Verify.** Confirm each plugin is installed, enabled, and configured before proceeding.
 
 ### 3. Create vault structure
 
