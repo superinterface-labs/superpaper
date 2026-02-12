@@ -878,7 +878,7 @@ Don't pre-create these. Let them emerge from use. The `[create when needed]` mar
 | I have... | It goes in | Because |
 |-----------|-----------|---------|
 | A link, article, transcript, PDF | `sources/` | Raw material — immutable reference |
-| A quick thought, voice note, screenshot | `inbox/` | Triage within 48h — process or discard |
+| A quick thought, voice note, screenshot | `inbox/` | Triage within 48h — process then move to `inbox/processed/` |
 | An insight, preference, pattern, claim | `memory/` | Atomic note in the knowledge graph |
 | A running log (reflections, goals, decisions) | `memory/*.log.md` | Append-only living document |
 | Something I'm actively building | `projects/<name>/` | Work in progress with deliverables |
@@ -904,6 +904,8 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 ### No deletions
 
 **Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/memory/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
+
+**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items or `daily/` notes. You may **append** to them or **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it.
 
 ---
 
@@ -961,7 +963,11 @@ The vault is scriptable from the terminal. **Use the CLI as your primary interfa
 | Kanban | `obsidian-kanban` |
 | File Explorer++ | `file-explorer-plus` |
 
-Install all: `obsidian plugin:install id=<id> enable` for each row above. Then configure to match vault conventions (template folder → `_templates/`, scripts → `.scripts/`, daily notes → `daily/`, Dataview JS queries → enabled, etc.). File Explorer++: pin `superpaper/` to the top; hide `AGENTS.md` (wildcard) and `_templates/` (infrastructure, accessed via Templater). Look up each plugin's latest docs online for its settings schema.
+Install all: `obsidian plugin:install id=<id> enable` for each row above. Then configure to match vault conventions (template folder → `_templates/`, scripts → `.scripts/`, daily notes → `daily/`, Dataview JS queries → enabled, etc.). Look up each plugin's latest docs online for its settings schema.
+
+**File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with hide filters to keep infrastructure out of the file explorer:
+- Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
+- Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
 
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
