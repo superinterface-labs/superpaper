@@ -417,6 +417,34 @@ renderDashboard(codeButtonContext.container);
 
 Put shared scripts in `.scripts/` — Obsidian ignores dot-folders, but CodeScript Toolkit can `require()` them. Full TypeScript syntax works (type annotations are stripped at runtime).
 
+#### Building heavier apps
+
+For anything beyond vanilla TS (React, complex state, large dependencies):
+
+1. **Bundle outside Obsidian** — build with Vite/esbuild into one JS bundle, drop output into `superpaper/apps/<name>/dist/`
+2. **Lazy-load inside Obsidian** — use `requireAsync()` with cache control:
+   ```js
+   const app = await requireAsync('./superpaper/apps/myapp/dist/bundle.js', { cacheInvalidationMode: 'always' });
+   app.mount(codeButtonContext.container);
+   ```
+   Cache modes: `always` (dev), `whenPossible` (default), `never` (stable releases). ESM works fine.
+3. **Mount into a single root** — one `codeButtonContext.container` per block. Return a cleanup function and call it before remounting.
+
+**Performance rules (keep Obsidian fast):**
+- Lazy-load everything — never import heavy deps at top-level
+- One mount root per block — avoid scattering listeners across the DOM
+- Dispose intervals/listeners on rerender/unload — memory leaks in Electron hurt
+- Push heavy compute to a Web Worker or a local service
+
+#### Persistence: files, not localStorage
+
+**Every tracker, log, and app must be backed by markdown files or frontmatter** — never localStorage alone. The human must be able to read history without running code. Patterns:
+- **Frontmatter fields** — store state in the note's own YAML (`streak: 5`, `last_run: 2026-02-12`)
+- **Append to log files** — `journal/*.log.md` for time-series data (mood, habits, workouts)
+- **One file per entry** — `inbox/log/mmm-yy/dd/<task>.md` for granular task tracking
+
+localStorage is acceptable only as a UI cache for the current session. The source of truth is always a file.
+
 #### Invocable scripts (command palette)
 
 Create `.scripts/my-command.ts`:
@@ -453,7 +481,7 @@ export async function cleanup(app: App): Promise<void> {
 
 | Artifact | Implementation |
 |----------|---------------|
-| Daily habit tracker | `code-button` with checkboxes, localStorage for persistence |
+| Daily habit tracker | `code-button` with checkboxes, file-backed via frontmatter or daily log |
 | Reading progress dashboard | `dataviewjs` querying source-notes by status |
 | Knowledge graph stats | `dataviewjs` counting note types, link density, orphans |
 | Quick capture form | `code-button` that creates a new note via Obsidian API |
@@ -461,6 +489,52 @@ export async function cleanup(app: App): Promise<void> {
 | Pomodoro timer | `code-button` with `setInterval`, visual countdown |
 | Spaced repetition queue | `dataviewjs` querying notes by last-reviewed date |
 | Mood/energy tracker | `code-button` with slider inputs, appends to daily log |
+| Budget / expense tracker | `code-button` with form inputs, file-backed via frontmatter or log |
+| Meal planner / recipe scaler | `code-button` with ingredient math, links to health notes |
+| Workout log | `code-button` with exercise sets/reps, trends over time |
+| Decision matrix | `code-button` with weighted criteria, visual comparison |
+| Flashcard reviewer | `code-button` with spaced repetition, pulls from knowledge notes |
+
+### Mission Control (`apps/mission-control.md`)
+
+A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue.
+
+**How it works:**
+- The human or agent adds cards with a one-line description. Each card can link to a project, note, or inbox item.
+- The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
+- Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
+
+**Task lifecycle:**
+
+```
+1. CAPTURE   → Card added to Todo (link to inbox item or inline description)
+2. PICK UP   → Move to In Progress — agent begins work
+3. SHIP      → Move to Done — append @{YYYY-MM-DD}, log to inbox/log/
+4. ARCHIVE   → After 7 days in Done — heartbeat removes card, log persists
+5. BLOCKED   → Move to Blocked — comment explains why, escalate to human
+```
+
+**Task execution logs** live in `inbox/log/mmm-yy/dd/<task-slug>.md`:
+
+```markdown
+---
+type: log
+task: "[[apps/mission-control]]#card-name"
+status: done
+created: YYYY-MM-DD
+---
+
+## What was done
+Brief summary.
+
+## Evidence
+Links to created/updated notes.
+
+## What remains
+Next steps or "complete".
+```
+
+The heartbeat appends a summary of mission-control activity to the daily note. Over time, `inbox/log/` becomes a complete audit trail of everything the agents did and why.
 
 ---
 
@@ -669,6 +743,7 @@ Set `type` in frontmatter:
 - **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/knowledge/ideas/`.
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `superpaper/journal/reflections/`.
 - **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/journal/`. Accumulates dated entries that link to atomic notes.
+- **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
 
 Types are structural roles — they define how a note behaves in the graph. Use `kind` for what it's about (fact, concept, procedure, principle, decision, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
 
@@ -831,6 +906,36 @@ tags: []
 
 ```
 
+### Bookmark template
+
+```markdown
+---
+type: bookmark
+kind: url | image | text | mixed
+source: ios | share-sheet
+url: ""
+status: unprocessed | processed | failed
+created: YYYY-MM-DD
+tags:
+  - inbox
+---
+
+# Bookmark title
+
+(URL, text, or image reference goes here)
+```
+
+### Bookmark processing lifecycle
+
+When a bookmark arrives in `inbox/`:
+
+1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
+2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
+3. **Create a source note** — save the raw content in `knowledge/sources/` as an immutable reference if directly available. NEVER manually rewrite the source document yourself to do this.
+4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes. Link back to the source.
+5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
+6. **Update bookmark** — set `status: processed`, add `processed_to: "[[source note]]"` in frontmatter. Move to `inbox/processed/`.
+
 ### Anti-patterns
 
 - **Hoarding** — more notes ≠ smarter. Fewer, denser, better-linked notes = smarter. Prune ruthlessly.
@@ -909,10 +1014,24 @@ Skills are reusable instruction packages following the [Agent Skills](https://ag
 **Discovery:** At startup, read `.agents/skills/AGENTS.md` for the skill index — names, descriptions, triggers.
 **Activation:** When a task matches a skill's description, read the full `SKILL.md` into context and follow it.
 
+**Plan before you build.** For any task that involves research, design decisions, or is not obviously simple — run the `plan` skill first. Design → plan → implement. Don't jump straight to code or content for non-trivial work.
+
 **Proactive skill creation:** When you notice the human repeating a workflow pattern 2–3 times:
 1. Note the pattern in knowledge (type: pattern)
 2. Suggest a skill — name + one-line description + what it would automate + and do any back and forth to nail down the skill
 3. Once approved, use the `skill-creator` skill to build it in `.agents/skills/`
+
+### Compound skills
+
+Skills can be atomic (one capability) or compound (a named multi-step sequence triggered by a phrase). When the human says something like "garden the knowledge" or "distill this paper", that maps to a compound skill that chains steps internally. No separate abstraction needed — skills handle both. You can also compose skills by mentioning other skills in a given skill's instructions.
+
+### Self-evolution
+
+The system grows. What can’t be done today can be done tomorrow.
+
+- **New skills** — draft in `projects/scratchpad/` → test with a real task → promote to `.agents/skills/`
+- **New apps** — when a workflow deserves a persistent interactive tool, build it in `apps/`
+- **Proactive mode** — at scale, agents don’t wait for requests. Knowledge continuously re-links. Heartbeat auto-processes inbox. Ideas get revisited. The reactive interface (Talk/Write/Read) coexists with autonomous background agents that improve the vault continuously.
 
 ---
 
@@ -939,6 +1058,8 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 - **Embed, don’t describe.** If referencing a web page, embed it (`<iframe>`) or transclude the relevant note section (`![[note#section]]`). Don’t make the human go find it.
 - **Atomic outputs.** Each note you create should be one concept. If a response covers three topics, create three notes and link them.
 - **Projects for multi-file work.** When a task needs more than one central file, create a project in `projects/`. Knowledge notes are atomic singles; projects hold coordinated efforts.
+- **Build apps proactively.** When a workflow would benefit from an interactive tool — a tracker, calculator, planner, dashboard, form — suggest building one in `apps/`. Bias toward making things the human can open and use daily. The best vault is one where half the notes are alive.
+- **File-backed everything.** Never store meaningful state in localStorage alone. Trackers, logs, and app data must live in markdown files or frontmatter so the human can always access history.
 - **Trace your reasoning.** Every substantial artifact includes a collapsed `> [!trace]- Trace` callout: context retrieved, assumptions, evidence, alternatives considered, uncertainty, next questions.
 - **Sentence-case headings.** Not Title Case.
 - **Disambiguate.** If ambiguity exists, stop and ask one clarifying question before proceeding. Or mentoin them as part of deliverables.
@@ -979,6 +1100,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   ├── knowledge/              # Everything the system knows — atomic, densely linked
 │   │   ├── <domain>/           # Emerge from use: ai/, meditation/, fitness/, ...
 │   │   ├── meta/               # Preferences, vision, self-knowledge
+│   │   ├── personal/           # Relationships, health, finances, life admin
 │   │   ├── sources/            # Raw imports — immutable references
 │   │   │   └── meetings/       # Meeting transcripts [create when needed]
 │   │   ├── ideas/              # Creative playground — hunches, what-ifs, brainstorms
@@ -988,8 +1110,11 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   │   ├── reflections/        # Long-form processing — struggles, breakthroughs, decisions
 │   │   └── *.log.md            # Living documents (decisions, goals, learnings) [create when needed]
 │   ├── projects/               # Active work — bias here when >1 file needed
-│   │   └── scratch/            # Default subproject for loose deliverables
+│   │   └── scratchpad/         # Throwaway experiments — auto-archive after 14 days
+│   ├── apps/                   # Mini apps — interactive tools the human uses regularly
+│   │   └── mission-control.md  # Kanban board — todo, in progress, done, blocked
 │   └── inbox/                  # Quick capture — triage within 48h
+│       └── log/                # Task execution logs: log/mmm-yy/dd/<task>.md
 ├── daily/                      # Daily notes (via Calendar plugin)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
@@ -1028,9 +1153,14 @@ Don't pre-create these. Let them emerge from use. The `[create when needed]` mar
 | An insight, preference, pattern, claim | `knowledge/` | Atomic note in the knowledge graph |
 | Granular evidence supporting a claim | `knowledge/.evidence/` | AI-facing, linked from knowledge notes |
 | A creative hunch, brainstorm, what-if | `knowledge/ideas/` | Low pressure — no structure required |
+| Something personal (health, relationships, finances, life admin) | `knowledge/personal/` | Private life knowledge — same atomic note standards |
 | Processing an experience or struggle | `journal/reflections/` | Self-reflection, growth |
 | A running log (decisions, goals, learnings) | `journal/*.log.md` | Append-only living document |
 | Something I'm actively building (>1 file) | `projects/<name>/` | Multi-file work lives in projects |
+| An interactive tool the human will reuse | `apps/<name>/` | Mini apps — trackers, calculators, dashboards, utilities |
+| A blog, tweet, video, podcast, or link I liked | `inbox/` with `type: bookmark` | Agent fetches full content, processes into knowledge |
+| A task the agent should work on | `apps/mission-control.md` | Kanban card — heartbeat picks it up |
+| A task execution log entry | `inbox/log/mmm-yy/dd/<task>.md` | Granular record of what was done, when, and why |
 | Today's plan, freewrite, captures | `daily/` | Dated, ephemeral, links to durable notes |
 
 Domain doesn't change the destination. A fitness insight and a philosophy insight both go to `knowledge/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — knowledge notes are atomic singles; projects hold coordinated multi-file efforts. Tags and kinds handle the rest.
@@ -1055,6 +1185,15 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 **Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/knowledge/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
 **User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items or `daily/` notes. You may **append** to them or **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it.
+
+### Infrastructure vs content
+
+The vault has two layers:
+
+- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md`, `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`, `AGENTS.md` files in any folder.
+- **Content** — the human's personal data. Never distributed: `knowledge/**` (except AGENTS.md, Knowledge map), `journal/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
+
+**Personal preferences live in knowledge, not in AGENTS.md.** When the human expresses a preference, store it as a `preference` note in `knowledge/meta/`. AGENTS.md defines the generic OS protocol — it should work for any user.
 
 ---
 
@@ -1090,6 +1229,9 @@ Install all: `obsidian plugin:install id=<id> enable` for each row above. Then c
 - Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
 
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
+
+**Graph View color groups** (configure in `.obsidian/graph.json`):
+- `path:superpaper/knowledge` green, `path:superpaper/journal` purple, `path:superpaper/projects` blue, `path:daily` gray, `[type:preference]` gold, `[type:claim]` orange, `[status:blocked]` red.
 
 ---
 
@@ -1164,21 +1306,25 @@ Create the folders listed in **Vault structure** above. Then create `superpaper/
 
 ### 5. Create templates
 
-Create the **Knowledge note template**, **Daily note template**, **Idea note template** and **Reflection template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
+Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
 
 ### 6. Create a first artifact
 
-Create a demo artifact in `superpaper/projects/scratch/` — an interactive `code-button` UI with `isRaw: true` and `shouldAutoRun: true` (e.g. habit tracker, pomodoro timer, or quick-capture form). This demonstrates TypeScript artifacts and the scratch subproject as a home for loose deliverables.
+Create a demo artifact in `superpaper/projects/scratchpad/` — an interactive `code-button` UI with `isRaw: true` and `shouldAutoRun: true` (e.g. habit tracker, pomodoro timer, or quick-capture form). This demonstrates TypeScript artifacts and the scratch subproject as a home for loose deliverables.
 
 ### 7. Create a first knowledge note
 
 Using what you learned in step 1, write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
 
-### 8. Add CSS polish
+### 8. Set up mobile bookmarking
+
+Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a `type: bookmark` note in `superpaper/inbox/` from any app. Walk through building it step by step — the shortcut should capture the URL, title, and any selected text, then save as a markdown file to the vault. This is how bookmarks flow in from anywhere.
+
+### 9. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 9. Demo the full system
+### 10. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
@@ -1187,7 +1333,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 4 of 9 — we're almost halfway."
+- Signpost progress: "Step 5 of 10 — we're halfway."
 
 ---
 

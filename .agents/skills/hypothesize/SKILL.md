@@ -16,7 +16,7 @@ description: Extract falsifiable hypotheses from a paper or research source. Use
 2. **Retrieve memory neighborhood** — search existing memory for related concepts, claims, and patterns using 4-surface retrieval (lexical, structural, semantic, temporal). This primes cross-domain connections.
 3. SUPER IMPORTANT: Assess ALL primary authors' work history and ALL primary references for relevance to the user's broader work. Identify ideas worth capturing.
 4. Write a source note in `superpaper/sources/<topic>/` with: title, authors, abstract summary, key findings, methodology notes.
-5. Extract 3–5 falsifiable hypotheses from the paper's claims and broader ideas gathered.
+5. Extract 3–5 falsifiable hypotheses from the paper's claims and broader ideas gathered that could address limitations of the work/area under consideration or fix gaps in the current paradigm.
 6. For each hypothesis worth remembering, create a claim note in `superpaper/memory/`:
    - `type: claim`, `confidence: 0.4–0.7`
    - Include predictions ("if true, expect…") and link to the evidence note(s)

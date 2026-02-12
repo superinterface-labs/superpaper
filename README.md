@@ -78,11 +78,12 @@ Reusable instruction packages in `.agents/skills/`. Each skill is a folder with 
 ## Vault structure
 
 ```
-├── AGENT.md                    # Operating manual — agents read this first
+├── AGENTS.md                   # Operating manual — agents read this first
 ├── superpaper/
-│   ├── sources/                # Raw imports
-│   ├── memory/                 # Zettelkasten knowledge graph
+│   ├── knowledge/              # Zettelkasten knowledge graph
+│   ├── journal/                # Self-reflection and growth
 │   ├── projects/               # Active work
+│   ├── apps/                   # Mini apps — trackers, dashboards, utilities
 │   └── inbox/                  # Quick capture — triage within 48h
 ├── daily/                      # Daily notes
 ├── .agents/skills/             # Reusable agent skills
