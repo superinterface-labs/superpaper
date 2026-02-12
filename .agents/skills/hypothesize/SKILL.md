@@ -13,21 +13,21 @@ description: Extract falsifiable hypotheses from a paper or research source. Use
 
 ## Process
 1. Read the full paper (URL, PDF, or pasted text)
-2. **Retrieve memory neighborhood** — search existing memory for related concepts, claims, and patterns using 4-surface retrieval (lexical, structural, semantic, temporal). This primes cross-domain connections.
+2. **Retrieve knowledge neighborhood** — search existing knowledge for related concepts, claims, and patterns using 4-surface retrieval (lexical, structural, semantic, temporal). This primes cross-domain connections.
 3. SUPER IMPORTANT: Assess ALL primary authors' work history and ALL primary references for relevance to the user's broader work. Identify ideas worth capturing.
-4. Write a source note in `superpaper/sources/<topic>/` with: title, authors, abstract summary, key findings, methodology notes.
+4. Write a source note in `superpaper/knowledge/sources/<topic>/` with: title, authors, abstract summary, key findings, methodology notes.
 5. Extract 3–5 falsifiable hypotheses from the paper's claims and broader ideas gathered that could address limitations of the work/area under consideration or fix gaps in the current paradigm.
-6. For each hypothesis worth remembering, create a claim note in `superpaper/memory/`:
+6. For each hypothesis worth remembering, create a claim note in `superpaper/knowledge/`:
    - `type: claim`, `confidence: 0.4–0.7`
    - Include predictions ("if true, expect…") and link to the evidence note(s)
    - Tags: `#domain/...` + `#topic/...`
-   - Link to the source note and any related existing memory notes
+   - Link to the source note and any related existing knowledge notes
 7. Link everything: source note links to claim notes, claim notes link to each other and to related existing knowledge. Update 1–3 existing notes to link back (distributed write).
 
 ## Outputs
-- 1 source note in `superpaper/sources/<topic>/`
-- 1+ evidence notes (key excerpts) in `superpaper/memory/`
-- 2+ claim notes (hypotheses) in `superpaper/memory/`
+- 1 source note in `superpaper/knowledge/sources/<topic>/`
+- 1+ evidence notes (key excerpts) in `superpaper/knowledge/.evidence/`
+- 2+ claim notes (hypotheses) in `superpaper/knowledge/`
 - All cross-linked with distributed write
 
 ## Done when

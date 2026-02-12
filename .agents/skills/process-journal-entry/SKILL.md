@@ -24,7 +24,7 @@ description: Process a daily freewrite or journal entry — reflect back, route 
 ### STEP 1 — Read and retrieve
 
 1. Read the full journal entry.
-2. Retrieve memory neighborhood for every concept, person, project, or emotion mentioned.
+2. Retrieve knowledge neighborhood for every concept, person, project, or emotion mentioned.
 3. Check [[Reflections log]], [[Learning log]], [[Decisions log]], [[Goals]] for recent entries — continuity matters.
 
 ### STEP 2 — Reflect back (reflective friend mode)
@@ -50,7 +50,7 @@ Each entry: one paragraph, dated, with wiki-links to related notes.
 ### STEP 4 — Create atomic notes
 
 For any genuine insight worth its own note (not just a log entry):
-1. Create a memory note in `superpaper/memory/` using the memory note template.
+1. Create a knowledge note in `superpaper/knowledge/` using the knowledge note template.
 2. Link to 2+ existing notes. Update 1–3 existing notes to link back.
 3. Link from the log entry to the new atomic note.
 
@@ -71,7 +71,7 @@ Append to today's daily note under `## Notes`:
 
 - Conversational reflection (in chat)
 - Updated living documents with dated entries
-- 0+ new atomic memory notes
+- 0+ new atomic knowledge notes
 - Daily note summary
 
 ## Decision authority

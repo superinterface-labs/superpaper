@@ -42,7 +42,7 @@ Every note should be reachable from [[AGENTS]] within 3 hops via wiki-links. Dea
 The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templates, and skills. Contradictions cause divergent behavior.
 
 1. **Frontmatter schema compliance:**
-   - Memory notes have: `type`, `kind`, `confidence`, `source`, `connections`, `created`, `updated`, `tags`, `aliases`, `relations` (per `_templates/memory-note.md`).
+   - Knowledge notes have: `type`, `kind`, `confidence`, `source`, `connections`, `created`, `updated`, `tags`, `aliases`, `relations` (per `_templates/knowledge-note.md`).
    - Daily notes have: `type: daily`, `created`.
    - Index files have: `type: index`, `created`.
    - All notes have at least `type` and `created`.
@@ -55,15 +55,15 @@ The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templat
    - Folder `AGENTS.md` descriptions match actual folder contents.
    - Dataview `FROM` clauses reference paths that exist.
 4. **Stale references:** Wiki-links or paths pointing to files that have been moved or renamed.
-5. **Template drift:** Compare `_templates/memory-note.md` and `_templates/daily-note.md` against the schemas defined in the Memory section of [[AGENTS]]. Flag divergence.
+5. **Template drift:** Compare `_templates/knowledge-note.md` and `_templates/daily-note.md` against the schemas defined in the Knowledge section of [[AGENTS]]. Flag divergence.
 
 **Output:** consistency report — violations grouped by severity (breaking > confusing > cosmetic).
 
 ### LAYER 3 — Memory quality
 
-The knowledge graph in `superpaper/memory/` is the vault's most valuable asset. Audit its health.
+The knowledge graph in `superpaper/knowledge/` is the vault's most valuable asset. Audit its health.
 
-1. **Relation coverage:** What % of memory notes have a `## Relates` section with at least one typed relation? Target: >80%.
+1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one typed relation? Target: >80%.
 2. **Confidence hygiene:** Are `confidence` scores present and numeric? Flag notes with missing or stale confidence.
 3. **Distributed write compliance:** Spot-check 3–5 notes — do they link to 2+ existing notes? Were existing notes updated to link back?
 4. **Contradiction health:** Notes with `contradicts` relations — is there a corresponding question or experiment note? Stale contradictions are waste.
@@ -71,7 +71,7 @@ The knowledge graph in `superpaper/memory/` is the vault's most valuable asset. 
 6. **Empty relations:** Notes where `## Relates` has no prose or links — these need gardening.
 7. **Wikilink density:** Flag notes that mention concepts as plain text instead of `[[wiki-links]]`.
 8. **Hub identification:** Top 5 notes by inbound link count — these are your emerging ontology.
-9. **[[Memory map]] freshness:** Does it reflect current clusters? Are recent additions showing in the Dataview query?
+9. **[[Knowledge map]] freshness:** Does it reflect current clusters? Are recent additions showing in the Dataview query?
 
 **Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes, garden tasks.
 
@@ -81,7 +81,7 @@ The knowledge graph in `superpaper/memory/` is the vault's most valuable asset. 
 2. **Empty sections:** Placeholder content (`- —`, empty tables, template boilerplate left unfilled).
 3. **Missing templates:** Note types referenced in [[AGENTS]] that don't have a corresponding template in `_templates/`.
 4. **Skill coverage:** Are there recurring workflows the human does that could be a skill? Check daily notes for patterns.
-5. **Source pipeline:** Are there sources in `superpaper/sources/` without corresponding evidence/claim notes in `superpaper/memory/`? Flag unprocessed sources.
+5. **Source pipeline:** Are there sources in `superpaper/knowledge/sources/` without corresponding evidence/claim notes in `superpaper/knowledge/`? Flag unprocessed sources.
 
 **Output:** completeness report — gaps ranked by impact.
 
@@ -92,7 +92,7 @@ Not "what's broken?" but "what's the next unlock?"
 1. **Pattern detection:**
    - Recurring multi-step workflows that could become skills.
    - Concepts frequently mentioned but never given their own note.
-   - Memory clusters that are growing and might need sub-structure.
+   - Knowledge clusters that are growing and might need sub-structure.
 2. **Structural opportunities:**
    - Could any skill be decomposed into smaller, composable skills?
    - Are there skills always invoked together — should they be chained?
@@ -109,7 +109,7 @@ Not "what's broken?" but "what's the next unlock?"
 
 Combine all layers into a single report.
 
-1. Write the report to `superpaper/projects/scratch/introspection-report.md`.
+1. Write the report to `superpaper/projects/scratchpad/introspection-report.md`.
 2. Structure:
    ```markdown
    ## Introspection report — YYYY-MM-DD
@@ -141,9 +141,9 @@ Combine all layers into a single report.
 
 ## Outputs
 
-- `superpaper/projects/scratch/introspection-report.md` — the full report (overwritten each run)
+- `superpaper/projects/scratchpad/introspection-report.md` — the full report (overwritten each run)
 - Daily note entry summarizing health score
-- Optional: memory notes for evolution insights worth preserving
+- Optional: knowledge notes for evolution insights worth preserving
 
 ## Decision authority
 

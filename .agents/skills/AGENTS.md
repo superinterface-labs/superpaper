@@ -17,6 +17,7 @@
 | [[.agents/skills/introspect/SKILL\|introspect]] | Audit the vault — connectivity, consistency, evolution potential | "audit the system", "introspect", after structural changes |
 | [[.agents/skills/process-journal-entry/SKILL\|process-journal-entry]] | Process a daily freewrite or journal entry — reflect back, route insights to living documents and atomic notes | "process my journal", "process today's writing", or when fed a freewrite/daily note |
 | [[.agents/skills/process-meeting/SKILL\|process-meeting]] | Process a meeting transcript — extract decisions, action items, insights, and commitments | "process this meeting", or when fed a transcript from Granola/Otter/etc |
+| [[.agents/skills/plan/SKILL\|plan]] | Decompose a goal into a phased implementation strategy | New project needs a roadmap, complex task needs breakdown, "plan this" |
 | [[.agents/skills/skill-creator/SKILL\|skill-creator]] | Create new skills from observed patterns or explicit requests | "make a skill for...", or when you notice repeated workflows |
 
 ## When to suggest a new skill

@@ -12,7 +12,7 @@ tags:
 
 > Decompose a goal into a phased implementation strategy.
 >
-> Part of [[.agents/SKILLS|Skills Directory]]. Used by: [[.agents/hierarchy/exec-ops|Operations]], [[.agents/hierarchy/exec-forge|Forge]].
+> Part of [[.agents/skills/AGENTS|Skills Directory]].
 
 ## When to Use
 
@@ -26,7 +26,7 @@ tags:
 |-------|----------|-------------|
 | goal | yes | What needs to be accomplished |
 | constraints | no | Budget, timeline, tech stack, team size |
-| context | no | Links to relevant superinterface/knowledge/ or superinterface/knowledge/memory/ notes |
+| context | no | Links to relevant superpaper/knowledge/ notes |
 
 ## Process
 
@@ -36,7 +36,7 @@ tags:
 4. For each phase: define deliverables and acceptance criteria phrased as behavior a human can verify
 5. Identify risks and mitigations
 6. Write the plan as a note or add tasks to the board
-7. For complex tasks: write the plan as a file (in project folder or `.plans/`). Plans that live as files can be handed to any agent or human cold. For technically rigorous work, escalate to [[.agents/skills/tech-plan/SKILL|tech-plan]].
+7. For complex tasks: write the plan as a file (in project folder or `.plans/`). Plans that live as files can be handed to any agent or human cold.
 
 ## Subagent Orchestration
 
@@ -49,8 +49,8 @@ When work partitions into independent subgraphs, dispatch parallel subagents wit
 
 ## Outputs
 
-- Plan document (in project folder, `.plans/`, or `superinterface/ops/`)
-- Tasks on [[Mission Control]] with phase labels
+- Plan document (in project folder or `.plans/`)
+- Tasks on [[apps/mission-control]] with phase labels
 - Dependencies noted (which tasks block which)
 
 ## Conventions

@@ -1098,23 +1098,12 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 ├── AGENTS.md                   # This file
 ├── superpaper/
 │   ├── knowledge/              # Everything the system knows — atomic, densely linked
-│   │   ├── <domain>/           # Emerge from use: ai/, meditation/, fitness/, ...
-│   │   ├── meta/               # Preferences, vision, self-knowledge
-│   │   ├── personal/           # Relationships, health, finances, life admin
-│   │   ├── sources/            # Raw imports — immutable references
-│   │   │   └── meetings/       # Meeting transcripts [create when needed]
-│   │   ├── ideas/              # Creative playground — hunches, what-ifs, brainstorms
-│   │   ├── Knowledge map.md    # Browsable entry point with clusters
-│   │   └── .evidence/          # Granular evidence notes (hidden, AI-facing)
+│   │   └── Knowledge map.md    # Browsable entry point with clusters
 │   ├── journal/                # Self-reflection and growth
-│   │   ├── reflections/        # Long-form processing — struggles, breakthroughs, decisions
-│   │   └── *.log.md            # Living documents (decisions, goals, learnings) [create when needed]
 │   ├── projects/               # Active work — bias here when >1 file needed
-│   │   └── scratchpad/         # Throwaway experiments — auto-archive after 14 days
 │   ├── apps/                   # Mini apps — interactive tools the human uses regularly
 │   │   └── mission-control.md  # Kanban board — todo, in progress, done, blocked
 │   └── inbox/                  # Quick capture — triage within 48h
-│       └── log/                # Task execution logs: log/mmm-yy/dd/<task>.md
 ├── daily/                      # Daily notes (via Calendar plugin)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
@@ -1122,6 +1111,8 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
+
+**Elegant simplicity.** Start with only the top-level function folders. Every subfolder below is created the moment it's first needed — never before. A clean vault invites use; a pre-organized one intimidates.
 
 ### Scaling principle
 
@@ -1131,18 +1122,30 @@ Folders organize by **function** first (what it does), not domain (what it's abo
 
 ### When subfolders emerge
 
-Create subfolders **only when a function accumulates volume**, not to pre-organize by topic. Examples that earn their own subfolder:
+Create subfolders **only when a function accumulates volume**, not to pre-organize by topic:
 
 | Subfolder | When to create | Lives under |
 |-----------|---------------|-------------|
-| `knowledge/sources/meetings/` | Regular meeting transcripts | `knowledge/sources/` |
-| `knowledge/sources/papers/` | Research paper collection grows | `knowledge/sources/` |
-| `knowledge/sources/conversations/` | Saving chat transcripts | `knowledge/sources/` |
-| `knowledge/<domain>/` | 5+ notes in a domain accumulate | `knowledge/` |
-| `knowledge/patterns/` | 10+ pattern notes accumulate | `knowledge/` |
-| `projects/<name>/` | Any active project with multiple files | `projects/` |
+| `sources/` | First external material arrives | `knowledge/` |
+| `sources/meetings/` | Regular meeting transcripts | `knowledge/sources/` |
+| `sources/papers/` | Research paper collection grows | `knowledge/sources/` |
+| `sources/conversations/` | Saving chat transcripts | `knowledge/sources/` |
+| `.evidence/` | First granular evidence note | `knowledge/` |
+| `meta/` | First preference or self-knowledge note | `knowledge/` |
+| `personal/` | First personal life note (health, relationships, finances) | `knowledge/` |
+| `ideas/` | First creative hunch or brainstorm | `knowledge/` |
+| `<domain>/` | 5+ notes in a domain accumulate | `knowledge/` |
+| `patterns/` | 10+ pattern notes accumulate | `knowledge/` |
+| `tools/` | Collecting tool evaluations, configs, setups | `knowledge/` |
+| `references/` | Quick-lookup reference material | `knowledge/` |
+| `guides/` | How-to notes and procedures | `knowledge/` |
+| `inspiration/` | Curated examples, designs, quotes worth revisiting | `knowledge/` |
+| `reflections/` | First long-form reflection | `journal/` |
+| `<name>/` | Any active project with multiple files | `projects/` |
+| `scratchpad/` | First throwaway experiment (auto-archive after 14 days) | `projects/` |
+| `log/` | First task execution log | `inbox/` |
 
-Don't pre-create these. Let them emerge from use. The `[create when needed]` marker in the tree above signals this.
+Don't pre-create these. Let them emerge from use. And organically expand them horizontally and in depth as categories emerge! Always take user's taste in organizing into account and help them use their existing work better when its an existing obsidian workspace.
 
 ### What goes where
 
@@ -1302,7 +1305,7 @@ Install and configure all required plugins yourself using the CLI and online doc
 
 ### 4. Create vault structure
 
-Create the folders listed in **Vault structure** above. Then create `superpaper/knowledge/Knowledge map.md` per the **Knowledge map** specification — with `## Clusters` (empty initially), `## Recent additions` (Dataview query), and `## Stats` (DataviewJS block).
+Create only the top-level function folders: `superpaper/knowledge/`, `superpaper/journal/`, `superpaper/projects/`, `superpaper/apps/`, `superpaper/inbox/`, `daily/`, `.archive/`, `.scripts/`, `_templates/`. Then create `superpaper/knowledge/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 ### 5. Create templates
 
