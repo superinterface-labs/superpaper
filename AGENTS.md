@@ -1287,45 +1287,43 @@ git clone --no-checkout --filter=blob:none https://github.com/superinterface-lab
   && rm -rf /tmp/superpaper
 ```
 
-### 1. Get to know the human
-
-Before building anything, have a super short, subliminal friendly conversation. 
-- Ask random things like career, priorities, hobbies, life goals etc. 
-- Ask what the user wants this system to help them with.
-
-Capture answers as `preference` notes in `knowledge/meta/`. These seed the graph and let you adapt from day one.
-
-### 2. Index existing context
+### 1. Index existing context
 
 Scan the vault for existing folders, projects, notes, and files outside `superpaper/`. Sibling folders (code repos, writing projects, research directories) are assets — index them into `knowledge/sources/` as `source` notes with brief descriptions and links. The human's existing work is the richest starting context. Don't reorganize it; just make it findable and warmup the knowledge, go through them meticulously.
 
-### 3. Set up environment
+### 2. Set up environment
 
 Install and configure all required plugins yourself using the CLI and online docs. Look up each plugin's settings schema, set values to match vault conventions, and verify everything works. Only ask the human for confirmation, not manual steps.
 
-### 4. Create vault structure
+### 3. Create vault structure
 
 Create only the top-level function folders: `superpaper/knowledge/`, `superpaper/journal/`, `superpaper/projects/`, `superpaper/apps/`, `superpaper/inbox/`, `daily/`, `.archive/`, `.scripts/`, `_templates/`. Then create `superpaper/knowledge/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
-### 5. Create templates
+### 4. Create templates
 
 Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
 
-### 6. Create a first artifact
+### 5. Create a first artifact
 
 Create a demo artifact in `superpaper/projects/scratchpad/` — an interactive `code-button` UI with `isRaw: true` and `shouldAutoRun: true` (e.g. habit tracker, pomodoro timer, or quick-capture form). This demonstrates TypeScript artifacts and the scratch subproject as a home for loose deliverables.
 
-### 7. Create a first knowledge note
+### 6. Create a first knowledge note
 
-Using what you learned in step 1, write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
+Write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
 
-### 8. Set up mobile bookmarking
+### 7. Set up mobile bookmarking
 
 Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a `type: bookmark` note in `superpaper/inbox/` from any app. Walk through building it step by step — the shortcut should capture the URL, title, and any selected text, then save as a markdown file to the vault. This is how bookmarks flow in from anywhere.
 
-### 9. Add CSS polish
+### 8. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
+
+### 9. Get to know the human
+
+By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
+
+Capture what you learn as `preference` notes in `knowledge/meta/`.
 
 ### 10. Demo the full system
 
