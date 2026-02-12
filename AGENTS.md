@@ -736,18 +736,42 @@ Set `type` in frontmatter:
 - **Source** — external material (article, book, podcast, conversation). Always has a `source` field.
 - **Evidence** — a specific excerpt, quote, observation, or metric from a source. Granular and blockref-linkable (`^evidence`). Lives in `superpaper/knowledge/.evidence/`.
 - **Claim** — a compressive assertion that could be wrong. Must have confidence + evidence links + predictions ("if true, expect…").
+- **Hypothesis** — a candidate causal or structural explanation. Links to the question it addresses, the claims it makes, and the experiments that could test it.
 - **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
 - **Pattern** — domain-general structural essence (e.g. `[[pattern/feedback-loop]]`). Cross-domain hub that many notes link *to*.
 - **Bridge** — explicit analogy map between two concepts/domains. What maps, what's preserved, where it breaks, what it predicts.
-- **Question** — a retrieval cue that pulls neighborhoods. Track whether answered.
-- **Experiment** — a test that updates confidence. Records prediction, procedure, outcome.
+- **Model** — a formal structure (causal graph, mechanism, mathematical model) that explains how something works. Links to claims it supports and experiments that test it.
+- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods. Must track status (open/answered/superseded) and link to hypotheses and evidence.
+- **Experiment** — a test plan with a prediction, procedure, and outcome. Links to the hypothesis it tests. Records whether the prediction held.
+- **Dataset** — data provenance, version, and location. Links to the experiments and evidence it supports.
+- **Decision** — why a choice was made. Links to the evidence, models, and claims that informed it. Records alternatives considered.
+- **Run** — what an agent actually did. Timestamped execution record linking to the decision or task that triggered it and the artifacts produced.
 - **Preference** — how the human thinks, works, or wants things done. Values, tastes, habits, constraints. Preferences take precedence over general heuristics.
 - **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/knowledge/ideas/`.
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `superpaper/journal/reflections/`.
 - **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/journal/`. Accumulates dated entries that link to atomic notes.
 - **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
 
-Types are structural roles — they define how a note behaves in the graph. Use `kind` for what it's about (fact, concept, procedure, principle, decision, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+Types are structural roles — they define how a note behaves in the graph. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+
+### Epistemic contract
+
+All durable work MUST compile into first-class objects: **Question, Hypothesis, Claim, Evidence, Model, Experiment, Dataset, Decision, Run.** These are the your belief states that help humans reason about your work.
+
+Every first-class object MUST have:
+
+| Field | Purpose |
+|-------|--------|
+| `id` | Stable identifier (e.g. `hyp-2026-02-12-a`) |
+| `status` | `draft` · `active` · `supported` · `falsified` · `paused` · `superseded` |
+| `confidence` | 0–1, when applicable |
+| `upstream` | Explicit links to objects this depends on (e.g. Claim → Evidence, Experiment → Hypothesis) |
+| `updated` | Last modification date |
+| `superseded_by` | Link to replacement, if superseded |
+
+**No naked conclusions.** If a conclusion matters, it must be a Claim or Decision object linked to Evidence, Model, or Experiment objects. Unlinked assertions are noise.
+
+**Update trail.** When an object's status or confidence changes, append a dated entry to its `## History` section: what changed, why, what triggered it. The graph must be auditable.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -790,7 +814,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 **Write protocol:**
 1. **One concept per note.** If you wrote two ideas, split into two notes.
 2. **Link to 2+ existing notes — and update 1–3 of them to link back.** This distributed write makes the note reachable from many cues. Search before creating — the concept may already exist.
-3. **Add relations** in `## Relates` as prose sentences. Implicitly, relation types are: *supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*. Include each as part of natural prose sentences with a wiki-link, e.g. "Supports [[other note]] — why."
+3. **Add relations** in `## Relates` as natural prose. Write the way you'd explain a connection to a friend: "This builds on [[note]] because...", "Sits in tension with [[note]] — they disagree on...". The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
 4. **Start as fleeting.** Promote to permanent only after the idea survives use and refinement.
 5. **Tag for retrieval.** `#domain/X` for the field, `#topic/Y` for the concept.
 6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
@@ -800,18 +824,27 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 10. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter. This makes notes findable from partial cues and unlinked mentions.
 11. **Essence + surfaces.** Every permanent note should name the invariant mechanism (essence) and give 2+ examples across different domains (surfaces).
 12. **Predictions over summaries.** Claims should state what you'd expect to observe if true. Bridges should state what the analogy predicts in the target domain.
+13. **No naked conclusions.** Every conclusion must be a Claim or Decision object linked to its Evidence/Model/Experiment chain. If you can't link it, it's a fleeting note — not a conclusion.
 
 ### Knowledge note template
 
 ```markdown
 ---
 type: fleeting
-kind: fact | concept | procedure | principle | decision | goal | habit | ritual | review | creation | prompt | recipe | preference | claim | pattern | bridge | idea | reflection |...
+kind: fact | concept | procedure | principle | goal | habit | ritual | review | creation | prompt | recipe | preference | claim | pattern | bridge | idea | reflection |...
+id: ""
+status: draft | active | supported | falsified | paused | superseded
 confidence: 0.5
 source: ""
 connections: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+superseded_by: ""
+evidence_for: []
+evidence_against: []
+assumptions: []
+predictions: []
+next_actions: []
 tags: []
 aliases: []
 relations:
@@ -825,9 +858,11 @@ One clear paragraph. What is this concept? Why does it matter? What does it impl
 
 ## Relates
 
-Supports [[Other note]] — brief explanation of the relationship.
-Contradicts [[Another note]] — the specific tension.
-Example of [[Parent concept]].
+This builds on [[Other note]] by taking the idea further into territory X. It sits in tension with [[Another note]] — they disagree on Y, and that gap is worth exploring. A concrete instance of [[Parent concept]], seen through the lens of Z.
+
+## History
+
+- YYYY-MM-DD — Created as fleeting. Reason.
 ```
 
 The `relations` field in frontmatter makes connections queryable by Dataview. The `## Relates` body section is prose — readable without any tooling.
@@ -877,7 +912,7 @@ What if...?
 
 ## Connects to
 
-[[related concept]] — why this matters.
+[[related concept]] — this matters because it challenges how we usually think about X.
 ```
 
 ### Reflection template
@@ -984,7 +1019,7 @@ Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. Use 
 6. **Foldable sections.** Use `> [!info]- Full details` for anything the reader might skip.
 7. **Knowledge map as entry point.** Never dump 50 links. Organize into clusters with descriptions.
 8. **Hub notes.** Overviews for topics, projects, or sources — short summary + links/embeds to atomic notes + Dataview rollups.
-9. **Source notes.** For a major external source, create a `Source – <Title>` note with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
+9. **Source notes.** For a major external source, create a note in `knowledge/sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
 
 ---
 
