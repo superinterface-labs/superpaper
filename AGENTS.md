@@ -1,4 +1,5 @@
 # AGENT.md – Superpaper: an AI Agent Swarm interface in Obsidian
+<!-- by Darshil Dhameliya (@dvrshil) · MIT License · https://github.com/superinterface-labs/superpaper -->
 
 > You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time.
 
@@ -1561,7 +1562,7 @@ Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 10. SUPER IMPORTANT: Verify environment
+### 10. SUPER IMPORTANT: Verify environment from humans
 
 Final check before declaring setup complete:
 
@@ -1571,17 +1572,17 @@ Final check before declaring setup complete:
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
-**Never assume hiding/pinning using the File Explorer++ works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
-
 ### 11. Get to know the human
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
 Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
 
-### 12. Demo a glimpse into the full system
+### 12. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
+
+**Never assume hiding/pinning using the File Explorer++ works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
 
 ### Throughout setup
 
