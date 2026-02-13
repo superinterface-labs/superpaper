@@ -54,7 +54,7 @@ This is the heartbeat’s main job. Dispatch ALL In Progress tasks as **parallel
 1. Reads the task’s card and any linked notes for context
 2. Does the actual work (research, build, organize, process). Uses appropriate skills.
 3. Updates the task with a `## Progress` entry (most recent at top): what changed, why, how validated, what remains.
-4. Moves the card: → **Done** (append `@{YYYY-MM-DD}`) or → **Blocked** (comment explains why).
+4. Moves the card: → **Done** (append `@{YYYY-MM-DD}` or → **Blocked** (explains why or for user input in the log file) `→ [[inbox/log/mmm-yy/dd/task-slug]]`). Any card thats picked up from Todo or inbox or quick capture must link to its log for the user to get an overview on the task progress.
 5. Creates `inbox/log/mmm-yy/dd/<task-slug>.md` with what was done, evidence links, and what remains.
 
 **Planning (complex tasks only):** If a task needs multiple steps or internal parallelism, create a plan in `.plans/<task-slug>.md` before dispatching. Simple tasks skip planning.
@@ -63,7 +63,9 @@ Skip cards that clearly need human input — leave them in Todo with a comment a
 
 ### STEP 4 — Triage inbox
 
-Read every file in `superpaper/inbox/` (skip `AGENTS.md`, skip items already routed to the board in Step 2).
+**A) Quick capture drops.** Read `daily/Quick capture.md`. Scan `## Drops` for unchecked items (`- [ ] ...`). For each: URLs → create bookmark in `inbox/`, text → append to daily + create log entry. Check off processed items (`- [x]`). This catches items dropped from other devices between heartbeats.
+
+**B) Inbox files.** Read every file in `superpaper/inbox/` (skip `AGENTS.md`, skip items already routed to the board in Step 2).
 
 For each item:
 1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?

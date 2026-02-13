@@ -589,19 +589,21 @@ export async function cleanup(app: App): Promise<void> {
 
 ### My tasks (`apps/My tasks.md`)
 
-A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue.
+A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue. Configure with `prepend-archive-separator`, `prepend-archive-date`, and — critically — no submit button: cards save on every keystroke (`new-card-insertion-method: obsidian-default`). The board must feel like a text file, not a form.
 
 **How it works:**
 - The human or agent adds cards with a one-line description. Each card can link to a project, note, or inbox item.
 - The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
 - Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
 
+**Every card MUST link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
+
 **Task lifecycle:**
 
 ```
 1. CAPTURE   → Card added to Todo (link to inbox item or inline description)
 2. PICK UP   → Move to In Progress — agent begins work
-3. SHIP      → Move to Done — append @{YYYY-MM-DD}, log to inbox/log/
+3. SHIP      → Move to Done — append @{YYYY-MM-DD} + link to log entry
 4. ARCHIVE   → After 7 days in Done — heartbeat removes card, log persists
 5. BLOCKED   → Move to Blocked — comment explains why, escalate to human
 ```
@@ -1542,6 +1544,8 @@ Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shou
 
 This is the human's primary capture surface. Pin it to a sidebar tab. It replaces direct browsing of `inbox/` — the agent ingests from inbox behind the scenes.
 
+**Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → thoughts in daily + log), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
+
 ### 6. Create starter bases
 
 Create one high-leverage `.base` file:
@@ -1556,7 +1560,7 @@ Write an atomic concept note together — one idea the human cares about, typed 
 
 ### 8. Set up mobile bookmarking
 
-Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a `type: bookmark` note in `superpaper/inbox/` from any app. Walk through building it step by step — the shortcut should capture the URL, title, and any selected text, then save as a markdown file to the vault. This is how bookmarks flow in from anywhere.
+Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
 ### 9. Add CSS polish
 
