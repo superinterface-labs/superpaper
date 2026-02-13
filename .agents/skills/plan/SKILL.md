@@ -50,7 +50,7 @@ When work partitions into independent subgraphs, dispatch parallel subagents wit
 ## Outputs
 
 - Plan document (in project folder or `.plans/`)
-- Tasks on [[apps/mission-control]] with phase labels
+- Tasks on [[apps/My tasks]] with phase labels
 - Dependencies noted (which tasks block which)
 
 ## Conventions

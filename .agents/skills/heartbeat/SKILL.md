@@ -29,13 +29,13 @@ Read these files (do not skip any):
 - [[Knowledge map]] — current knowledge graph entry point
 - `superpaper/AGENTS.md` — workspace index and subfolder purposes
 - `.agents/skills/AGENTS.md` — available skills and triggers
-- `superpaper/apps/mission-control.md` — the board
+- `superpaper/apps/My tasks.md` — the board
 
 ### STEP 2 — Fill the pipeline
 
 The board must always have work flowing.
 
-**A) Inbox → Board:** Read `superpaper/inbox/`. For any item that is a task, add a card to Mission Control under **Todo**. Non-task items are triaged in Step 4.
+**A) Inbox → Board:** Read `superpaper/inbox/`. For any item that is a task, add a card to My tasks under **Todo**. Non-task items are triaged in Step 4.
 
 **B) Todo → In Progress:** If In Progress has fewer than 3 cards, pull the top card(s) from Todo. Move them to **In Progress** on the board.
 
@@ -68,8 +68,8 @@ Read every file in `superpaper/inbox/` (skip `AGENTS.md`, skip items already rou
 For each item:
 1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?
 2. **Route:**
-   - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), create source note in `sources/`, extract insights into atomic notes, connect to graph, update bookmark status. High priority — the human shared it because it matters.
-   - *Meeting or conversation transcript* → `superpaper/personal/events/`. Run [[process-meeting]] if structured enough.
+   - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), enrich the bookmark with summary + key ideas + `#domain/` tags, extract insights into atomic notes, connect to graph, move to `sources/bookmarks/` with `status: processed`. High priority — the human shared it because it matters.
+   - *Meeting or conversation transcript* → `superpaper/sources/`. Run [[process-meeting]] if structured enough.
    - *Fleeting thought* → `superpaper/concepts/` with `type: fleeting`. Link to 1–2 existing notes.
    - *Source material* → `superpaper/sources/`. Extract key evidence if high-signal.
    - *Project idea* → `superpaper/projects/scratchpad/` or the relevant project folder.
@@ -152,7 +152,7 @@ NOTE: If git is not set up, do git init and if remote is not set up, do git remo
 
 ## Outputs
 
-- Updated `apps/mission-control.md` with cards moved between lanes
+- Updated `apps/My tasks.md` with cards moved between lanes
 - Task execution logs in `inbox/log/mmm-yy/dd/`
 - Clean `superpaper/inbox/`
 - Updated entity folders with consolidated, promoted, and better-linked notes

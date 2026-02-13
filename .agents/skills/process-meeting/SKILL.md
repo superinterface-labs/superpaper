@@ -24,7 +24,7 @@ description: Process a meeting transcript — extract decisions, action items, i
 
 ### STEP 1 — Store source
 
-Save the raw transcript to `superpaper/personal/events/meetings/` with frontmatter:
+Save the raw transcript to `superpaper/sources/meetings/` with frontmatter:
 ```yaml
 type: source
 source: meeting
@@ -65,7 +65,7 @@ Append to today's daily note under `## Notes`:
 
 ## Outputs
 
-- Source transcript in `superpaper/personal/events/meetings/`
+- Source transcript in `superpaper/sources/meetings/`
 - Updated living documents (Decisions log, Learning log)
 - 0+ new atomic notes in entity folders
 - Action items in daily note

@@ -291,47 +291,59 @@ Turn any set of notes into a filterable, sortable, editable database. Data lives
 ![[My base.base#View Name]]
 ```
 
-**Syntax (`.base` YAML):**
+**Syntax (`.base` YAML) — Bookmarks example:**
 ```yaml
 filters:
   and:
-    - inFolder(file.file, "superpaper/concepts")
-    - 'type == "claim"'
-    - "confidence <= 0.55"
+    - 'type == "bookmark"'                                # ← All views filter: only bookmarks
 formulas:
-  days_stale: "dateDiff(now(), date(updated), 'days')"
-  link_count: "file.backlinks.length"
+  days_waiting: "dateDiff(now(), date(created), 'days')"   # ← Computed column: age in days
+  insight_count: "file.backlinks.length"                    # ← How many notes cite this bookmark
+  has_tags: "list(tags).length > 1"                         # ← list() wraps safely even if empty
+  related: "file.hasLink(this.file)"                        # ← `this` = whatever note you're viewing
 display:
-  confidence: Confidence
-  formula.days_stale: "Days stale"
+  formula.days_waiting: "⏳ Days"                           # ← Rename columns for humans
+  formula.insight_count: "💡 Insights"
+  formula.has_tags: "🏷 Tagged"
 views:
   - type: table
-    name: "Low-confidence claims"
-    order:
-      - file.name
-      - confidence
-      - formula.days_stale
-    limit: 20
+    name: "Unprocessed"                                    # ← View 1: triage queue
+    filters: 'status != "processed"'                       # ← Per-view filter (stacks on All views)
+    order: [file.name, url, tags, formula.days_waiting]
+    limit: 30
   - type: table
-    name: "All claims"
-    filters: 'type == "claim"'
-    order:
-      - file.name
-      - confidence
+    name: "Library"                                        # ← View 2: everything, newest first
+    order: [file.name, url, tags, formula.insight_count, created]
+    limit: 50
+  - type: table
+    name: "Stale"                                          # ← View 3: needs attention
+    filters: 'formula.days_waiting > 7 && status == "unprocessed"'
+    order: [file.name, url, formula.days_waiting]
+  - type: table
+    name: "Connected"                                      # ← View 4: contextual — changes per note
+    filters: 'formula.related'                             # ← Only bookmarks linked to current note
+    order: [file.name, tags, formula.insight_count]
 ```
 
-**Key filters and functions:**
+**Key primitives:**
 
-| Filter / formula | What it does |
-|-----------------|-------------|
-| `inFolder(file.file, "path")` | Notes in a folder |
-| `taggedWith(file.file, "tag")` | Notes with a tag |
-| `linksTo(file.file, "Note")` | Notes that link to a specific note |
-| `file.hasLink(this.file)` | Backlinks to the currently focused note |
-| `this.file.hasLink(file)` | Outlinks from the currently focused note |
-| `file.backlinks` / `file.links` | All backlinks / outlinks as lists |
-| `dateDiff(now(), date(field), 'days')` | Days since a date field |
-| `list(prop).map(...)` / `.filter(...)` | Transform and filter list properties |
+| Primitive | Example | What it does |
+|-----------|---------|-------------|
+| `inFolder(file.file, "path")` | `inFolder(file.file, "superpaper/sources")` | Notes in a folder |
+| `taggedWith(file.file, "tag")` | `taggedWith(file.file, "domain/ai")` | Notes with a specific tag |
+| `linksTo(file.file, "Note")` | `linksTo(file.file, "AI safety")` | Notes that link to a specific note |
+| `file.hasLink(this.file)` | filter: `file.hasLink(this.file)` | Backlinks to the currently focused note |
+| `this.file.hasLink(file)` | filter: `this.file.hasLink(file)` | Outlinks from the currently focused note |
+| `file.backlinks` / `file.links` | `file.backlinks.length` | All backlinks / outlinks as lists |
+| `dateDiff(now(), date(field), 'days')` | formula: `dateDiff(now(), date(created), 'days')` | Days since a date field |
+| `list(prop).map(...)` / `.filter(...)` | `list(tags).filter(value.contains("domain"))` | Safe iteration over list properties |
+| `formula["name"]` | `formula["days_waiting"] > 7` | Reuse a formula in filters or other formulas |
+| `note["prop-name"]` | `note["last-contact"]` | Access properties with dashes |
+| `if(cond, then, else)` | `if(status == "processed", "✅", "⏳")` | Conditional values |
+| `/regex/.matches(field)` | `/\d{4}/.matches(file.name)` | Regex matching |
+| `.toString()` / `.contains()` / `.slice()` | `url.toString().contains("arxiv")` | String operations |
+| `.sort()` / `.unique()` / `.flat()` | `list(tags).sort().unique()` | List manipulation |
+| `value.asFile()` | `file.backlinks.map(value.asFile())` | Convert link to file object |
 
 **`this` — the self-referential keyword.** In an embedded base, `this` refers to the note containing the embed. In the sidebar, `this` refers to the currently active note. This enables contextual, dynamic views that change based on what you're looking at.
 
@@ -352,11 +364,11 @@ views:
 | `Knowledge health.base` | `superpaper/` | Views: orphan notes (backlinks = 0), low-confidence claims, stale fleeting notes (>14 days), unrequited outlinks. The introspect skill in base form. |
 | `People.base` | `superpaper/people/` | CRM view — last-contact, role, context. Sortable, inline-editable. Filter by staleness. |
 | `Questions.base` | `superpaper/questions/` | Views: open, answered, superseded. Link count shows which questions are pulling the most knowledge. |
-| `Inbox.base` | `superpaper/inbox/` | Unprocessed items sorted by age. Formula: days since created. Triage at a glance. |
+| `Bookmarks.base` | `superpaper/sources/` | The human's read-later library. Views: unprocessed (triage), library (browse all), stale (>7 days unprocessed), connected (backlinks to current note via `this`). Formulas: days waiting, insight count, tag coverage. The showcase base — see syntax example above. |
 | `Experiments.base` | `superpaper/` | All experiments (personal + project). Views by status: active, completed, abandoned. Track hypothesis → outcome. |
 | `Contextual backlinks.base` | sidebar | Filter: `file.hasLink(this.file)`. Drag to sidebar — dynamic backlinks with editable properties for whatever note you're viewing. |
 
-Don't create all of these at once. Start with **Knowledge health** during bootstrap. Others emerge as content grows.
+Don't create all of these at once. Start with **Bookmarks** during bootstrap — it's the first base the human will use daily. Others emerge as content grows.
 
 ---
 
@@ -574,7 +586,7 @@ export async function cleanup(app: App): Promise<void> {
 | Decision matrix | `code-button` with weighted criteria, visual comparison |
 | Flashcard reviewer | `code-button` with spaced repetition, pulls from knowledge notes |
 
-### Mission Control (`apps/mission-control.md`)
+### My tasks (`apps/My tasks.md`)
 
 A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue.
 
@@ -598,7 +610,7 @@ A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress
 ```markdown
 ---
 type: log
-task: "[[apps/mission-control]]#card-name"
+task: "[[apps/My tasks]]#card-name"
 status: done
 created: YYYY-MM-DD
 ---
@@ -613,7 +625,7 @@ Links to created/updated notes.
 Next steps or "complete".
 ```
 
-The heartbeat appends a summary of mission-control activity to the daily note. Over time, `inbox/log/` becomes a complete audit trail of everything the agents did and why.
+The heartbeat appends a summary of task board activity to the daily note. Over time, `inbox/log/` becomes a complete audit trail of everything the agents did and why.
 
 ---
 
@@ -1065,9 +1077,11 @@ kind: url | image | text | mixed
 source: ios | share-sheet
 url: ""
 status: unprocessed | processed | failed
+rating:
 created: YYYY-MM-DD
 tags:
   - inbox
+  - "#domain/..."                  ← add domain tag(s) during processing
 ---
 
 (URL, text, or image reference goes here)
@@ -1079,10 +1093,10 @@ When a bookmark arrives in `inbox/`:
 
 1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
 2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
-3. **Create a source note** — save the raw content in `sources/` as an immutable reference if directly available. NEVER manually rewrite the source document yourself to do this.
-4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes. Link back to the source.
+3. **Enrich the bookmark** — add a `## Summary` and `## Key ideas` section to the bookmark note itself. Add `#domain/` tags and a `rating` (1–5) if quality is assessable. The bookmark becomes the source — no separate source note needed. NEVER manually rewrite the source content; quote or transclude it.
+4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes in `concepts/`, `.evidence/`, etc. Link back to the bookmark.
 5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
-6. **Update bookmark** — set `status: processed`, add `processed_to: "[[source note]]"` in frontmatter. Move to `inbox/processed/`.
+6. **Move to library** — set `status: processed`, move to `sources/bookmarks/`. The bookmark is now browsable in `Bookmarks.base`.
 
 ### Anti-patterns
 
@@ -1145,6 +1159,7 @@ The knowledge map is the browsable entry point to the knowledge graph. It should
 - **`## Open questions`** — `LIST FROM "superpaper/questions" SORT created DESC`
 - **`## Low-confidence claims`** — `TABLE confidence FROM "superpaper/concepts" WHERE type = "claim" AND confidence <= 0.55 SORT updated DESC`
 - **`## Contradictions`** — `LIST FROM "superpaper" WHERE contains(file.outlinks, "contradicts") SORT updated DESC`
+- **`## Bookmarks`** — embed `![[Bookmarks.base#Library]]` for a browsable read-later library. The human can scan, filter, and discover connections without leaving the knowledge map.
 - **`## Vault health`** — embed `![[Knowledge health.base#Overview]]` for a live, interactive dashboard (if the base exists). Falls back gracefully if not yet created.
 
 ---
@@ -1281,14 +1296,12 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   ├── questions/              # What I'm exploring — open threads, retrieval magnets
 │   ├── sources/                # Where I learned it — articles, books, papers
 │   ├── personal/               # My life — health, relationships, finances, hobbies, journal
-│   │   ├── events/             # Time — meetings, conversations, logs, history
-│   │   ├── places/             # Space — physical & virtual locations
 │   │   └── journal/            # Self-reflection and growth
 │   ├── meta/                   # How we think — shared AI+human introspection layer
 │   ├── .evidence/              # (hidden) granular evidence for AI citation
 │   ├── projects/               # Active work — bias here when >1 file needed
 │   ├── apps/                   # Mini apps — interactive tools the human uses regularly
-│   │   └── mission-control.md  # Kanban board — todo, in progress, done, blocked
+│   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
 ├── daily/                      # Daily notes (via Calendar plugin)
@@ -1305,7 +1318,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 
 Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domain/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
 
-**inbox → sources/personal/events → concepts/questions → personal/journal → projects → daily**
+**inbox → sources → concepts/questions → personal/journal → projects → daily**
 
 ### When subfolders emerge
 
@@ -1316,8 +1329,10 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 | `work/`, `public-figures/`, `mentors/` | 8+ people notes | `people/` |
 | `<domain>/` (e.g. `ai/`, `philosophy/`), `mental-models/`, `frameworks/`, `patterns/`, `claims/` | 5+ concept notes in one domain or kind | `concepts/` |
 | `active/`, `parked/`, `resolved/` | Volume of questions grows | `questions/` |
+| `bookmarks/` | First processed bookmark (created during bootstrap) | `sources/` |
 | `papers/`, `books/`, `articles/`, `podcasts/`, `courses/` | Source type accumulates | `sources/` |
-| `meetings/`, `conversations/` | Regular event transcripts | `personal/events/` |
+| `meetings/`, `conversations/` | Regular event transcripts | `sources/` |
+| `events/`, `places/` | First time-bound event or location note | `personal/` |
 | `health/`, `finances/`, `relationships/`, `goals/`, `hobbies/`, `possessions/` | 5+ notes in a life area | `personal/` |
 | `journal/`, `reflections/`, `weekly-reviews/`, `retrospectives/`, `gratitude/` | First long-form reflection or review | `personal/` |
 | `experiments/` | First designed personal trial (sleep, habits, routines) | `personal/` |
@@ -1339,8 +1354,8 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | An insight, pattern, principle, claim, mental model | `concepts/` | The "what I understand" bucket |
 | An open question I'm exploring | `questions/` | Retrieval magnet — pulls neighborhoods |
 | A link, article, paper, book | `sources/` | Raw material — immutable reference |
-| A meeting, conversation, or time-bound event | `personal/events/` | Temporal record — what happened when |
-| A physical or virtual location | `personal/places/` | Spatial anchor — where things happen |
+| A meeting, conversation, or time-bound event | `sources/` | Transcript is source material — insights extracted to entity folders |
+| A physical or virtual location | `personal/places/` | Spatial anchor — where things happen (folder emerges when needed) |
 | A creative hunch, brainstorm, what-if | `concepts/` | `type: idea` — low pressure, no structure required |
 | Something personal (health, relationships, finances) | `personal/` | Private life knowledge |
 | Processing an experience or struggle | `personal/journal/` | Self-reflection, growth |
@@ -1356,8 +1371,8 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | Something I'm actively building (>1 file) | `projects/<name>/` | Multi-file work lives in projects |
 | A project experiment or A/B test | `projects/<name>/experiments/` | Designed trial scoped to a project |
 | An interactive tool the human will reuse | `apps/<name>/` | Mini apps — trackers, dashboards, utilities |
-| A blog, tweet, video, podcast, or link I liked | `inbox/` with `type: bookmark` | Agent fetches full content, processes into knowledge |
-| A task the agent should work on | `apps/mission-control.md` | Kanban card — heartbeat picks it up |
+| A blog, tweet, video, podcast, or link I liked | `inbox/` → `sources/bookmarks/` | Captured in inbox, enriched and moved to library after processing |
+| A task the agent should work on | `apps/My tasks.md` | Kanban card — heartbeat picks it up |
 | A task execution log entry | `inbox/log/mmm-yy/dd/<task>.md` | Granular record of what was done, when, and why |
 | Today's plan, freewrite, captures | `daily/` | Dated, ephemeral, links to durable notes |
 
@@ -1423,15 +1438,21 @@ The vault is scriptable from the terminal. **Use the CLI as your primary interfa
 
 Install all community plugins: `obsidian plugin:install id=<id> enable` for each row above. Enable Bases and Properties in Settings → Core plugins. Then configure to match vault conventions (template folder → `_templates/`, scripts → `.scripts/`, daily notes → `daily/`, Dataview JS queries → enabled, etc.). Look up each plugin's latest docs online for its settings schema.
 
-**File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with hide filters to keep infrastructure out of the file explorer:
+**File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with:
+
+*Hide filters* — keep infrastructure out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
 - Hide `inbox` (wildcard, `FILES_AND_DIRECTORIES`) — agent-managed; humans capture via Quick Capture UI, not by browsing inbox.
 
+*Pin to top* — the things the human reaches for daily:
+- **Folders:** `apps/`, `personal/`, `projects/`
+- **Files:** central files like `Knowledge map.md`, `My tasks.md`, every `.base` file (e.g. `Bookmarks.base`)
+
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
 **Graph View color groups** (configure in `.obsidian/graph.json`):
-- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/personal` purple, `path:superpaper/personal/events` amber, `path:superpaper/personal/places` indigo, `path:superpaper/meta` gold, `path:superpaper/projects` blue, `path:daily` gray, `[type:claim]` orange, `[status:blocked]` red.
+- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/personal` purple, `path:superpaper/sources` amber, `path:superpaper/meta` gold, `path:superpaper/projects` blue, `path:daily` gray, `[type:claim]` orange, `[status:blocked]` red.
 
 ---
 
@@ -1501,7 +1522,7 @@ This step is non-negotiable — do not skip or defer it.
 
 ### 3. Create vault structure
 
-Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/events/`, `personal/places/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 ### 4. Create templates
 
@@ -1511,7 +1532,7 @@ Create the **Knowledge note template**, **Daily note template**, **Idea note tem
 
 Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
 - *Thought* → appends to today's daily note under `## Captures`
-- *Task* → creates a card on `apps/mission-control.md` under **Todo**
+- *Task* → creates a card on `apps/My tasks.md` under **Todo**
 - *Idea* → creates a note in `concepts/` with `type: idea`
 - *Link* → creates a `type: bookmark` note in `inbox/`
 
@@ -1521,12 +1542,9 @@ This is the human's primary capture surface. Pin it to a sidebar tab. It replace
 
 Create one high-leverage `.base` file:
 
-1. **`superpaper/Knowledge health.base`** — filter: `inFolder(file.file, "superpaper")`. Views:
-   - "Low confidence" — filter: `type == "claim"` and `confidence <= 0.55`
-   - "Stale fleeting" — filter: `type == "fleeting"`, formula: `dateDiff(now(), date(created), 'days') > 14`
-   - "Recent" — all notes sorted by created DESC, limit 20
+1. **`superpaper/sources/Bookmarks.base`** — use the exact YAML from the **Bases syntax** section above. This is the human's browsable library and the showcase for what Bases can do: computed columns (`⏳ Days`, `💡 Insights`, `🏷 Tagged`), contextual filtering via `this`, multiple views (Unprocessed, Library, Stale, Connected), and inline-editable properties.
 
-Embed `![[Knowledge health.base#Recent]]` in the Knowledge map. Other bases (People, Questions, Inbox, Experiments etc) emerge as content grows — don't pre-create them.
+Embed `![[Bookmarks.base#Library]]` in the Knowledge map under a `## Bookmarks` section. Other bases (Knowledge health, People, Questions, Experiments etc) emerge as content grows — don't pre-create them.
 
 ### 7. Create a first knowledge note
 
@@ -1555,9 +1573,10 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 Final check before declaring setup complete:
 
 1. **File Explorer++ hiding:** Ask the human: "Can you see any `AGENTS.md` files in your file explorer sidebar?" If yes, the hide filters aren't working — debug `.obsidian/plugins/file-explorer-plus/data.json` and reload. Also confirm `_templates` and `inbox` are hidden.
-2. **Pinned tabs:** Confirm Quick Capture, Meta dashboard (if created), and daily note are pinned or in sidebar tabs.
-3. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
-4. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
+2. **File Explorer++ pinning:** Confirm `apps/`, `personal/`, `projects/` are pinned to top. Confirm `Knowledge map.md`, `My tasks.md`, and any `.base` files are pinned.
+3. **Pinned tabs:** Confirm Quick Capture, Meta dashboard (if created), and daily note are pinned or in sidebar tabs.
+4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
+5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
 **Never assume hiding works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
 

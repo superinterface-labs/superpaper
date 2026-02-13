@@ -87,8 +87,6 @@ Reusable instruction packages in `.agents/skills/`. Each skill is a folder with 
 │   ├── concepts/               # What I understand — patterns, principles, claims
 │   ├── questions/              # What I'm exploring — open threads
 │   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── events/                 # Time — meetings, conversations, logs
-│   ├── places/                 # Space — physical & virtual locations
 │   ├── personal/               # My life — health, relationships, journal
 │   ├── projects/               # Active work
 │   ├── apps/                   # Mini apps — trackers, dashboards, utilities
