@@ -7,8 +7,11 @@ You talk, the agent writes files, knowledge compounds. No code, no build steps, 
 
 Your Obsidian vault is just a folder of text files. No database, no lock-in.
 
-- **[Obsidian](https://obsidian.md)** — a free app that renders markdown files into rich, interactive documents. Your vault is an Obsidian folder.
-- **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.dev) that read and write files on your behalf and use various tools to perform actions.
+### Tools that you will need
+- Install **[Obsidian](https://obsidian.md)** — a free app that renders markdown files into rich, interactive documents. Your vault is an Obsidian folder. [Watch this quick intro](https://youtu.be/z4AbijUCoKU?si=C52APZ14oehdnprN) if you are new to Obsidian.
+- Install one or more **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.dev) that read and write files on your behalf and use various tools to perform actions.
+
+### Good to know about
 - **[AGENTS.md](https://agents.md)** — a single markdown file that teaches agents how to operate in your vault.
 - **[Agent Skills](https://agentskills.io)** — reusable instruction packages agents discover and follow automatically.
 - **[Markdown](https://www.markdownguide.org/basic-syntax/)** — headings, links, lists, checkboxes. Enough to read and lightly edit what agents produce.
@@ -84,8 +87,9 @@ Reusable instruction packages in `.agents/skills/`. Each skill is a folder with 
 │   ├── concepts/               # What I understand — patterns, principles, claims
 │   ├── questions/              # What I'm exploring — open threads
 │   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── personal/               # My life — health, relationships, finances
-│   ├── journal/                # Self-reflection and growth
+│   ├── events/                 # Time — meetings, conversations, logs
+│   ├── places/                 # Space — physical & virtual locations
+│   ├── personal/               # My life — health, relationships, journal
 │   ├── projects/               # Active work
 │   ├── apps/                   # Mini apps — trackers, dashboards, utilities
 │   └── inbox/                  # Quick capture — triage within 48h

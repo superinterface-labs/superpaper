@@ -69,9 +69,11 @@ For each item:
 1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?
 2. **Route:**
    - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), create source note in `sources/`, extract insights into atomic notes, connect to graph, update bookmark status. High priority — the human shared it because it matters.
+   - *Meeting or conversation transcript* → `superpaper/events/`. Run [[process-meeting]] if structured enough.
    - *Fleeting thought* → `superpaper/concepts/` with `type: fleeting`. Link to 1–2 existing notes.
    - *Source material* → `superpaper/sources/`. Extract key evidence if high-signal.
    - *Project idea* → `superpaper/projects/scratchpad/` or the relevant project folder.
+   - *Preference or self-knowledge* → `superpaper/meta/`. Tag with relevant dimension (`alignment`, `decision-making`, `risk-taking`, `taste`).
    - *Noise / already captured* → still move to `processed/`, note why it was dismissed.
 3. **Preserve provenance:** Add `processed_to: "[[Destination note]]"` to the inbox item's frontmatter. Move to `superpaper/inbox/processed/`.
 4. **Update AGENTS.md indexes** in any folder that gained or lost files.
@@ -92,6 +94,8 @@ Skip if entity folders have fewer than 5 non-index notes total.
 5. **Contradiction check:** Any `contradicts` relation without a corresponding question or experiment note → create a question note.
 6. **Proactive synthesis:** If this cycle created 2+ knowledge notes with the same `#domain/` tag, check if they should be consolidated or bridged.
 7. **Update [[Knowledge map]]:** Add new clusters if themes emerged. Update existing cluster descriptions if they've grown.
+8. **Review meta:** Reread `superpaper/meta/` notes. Has alignment drifted since last cycle? Are decision patterns repeating? Is taste sharpening or flattening? Update stale meta notes. Write a new meta note if this cycle surfaced an insight about the partnership.
+9. **Update bases:** If this cycle created or promoted notes that affect existing `.base` views (e.g. new claims visible in Knowledge health, new meta notes in Meta dashboard), verify the bases still reflect current state. Create new bases from the high-leverage table in [[AGENTS]] when a folder reaches sufficient volume.
 
 ### STEP 6 — Archive stale Done cards
 
@@ -132,6 +136,7 @@ Append inside the `> [!info]- AI Agent Updates` callout in today's daily note (c
 > > - **Knowledge:** N notes consolidated, N promoted, N stale flagged
 > > - **Archived:** N cards older than 7d
 > > - **Health:** N orphans, N low-density, N missing AGENTS.md
+> > - **Meta:** [alignment/taste/decision/risk observations, or "no drift"]
 > > - **Needs human input:** [items or "none"]
 ```
 
