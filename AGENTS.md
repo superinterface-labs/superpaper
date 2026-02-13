@@ -1561,17 +1561,7 @@ Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 10. Get to know the human
-
-By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
-
-Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
-
-### 11. Demo the full system
-
-Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
-
-### 12. Verify environment
+### 10. SUPER IMPORTANT: Verify environment
 
 Final check before declaring setup complete:
 
@@ -1581,7 +1571,17 @@ Final check before declaring setup complete:
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
-**Never assume hiding works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
+**Never assume hiding/pinning using the File Explorer++ works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
+
+### 11. Get to know the human
+
+By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
+
+Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
+
+### 12. Demo a glimpse into the full system
+
+Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
 ### Throughout setup
 
