@@ -1446,7 +1446,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 *Hide filters* — keep infrastructure out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `_attachments` (wildcard, `FILES_AND_DIRECTORIES`) — media storage, not browsed.
-- Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
+- Hide `AGENTS|CLAUDE` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` and `CLAUDE.md` files across the vault.
 - Hide `inbox` (wildcard, `FILES_AND_DIRECTORIES`) — agent-managed; humans capture via Quick Capture UI, not by browsing inbox.
 
 *Pin to top* — the things the human reaches for daily:
