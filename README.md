@@ -23,13 +23,14 @@ Your Obsidian vault is just a folder of text files. No database, no lock-in.
 3. Tell the agent: *"Read AGENTS.md in full and set up the vault."*
 4. Start chatting and following instructions to set it up.
 5. You will see a new folder called `superpaper` in your vault. This is where the agent will store strutured notes, artifacts, and projects.
-6. You can write daily logs or ideas into inbox or daily folder. And ask help from the agent to process them.
+6. You can write daily logs or ideas into daily folder or via a Quick Capture the agent will set up for you. And ask help from the agent to process them.
 
-Tips:
+### Tips
 - You can also setup a vault as a folder that contains all your projets so the agent can use context from them and work on them with you.
 - Obsidian is also available on most platforms, so you can keep track of your notes and (eventually) the agents in the same place.
 - You can use the obsidian-terminal public plugin to run the coding agent from within obsidian.
 
+### Future plans
 We are planning on providing a service that will allow you to do all this from any device with zero setup overhead and with additional features like ambient agents.
 
 ## Why this exists
