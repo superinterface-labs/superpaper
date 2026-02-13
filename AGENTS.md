@@ -1341,7 +1341,7 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 | `values/`, `beliefs/`, `preferences/`, `cognitive-patterns/`, `blindspots/` | Self-knowledge deepens | `meta/` |
 | `<name>/` | Any active project with multiple files | `projects/` |
 | `experiments/` | First designed trial within a project | `projects/<name>/` |
-| `scratchpad/` | First throwaway experiment (auto-archive after 14 days) | `projects/` |
+| `scratchpad/` | First throwaway experiment or deliverable (auto-archive after 14 days) | `projects/` |
 | `log/` | First task execution log | `inbox/` |
 
 Don't pre-create these. Let them emerge from use. Expand organically as categories surface. Always respect the user's taste in organizing — especially in existing vaults.
@@ -1440,14 +1440,17 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 
 **File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with:
 
+**Read the plugin's source code or existing `data.json` first** to confirm the exact config schema (e.g. `hideFilters` and `pinFilters` are objects with `active`, `paths`, `tags`, and `frontMatter` arrays — not flat arrays). Never guess the shape.
+
 *Hide filters* — keep infrastructure out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
+- Hide `_attachments` (wildcard, `FILES_AND_DIRECTORIES`) — media storage, not browsed.
 - Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
 - Hide `inbox` (wildcard, `FILES_AND_DIRECTORIES`) — agent-managed; humans capture via Quick Capture UI, not by browsing inbox.
 
 *Pin to top* — the things the human reaches for daily:
-- **Folders:** `apps/`, `personal/`, `projects/`
-- **Files:** central files like `Knowledge map.md`, `My tasks.md`, every `.base` file (e.g. `Bookmarks.base`)
+- **Folders:** `superpaper/`, `apps/`, `personal/`, `projects/`
+- **Files:** central files like `My tasks.md`, every `.base` file (e.g. `Bookmarks.base`) [knowledge map is an execption it shouldnt be pinned]
 
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
@@ -1517,7 +1520,7 @@ This step is non-negotiable — do not skip or defer it.
 1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
 2. **Try CLI first.** If not available, ask the human to enable it in Obsidian: Settings → General → Advanced and turn on **Command-line interface**.
 3. **If CLI is unavailable, even after the user tries it**, walk the human through installing each plugin manually: open Settings → Community plugins → Browse → search → install → enable. Do this one plugin at a time, confirming each is active before moving on.
-4. **Configure every plugin.** Look up each plugin's latest docs and settings schema online before touching config. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
+4. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
 5. **Verify.** Confirm each plugin is installed, enabled, and configured before proceeding.
 
 ### 3. Create vault structure
@@ -1573,7 +1576,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 Final check before declaring setup complete:
 
 1. **File Explorer++ hiding:** Ask the human: "Can you see any `AGENTS.md` files in your file explorer sidebar?" If yes, the hide filters aren't working — debug `.obsidian/plugins/file-explorer-plus/data.json` and reload. Also confirm `_templates` and `inbox` are hidden.
-2. **File Explorer++ pinning:** Confirm `apps/`, `personal/`, `projects/` are pinned to top. Confirm `Knowledge map.md`, `My tasks.md`, and any `.base` files are pinned.
+2. **File Explorer++ pinning:** Confirm `superpaper/apps/`, `personal/`, `projects/` are pinned. Confirm `My tasks.md` and `.base` files are pinned. Knowledge map must never be pinned.
 3. **Pinned tabs:** Confirm Quick Capture, Meta dashboard (if created), and daily note are pinned or in sidebar tabs.
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
