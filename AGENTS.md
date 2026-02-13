@@ -971,6 +971,9 @@ created: YYYY-MM-DD
 ## Intention
 One thing that matters today:
 
+## Intention
+One thing that matters today:
+
 ## Freewrite
 
 
