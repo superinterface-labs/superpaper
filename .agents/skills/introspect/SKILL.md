@@ -54,14 +54,15 @@ The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templat
    - Template index (if in `_templates/AGENTS.md`) matches actual template files.
    - Folder `AGENTS.md` descriptions match actual folder contents.
    - Dataview `FROM` clauses reference paths that exist.
-4. **Stale references:** Wiki-links or paths pointing to files that have been moved or renamed.
-5. **Template drift:** Compare `_templates/knowledge-note.md` and `_templates/daily-note.md` against the schemas defined in the Knowledge section of [[AGENTS]]. Flag divergence.
+4. **Folder overcrowding:** Flag folders with >8–10 items — candidates for subfolder reorganization per [[AGENTS]] conventions.
+5. **Stale references:** Wiki-links or paths pointing to files that have been moved or renamed.
+6. **Template drift:** Compare `_templates/knowledge-note.md` and `_templates/daily-note.md` against the schemas defined in the Knowledge section of [[AGENTS]]. Flag divergence.
 
 **Output:** consistency report — violations grouped by severity (breaking > confusing > cosmetic).
 
 ### LAYER 3 — Memory quality
 
-The knowledge graph in `superpaper/knowledge/` is the vault's most valuable asset. Audit its health.
+The knowledge graph across entity folders (`people/`, `concepts/`, `questions/`, `sources/`) is the vault's most valuable asset. Audit its health.
 
 1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one typed relation? Target: >80%.
 2. **Confidence hygiene:** Are `confidence` scores present and numeric? Flag notes with missing or stale confidence.
@@ -81,7 +82,7 @@ The knowledge graph in `superpaper/knowledge/` is the vault's most valuable asse
 2. **Empty sections:** Placeholder content (`- —`, empty tables, template boilerplate left unfilled).
 3. **Missing templates:** Note types referenced in [[AGENTS]] that don't have a corresponding template in `_templates/`.
 4. **Skill coverage:** Are there recurring workflows the human does that could be a skill? Check daily notes for patterns.
-5. **Source pipeline:** Are there sources in `superpaper/knowledge/sources/` without corresponding evidence/claim notes in `superpaper/knowledge/`? Flag unprocessed sources.
+5. **Source pipeline:** Are there sources in `superpaper/sources/` without corresponding evidence/claim notes in `superpaper/concepts/`? Flag unprocessed sources.
 
 **Output:** completeness report — gaps ranked by impact.
 

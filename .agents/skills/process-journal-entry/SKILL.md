@@ -50,7 +50,7 @@ Each entry: one paragraph, dated, with wiki-links to related notes.
 ### STEP 4 — Create atomic notes
 
 For any genuine insight worth its own note (not just a log entry):
-1. Create a knowledge note in `superpaper/knowledge/` using the knowledge note template.
+1. Create a note in the appropriate entity folder (`superpaper/concepts/`, `superpaper/people/`, `superpaper/questions/`, etc.) using the knowledge note template.
 2. Link to 2+ existing notes. Update 1–3 existing notes to link back.
 3. Link from the log entry to the new atomic note.
 

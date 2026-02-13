@@ -80,7 +80,11 @@ Reusable instruction packages in `.agents/skills/`. Each skill is a folder with 
 ```
 ├── AGENTS.md                   # Operating manual — agents read this first
 ├── superpaper/
-│   ├── knowledge/              # Zettelkasten knowledge graph
+│   ├── people/                 # Who — contacts, collaborators, public figures
+│   ├── concepts/               # What I understand — patterns, principles, claims
+│   ├── questions/              # What I'm exploring — open threads
+│   ├── sources/                # Where I learned it — articles, books, papers
+│   ├── personal/               # My life — health, relationships, finances
 │   ├── journal/                # Self-reflection and growth
 │   ├── projects/               # Active work
 │   ├── apps/                   # Mini apps — trackers, dashboards, utilities

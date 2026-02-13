@@ -68,9 +68,9 @@ Read every file in `superpaper/inbox/` (skip `AGENTS.md`, skip items already rou
 For each item:
 1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?
 2. **Route:**
-   - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), create source note in `knowledge/sources/`, extract insights into atomic knowledge notes, connect to graph, update bookmark status. High priority — the human shared it because it matters.
-   - *Fleeting thought* → `superpaper/knowledge/` with `type: fleeting`. Link to 1–2 existing notes.
-   - *Source material* → `superpaper/knowledge/sources/`. Extract key evidence if high-signal.
+   - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), create source note in `sources/`, extract insights into atomic notes, connect to graph, update bookmark status. High priority — the human shared it because it matters.
+   - *Fleeting thought* → `superpaper/concepts/` with `type: fleeting`. Link to 1–2 existing notes.
+   - *Source material* → `superpaper/sources/`. Extract key evidence if high-signal.
    - *Project idea* → `superpaper/projects/scratchpad/` or the relevant project folder.
    - *Noise / already captured* → still move to `processed/`, note why it was dismissed.
 3. **Preserve provenance:** Add `processed_to: "[[Destination note]]"` to the inbox item's frontmatter. Move to `superpaper/inbox/processed/`.
@@ -80,7 +80,7 @@ After this step, `superpaper/inbox/` should contain only `AGENTS.md` and items l
 
 ### STEP 5 — Knowledge consolidation
 
-Skip if `superpaper/knowledge/` has fewer than 5 non-index notes.
+Skip if entity folders have fewer than 5 non-index notes total.
 
 1. **Merge duplicates:** If 2+ notes describe the same concept, merge into one. Mark the redundant note with `superseded_by: "[[surviving-note]]"` in frontmatter.
 2. **Promote mature fleeting notes:** Notes with `type: fleeting` older than 7 days that have been referenced (inbound links > 0):
@@ -110,6 +110,7 @@ A lightweight [[introspect]]. Surface scan only:
 3. **AGENTS.md coverage:** Every folder with 2+ non-index files should have one.
 4. **Frontmatter compliance:** Spot-check 3–5 recent notes for required fields (`type`, `created`).
 5. **Template drift:** Verify templates still match [[AGENTS]] schemas.
+6. **Folder overcrowding:** Flag any folder with >8–10 items — propose reorganization into subfolders.
 
 Record issues — don't fix inline. Fixes become board cards in Blocked lane so human can discuss them and promote to todo.
 
@@ -119,21 +120,22 @@ Scan recent daily notes and knowledge for repeated workflows (2+ occurrences). I
 
 ### STEP 9 — Daily log
 
-Append to today's daily note in `daily/` (create from `_templates/daily-note.md` if it doesn't exist):
+Append inside the `> [!info]- AI Agent Updates` callout in today's daily note (create from `_templates/daily-note.md` if it doesn't exist). Each entry is a nested callout within it:
 
 ```markdown
-### Heartbeat — HH:MM
-- **Pipeline:** N cards moved Todo→In Progress
-- **Dispatched:** N sub-agents for N tasks
-- **Shipped:** [task names] | **Blocked:** [task names + why]
-- **Inbox:** triaged N items (N bookmarks, N routed, N discarded)
-- **Knowledge:** N notes consolidated, N promoted, N stale flagged
-- **Archived:** N cards older than 7d
-- **Health:** N orphans, N low-density, N missing AGENTS.md
-- **Needs human input:** [items or "none"]
+> [!info]- AI Agent Updates
+> > [!note]- Heartbeat — HH:MM
+> > - **Pipeline:** N cards moved Todo→In Progress
+> > - **Dispatched:** N sub-agents for N tasks
+> > - **Shipped:** [task names] | **Blocked:** [task names + why]
+> > - **Inbox:** triaged N items (N bookmarks, N routed, N discarded)
+> > - **Knowledge:** N notes consolidated, N promoted, N stale flagged
+> > - **Archived:** N cards older than 7d
+> > - **Health:** N orphans, N low-density, N missing AGENTS.md
+> > - **Needs human input:** [items or "none"]
 ```
 
-### STEP 10 — Git sync [if Git is set up]
+### STEP 10 — Git sync
 
 Last step, no exceptions.
 
@@ -141,18 +143,19 @@ Last step, no exceptions.
 2. `git status --porcelain` — if empty, skip. Log "No changes to sync."
 3. `git commit -m "heartbeat: <one-line summary>"` — e.g. `heartbeat: dispatched 3 tasks, triaged 2 bookmarks, consolidated 1 note`
 4. `git push` — if push fails (conflict), log the error in the daily note. Do NOT force push. Next cycle retries.
+NOTE: If git is not set up, do git init and if remote is not set up, do git remote, skip git push.
 
 ## Outputs
 
 - Updated `apps/mission-control.md` with cards moved between lanes
 - Task execution logs in `inbox/log/mmm-yy/dd/`
 - Clean `superpaper/inbox/`
-- Updated `superpaper/knowledge/` with consolidated, promoted, and better-linked notes
+- Updated entity folders with consolidated, promoted, and better-linked notes
 - Updated [[Knowledge map]] with new clusters
 - Updated `AGENTS.md` index files in affected folders
 - Stale Done cards archived to `.archive/`
 - Daily note entry summarizing the cycle
-- Git commit + push
+- Git commit + optionally push
 
 ## Decision authority
 

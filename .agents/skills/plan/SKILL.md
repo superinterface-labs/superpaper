@@ -26,7 +26,7 @@ tags:
 |-------|----------|-------------|
 | goal | yes | What needs to be accomplished |
 | constraints | no | Budget, timeline, tech stack, team size |
-| context | no | Links to relevant superpaper/knowledge/ notes |
+| context | no | Links to relevant notes in entity folders |
 
 ## Process
 
@@ -61,3 +61,4 @@ When work partitions into independent subgraphs, dispatch parallel subagents wit
 - Include a "What We Don't Build" section to prevent scope creep
 - Record surprises and discoveries as you go — they inform future plans
 - Plans should be self-contained enough that a novice (or stateless agent) can pick them up cold
+- If a plan will produce many files in one folder, plan subfolder structure upfront. Reorganize any folder that crosses ~8–10 items (per [[AGENTS]] conventions).

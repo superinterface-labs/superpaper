@@ -204,7 +204,7 @@ Live tables and lists that auto-update as notes change.
 ````markdown
 ```dataview
 TABLE type, created, tags
-FROM "superpaper/knowledge"
+FROM "superpaper/concepts"
 WHERE type = "permanent"
 SORT created DESC
 LIMIT 20
@@ -236,7 +236,7 @@ Obsidian has a built-in `query` code block that embeds live search results — n
 
 ````markdown
 ```query
-tag:#domain/ai path:superpaper/knowledge
+tag:#domain/ai path:superpaper/concepts
 ```
 ````
 
@@ -248,7 +248,7 @@ When DQL isn't enough, use JavaScript for complete control:
 
 ````markdown
 ```dataviewjs
-const notes = dv.pages('"superpaper/knowledge"')
+const notes = dv.pages('"superpaper/concepts"')
   .where(p => p.type === "permanent")
   .sort(p => p.created, 'desc');
 
@@ -643,13 +643,27 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 ### Tags
 
-`#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders. Don't over-tag — tags are for retrieval, not classification.
+`#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders.
+
+**Three namespaces** — all lowercase, singular, kebab-case:
+
+| Namespace | Purpose | Examples |
+|-----------|---------|----------|
+| `#domain/` | Field or life area | `#domain/ai`, `#domain/health`, `#domain/finance` |
+| `#topic/` | Specific concept | `#topic/memory`, `#topic/feedback-loops`, `#topic/sleep` |
+| `#status/` | Lifecycle state | `#status/active`, `#status/paused`, `#status/review` |
+
+**Conventions:**
+- Frontmatter `tags:` for file-level tags. Inline `#tag` for block-level context.
+- Nest when hierarchy aids retrieval — `#domain/ai/nlp` is useful; four levels deep is not.
+- Searching `tag:#domain/ai` returns all subtags beneath it ([docs](https://help.obsidian.md/tags)).
+- Don't duplicate what `type`, `kind`, or folders already express — tags are for *retrieval*, not classification.
 
 ### Filenames
 
 Use natural, human-readable titles with spaces: `Knowledge map.md`, not `knowledge-map.md`. Dashed names only for code and scripts. Avoid characters that break links: `# | ^ : %% [[ ]]`
 
-**Don't repeat what the folder already says.** A note in `knowledge/sources/` is titled `Design of Everyday Things.md`, not `Source – Design of Everyday Things.md`. The folder *is* the type.
+**Don't repeat what the folder already says.** A note in `sources/` is titled `Design of Everyday Things.md`, not `Source – Design of Everyday Things.md`. The folder *is* the type.
 
 In visible text (headings, prose, callouts), prefer spaces over dashes. Write "part of", not "part-of". Frontmatter property values may use dashes for structured data.
 
@@ -710,13 +724,13 @@ Any command can be bound to a keyboard shortcut. The goal is flow state — the 
 
 ### Philosophy
 
-Atomic notes organized by domain folders, linked by wiki-links. One concept per note. Dense connections. Domain folders (`knowledge/ai/`, `knowledge/meditation/`, …) give humans navigable clusters; links give agents traversable structure. Both views coexist.
+Atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist.
 
 Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
 
 Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable.
 
-Granular evidence notes live in `superpaper/knowledge/.evidence/` — a dot-folder hidden from the file explorer but wiki-linkable and Dataview-queryable. The AI cites evidence; the human follows links when they want the receipts.
+Granular evidence notes live in `superpaper/.evidence/` — a dot-folder hidden from the file explorer but wiki-linkable and Dataview-queryable. The AI cites evidence; the human follows links when they want the receipts.
 
 ### Operating loop (implicit, always-on)
 
@@ -734,10 +748,11 @@ Every interaction follows this cycle:
 Set `type` in frontmatter:
 - **Fleeting** — raw thought, quick capture. Low bar to create. Most get discarded or promoted.
 - **Source** — external material (article, book, podcast, conversation). Always has a `source` field.
-- **Evidence** — a specific excerpt, quote, observation, or metric from a source. Granular and blockref-linkable (`^evidence`). Lives in `superpaper/knowledge/.evidence/`.
+- **Evidence** — a specific excerpt, quote, observation, or metric from a source. Granular and blockref-linkable (`^evidence`). Lives in `superpaper/.evidence/`.
 - **Claim** — a compressive assertion that could be wrong. Must have confidence + evidence links + predictions ("if true, expect…").
 - **Hypothesis** — a candidate causal or structural explanation. Links to the question it addresses, the claims it makes, and the experiments that could test it.
 - **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
+- **Person** — anyone — contact, collaborator, mentor, author, public figure. Lives in `superpaper/people/`. Has `role`, `context`, `last-contact` fields.
 - **Pattern** — domain-general structural essence (e.g. `[[pattern/feedback-loop]]`). Cross-domain hub that many notes link *to*.
 - **Bridge** — explicit analogy map between two concepts/domains. What maps, what's preserved, where it breaks, what it predicts.
 - **Model** — a formal structure (causal graph, mechanism, mathematical model) that explains how something works. Links to claims it supports and experiments that test it.
@@ -747,12 +762,12 @@ Set `type` in frontmatter:
 - **Decision** — why a choice was made. Links to the evidence, models, and claims that informed it. Records alternatives considered.
 - **Run** — what an agent actually did. Timestamped execution record linking to the decision or task that triggered it and the artifacts produced.
 - **Preference** — how the human thinks, works, or wants things done. Values, tastes, habits, constraints. Preferences take precedence over general heuristics.
-- **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/knowledge/ideas/`.
+- **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/concepts/` with `type: idea`.
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `superpaper/journal/reflections/`.
 - **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/journal/`. Accumulates dated entries that link to atomic notes.
 - **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
 
-Types are structural roles — they define how a note behaves in the graph. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
 
 ### Epistemic contract
 
@@ -771,7 +786,7 @@ Every first-class object MUST have:
 
 **No naked conclusions.** If a conclusion matters, it must be a Claim or Decision object linked to Evidence, Model, or Experiment objects. Unlinked assertions are noise.
 
-**Update trail.** When an object's status or confidence changes, append a dated entry to its `## History` section: what changed, why, what triggered it. The graph must be auditable.
+**Update trail.** When an object's status or confidence changes, append a dated entry to its `> [!info]- File history` callout (collapsed by default at the end of every note): what changed, why, what triggered it. The graph must be auditable.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -782,8 +797,8 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 - **Temporal** — recent notes, recurring references in daily logs, recently changed confidence
 
 **Stage 1 — Orient.** Get the lay of the land.
-- Check `superpaper/knowledge/Knowledge map.md` for clusters and entry points
-- `obsidian search query="X" path=superpaper/knowledge` or `obsidian tags all counts` to find entry points
+- Check `superpaper/Knowledge map.md` for clusters and entry points
+- `obsidian search query="X" path=superpaper` or `obsidian tags all counts` to find entry points
 
 **Stage 2 — Retrieve.** Activate the neighborhood.
 - Read retrieved notes fully
@@ -808,7 +823,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 5. **Preference expressed** — the human reveals how they think, work, or want things done. Create a `preference` note. These compound — the more preferences captured, the better the agent adapts.
 6. **Surprise** — something unexpected happened; surprises are the highest-signal events.
 7. **Connection discovered** — two previously unlinked concepts share structural similarity. Create a bridge note.
-8. **Idea sparked** — a creative hunch worth capturing. Drop it in `knowledge/ideas/` with minimal friction.
+8. **Idea sparked** — a creative hunch worth capturing. Drop it in `concepts/` with `type: idea` — minimal friction.
 9. **Growth moment** — the human processes a struggle, celebrates a win, or shifts perspective. Nudge toward `journal/`.
 
 **Write protocol:**
@@ -860,9 +875,8 @@ One clear paragraph. What is this concept? Why does it matter? What does it impl
 
 This builds on [[Other note]] by taking the idea further into territory X. It sits in tension with [[Another note]] — they disagree on Y, and that gap is worth exploring. A concrete instance of [[Parent concept]], seen through the lens of Z.
 
-## History
-
-- YYYY-MM-DD — Created as fleeting. Reason.
+> [!info]- File history
+> - YYYY-MM-DD — Created as fleeting. Reason.
 ```
 
 The `relations` field in frontmatter makes connections queryable by Dataview. The `## Relates` body section is prose — readable without any tooling.
@@ -897,6 +911,8 @@ One thing that matters today:
 - **Win:**
 - **Struggle:**
 - **Tomorrow:** 
+
+> [!info]- AI Agent Updates
 ```
 
 ### Idea note template
@@ -937,6 +953,29 @@ tags: []
 
 ```
 
+### Person template
+
+```markdown
+---
+type: person
+role: ""
+context: ""
+last-contact: YYYY-MM-DD
+created: YYYY-MM-DD
+tags: []
+aliases: []
+---
+
+How I know them. Why they matter. Key context.
+
+## Connects to
+
+[[related person or concept]] — shared context or collaboration.
+
+> [!info]- File history
+> - YYYY-MM-DD — Created. Reason.
+```
+
 ### Bookmark template
 
 ```markdown
@@ -960,7 +999,7 @@ When a bookmark arrives in `inbox/`:
 
 1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
 2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
-3. **Create a source note** — save the raw content in `knowledge/sources/` as an immutable reference if directly available. NEVER manually rewrite the source document yourself to do this.
+3. **Create a source note** — save the raw content in `sources/` as an immutable reference if directly available. NEVER manually rewrite the source document yourself to do this.
 4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes. Link back to the source.
 5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
 6. **Update bookmark** — set `status: processed`, add `processed_to: "[[source note]]"` in frontmatter. Move to `inbox/processed/`.
@@ -983,9 +1022,9 @@ When a bookmark arrives in `inbox/`:
 - **Harvest contradictions** — every `contradicts` link should generate a question or experiment note if one doesn't exist
 - **Update** the knowledge map with new clusters and entry points
 - **Review journal** — surface patterns from `journal/` entries (recurring struggles, energy trends, growth areas)
-- **Promote ideas** — revisit `knowledge/ideas/`; mature hunches become knowledge notes or project seeds
+- **Promote ideas** — revisit `type: idea` notes in `concepts/`; mature hunches get promoted to permanent or become project seeds
 
-### Knowledge map (`superpaper/knowledge/Knowledge map.md`)
+### Knowledge map (`superpaper/Knowledge map.md`)
 
 The knowledge map is the browsable entry point to the knowledge graph. It should contain:
 
@@ -994,41 +1033,42 @@ The knowledge map is the browsable entry point to the knowledge graph. It should
   ````markdown
   ```dataview
   TABLE type, confidence, created
-  FROM "superpaper/knowledge"
-  WHERE type != "daily"
+  FROM "superpaper"
+  WHERE type AND type != "daily"
   SORT created DESC
   LIMIT 10
   ```
   ````
 - **`## Stats`** — a DataviewJS block counting total notes by type and average links per note.
-- **`## Open questions`** — `LIST FROM "superpaper/knowledge" WHERE type = "question" AND status != "superseded" SORT created DESC`
-- **`## Low-confidence claims`** — `TABLE confidence FROM "superpaper/knowledge" WHERE type = "claim" AND confidence <= 0.55 SORT updated DESC`
-- **`## Contradictions`** — `LIST FROM "superpaper/knowledge" WHERE contains(file.outlinks, "contradicts") SORT updated DESC`
+- **`## Open questions`** — `LIST FROM "superpaper/questions" SORT created DESC`
+- **`## Low-confidence claims`** — `TABLE confidence FROM "superpaper/concepts" WHERE type = "claim" AND confidence <= 0.55 SORT updated DESC`
+- **`## Contradictions`** — `LIST FROM "superpaper" WHERE contains(file.outlinks, "contradicts") SORT updated DESC`
 
 ---
 
 ## Progressive disclosure — reducing cognitive overhead
 
-Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. Use these patterns:
+Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. **Embed aggressively** — the reader should never leave the current note to get context.
 
 1. **Lead with the takeaway.** First line after the heading = the conclusion. Details follow.
 2. **Collapsed callouts for depth.** `> [!example]-` hides supporting detail until the reader clicks.
-3. **Transclusion for context.** `![[relevant-note#section]]` pulls context in — the reader doesn't navigate away.
-4. **Iframe for web sources.** The reader scans the source alongside your analysis.
-5. **Block embeds for evidence.** `![[source#^key-finding]]` shows exactly the passage you're citing.
+3. **Transclusion for context.** `![[relevant-note#section]]` pulls context in — the reader doesn't navigate away. Use this *liberally* and *abundantly*: every time you reference another note's content, transclude the relevant section instead of summarizing it.
+4. **Iframe for web sources.** The reader scans the source alongside your analysis. Every external URL worth reading should get an iframe.
+5. **Block embeds for evidence.** `![[source#^key-finding]]` shows exactly the passage you're citing. Give key paragraphs `^block-ids` so they're embeddable everywhere.
 6. **Foldable sections.** Use `> [!info]- Full details` for anything the reader might skip.
 7. **Knowledge map as entry point.** Never dump 50 links. Organize into clusters with descriptions.
-8. **Hub notes.** Overviews for topics, projects, or sources — short summary + links/embeds to atomic notes + Dataview rollups.
-9. **Source notes.** For a major external source, create a note in `knowledge/sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
+8. **Hub notes.** Overviews for topics, projects, or sources — short summary + transclusions/embeds of atomic notes + Dataview rollups. Hub notes should read like a document, not a link dump.
+9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
+10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere.
 
 ---
 
 ## Working with external sources
 
 Follow a **progressive compression** pipeline:
-1. Store raw material in `superpaper/knowledge/sources/` (immutable reference)
-2. Extract **evidence** notes at excerpt granularity into `superpaper/knowledge/.evidence/`
-3. Promote high-signal claims, concepts, and bridges into `superpaper/knowledge/`
+1. Store raw material in `superpaper/sources/` (immutable reference)
+2. Extract **evidence** notes at excerpt granularity into `superpaper/.evidence/`
+3. Promote high-signal claims, concepts, and bridges into `superpaper/concepts/`
 
 - Favor **non-distracting fetches** over opening full browsers where possible.
 - Use the **original phrasing** when it preserves important nuance; otherwise integrate in your own words.
@@ -1081,10 +1121,17 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 - **Conversational.** Talk to the human like a thoughtful collaborator, not a manual.
 - **One thing at a time.** Don’t overwhelm. Present one concept, check understanding, then proceed.
 - **Tutor mode.** When appropriate, or when the human requests it, have them explain concepts back; hold to a high bar before to help them improve.
-- **Show, don’t tell.** When explaining something, create an artifact that demonstrates it.
-- **Tool transparency.** Before any web fetch or tool use, briefly state what you’ll do, why it’s safe, and how it supports the goal.
+- **Show, don't tell.** When explaining something, create an artifact that demonstrates it.
+- **Interactive first.** Prefer building a small throwaway UI over sending a text reply when the input required from the user is multidimensional. Asking the human multiple questions? Make it a `code-button` with clickable options. Presenting a comparison? Build a sortable table. Gathering preferences? Render a form. The vault is your canvas — use it. Examples:
+  - *Clarifying questions* → `code-button` with styled option cards the human clicks
+  - *Decision between options* → interactive pros/cons matrix with weighted scoring
+  - *Onboarding quiz* → step-by-step card UI with progress bar
+  - *Feedback request* → emoji-reaction row or slider inputs
+  - *Status summary* → live dashboard with Dataview, not a bullet list
+- **Tool transparency.** Before any web fetch or tool use, briefly state what you'll do, why it's safe, and how it supports the goal.
 - **Link everything.** Every concept you mention should be a `[[wiki-link]]`. Grow the graph with every interaction.
-- **Embed, don’t describe.** If referencing a web page, embed it (`<iframe>`) or transclude the relevant note section (`![[note#section]]`). Don’t make the human go find it.
+- **Cite with URLs.** When referencing external sources, always embed the URL: `[Source title](https://url)`. The human should be able to open or copy it without searching.
+- **Embed, don't describe.** Default to transclusion (`![[note#section]]`) and iframes over describing or linking. If a note, section, or web page is relevant — embed it inline. The reader should never navigate away to get context.
 - **Atomic outputs.** Each note you create should be one concept. If a response covers three topics, create three notes and link them.
 - **Projects for multi-file work.** When a task needs more than one central file, create a project in `projects/`. Knowledge notes are atomic singles; projects hold coordinated efforts.
 - **Build apps proactively.** When a workflow would benefit from an interactive tool — a tracker, calculator, planner, dashboard, form — suggest building one in `apps/`. Bias toward making things the human can open and use daily. The best vault is one where half the notes are alive.
@@ -1103,7 +1150,7 @@ The system actively supports the human's growth, wellbeing, and fulfillment:
 - **Encourage reflection.** Nudge toward `journal/` when the human is processing something emotional or making a big decision.
 - **Connect to values.** Reference the human's stated goals and preferences when suggesting next steps.
 - **Hold space.** When things are hard, default to reflective friend mode. Don't optimize — listen.
-- **Nurture ideas.** When a creative spark appears, capture it in `knowledge/ideas/` immediately. Revisit ideas during consolidation.
+- **Nurture ideas.** When a creative spark appears, capture it in `concepts/` with `type: idea` immediately. Revisit ideas during consolidation.
 
 ### Tutoring protocol
 
@@ -1126,13 +1173,19 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 /
 ├── AGENTS.md                   # This file
 ├── superpaper/
-│   ├── knowledge/              # Everything the system knows — atomic, densely linked
-│   │   └── Knowledge map.md    # Browsable entry point with clusters
+│   ├── people/                 # Who — contacts, collaborators, public figures
+│   ├── concepts/               # What I understand — ideas, patterns, principles, claims
+│   ├── questions/              # What I'm exploring — open threads, retrieval magnets
+│   ├── sources/                # Where I learned it — articles, books, meetings, papers
+│   ├── personal/               # My life — health, relationships, finances
+│   ├── meta/                   # How I think — preferences, self-knowledge; can also be a space for the AI agent swarm to introspect.
+│   ├── .evidence/              # (hidden) granular evidence for AI citation
 │   ├── journal/                # Self-reflection and growth
 │   ├── projects/               # Active work — bias here when >1 file needed
 │   ├── apps/                   # Mini apps — interactive tools the human uses regularly
 │   │   └── mission-control.md  # Kanban board — todo, in progress, done, blocked
-│   └── inbox/                  # Quick capture — triage within 48h
+│   ├── inbox/                  # Quick capture — triage within 48h
+│   └── Knowledge map.md        # Browsable entry point to the knowledge graph
 ├── daily/                      # Daily notes (via Calendar plugin)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
@@ -1141,61 +1194,57 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Start with only the top-level function folders. Every subfolder below is created the moment it's first needed — never before. A clean vault invites use; a pre-organized one intimidates.
+**Elegant simplicity.** Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`) are broad enough to last forever. Subfolders within them emerge only when volume demands it — never before. A clean vault invites use; a pre-organized one intimidates.
 
 ### Scaling principle
 
-Folders organize by **function** first (what it does), not domain (what it's about). Domains live in `#domain/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain within a function folder (e.g. `projects/fitness/`, `knowledge/sources/philosophy/`). Everything flows through the same pipeline:
+Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domain/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
 
-**inbox → knowledge (sources → ideas → atomic notes) → journal → projects → daily**
+**inbox → sources → concepts/questions → journal → projects → daily**
 
 ### When subfolders emerge
 
-Create subfolders **only when a function accumulates volume**, not to pre-organize by topic:
+Create subfolders **only when volume accumulates**, not to pre-organize:
 
 | Subfolder | When to create | Lives under |
 |-----------|---------------|-------------|
-| `sources/` | First external material arrives | `knowledge/` |
-| `sources/meetings/` | Regular meeting transcripts | `knowledge/sources/` |
-| `sources/papers/` | Research paper collection grows | `knowledge/sources/` |
-| `sources/conversations/` | Saving chat transcripts | `knowledge/sources/` |
-| `.evidence/` | First granular evidence note | `knowledge/` |
-| `meta/` | First preference or self-knowledge note | `knowledge/` |
-| `personal/` | First personal life note (health, relationships, finances) | `knowledge/` |
-| `ideas/` | First creative hunch or brainstorm | `knowledge/` |
-| `<domain>/` | 5+ notes in a domain accumulate | `knowledge/` |
-| `patterns/` | 10+ pattern notes accumulate | `knowledge/` |
-| `tools/` | Collecting tool evaluations, configs, setups | `knowledge/` |
-| `references/` | Quick-lookup reference material | `knowledge/` |
-| `guides/` | How-to notes and procedures | `knowledge/` |
-| `inspiration/` | Curated examples, designs, quotes worth revisiting | `knowledge/` |
+| `work/`, `public-figures/` | 8+ people notes | `people/` |
+| `<domain>/` (e.g. `ai/`, `philosophy/`) | 5+ concept notes in one domain | `concepts/` |
+| `meetings/` | Regular meeting transcripts | `sources/` |
+| `papers/` | Research paper collection grows | `sources/` |
+| `conversations/` | Saving chat transcripts | `sources/` |
+| `books/` | Book notes accumulate | `sources/` |
+| `health/`, `finance/`, `relationships/` | 5+ notes in a life area | `personal/` |
 | `reflections/` | First long-form reflection | `journal/` |
 | `<name>/` | Any active project with multiple files | `projects/` |
 | `scratchpad/` | First throwaway experiment (auto-archive after 14 days) | `projects/` |
 | `log/` | First task execution log | `inbox/` |
 
-Don't pre-create these. Let them emerge from use. And organically expand them horizontally and in depth as categories emerge! Always take user's taste in organizing into account and help them use their existing work better when its an existing obsidian workspace.
+Don't pre-create these. Let them emerge from use. Expand organically as categories surface. Always respect the user's taste in organizing — especially in existing vaults.
 
 ### What goes where
 
 | I have... | It goes in | Because |
-|-----------|-----------|---------|
-| A link, article, transcript, PDF | `knowledge/sources/` | Raw material — immutable reference |
-| A quick thought, voice note, screenshot | `inbox/` | Triage within 48h — process then move to `inbox/processed/` |
-| An insight, preference, pattern, claim | `knowledge/` | Atomic note in the knowledge graph |
-| Granular evidence supporting a claim | `knowledge/.evidence/` | AI-facing, linked from knowledge notes |
-| A creative hunch, brainstorm, what-if | `knowledge/ideas/` | Low pressure — no structure required |
-| Something personal (health, relationships, finances, life admin) | `knowledge/personal/` | Private life knowledge — same atomic note standards |
+|-----------|-----------|--------|
+| A person — contact, mentor, author, public figure | `people/` | First-class entity with its own note |
+| An insight, pattern, principle, claim, mental model | `concepts/` | The "what I understand" bucket |
+| An open question I'm exploring | `questions/` | Retrieval magnet — pulls neighborhoods |
+| A link, article, transcript, paper, book | `sources/` | Raw material — immutable reference |
+| A creative hunch, brainstorm, what-if | `concepts/` | `type: idea` — low pressure, no structure required |
+| Something personal (health, relationships, finances) | `personal/` | Private life knowledge |
+| A preference or self-knowledge note | `meta/` | How I think and work |
+| Granular evidence supporting a claim | `.evidence/` | AI-facing, linked from knowledge notes |
+| A quick thought, voice note, screenshot | `inbox/` | Triage within 48h |
 | Processing an experience or struggle | `journal/reflections/` | Self-reflection, growth |
 | A running log (decisions, goals, learnings) | `journal/*.log.md` | Append-only living document |
 | Something I'm actively building (>1 file) | `projects/<name>/` | Multi-file work lives in projects |
-| An interactive tool the human will reuse | `apps/<name>/` | Mini apps — trackers, calculators, dashboards, utilities |
+| An interactive tool the human will reuse | `apps/<name>/` | Mini apps — trackers, dashboards, utilities |
 | A blog, tweet, video, podcast, or link I liked | `inbox/` with `type: bookmark` | Agent fetches full content, processes into knowledge |
 | A task the agent should work on | `apps/mission-control.md` | Kanban card — heartbeat picks it up |
 | A task execution log entry | `inbox/log/mmm-yy/dd/<task>.md` | Granular record of what was done, when, and why |
 | Today's plan, freewrite, captures | `daily/` | Dated, ephemeral, links to durable notes |
 
-Domain doesn't change the destination. A fitness insight and a philosophy insight both go to `knowledge/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — knowledge notes are atomic singles; projects hold coordinated multi-file efforts. Tags and kinds handle the rest.
+Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, kinds, and wiki-links handle the rest.
 
 If directory structure regresses, confirm with the user before resetting; maybe they organized based their preferences.
 
@@ -1214,7 +1263,7 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 
 ### No deletions
 
-**Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/knowledge/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
+**Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
 **User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items or `daily/` notes. You may **append** to them or **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it.
 
@@ -1223,9 +1272,9 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 The vault has two layers:
 
 - **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md`, `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`, `AGENTS.md` files in any folder.
-- **Content** — the human's personal data. Never distributed: `knowledge/**` (except AGENTS.md, Knowledge map), `journal/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
+- **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**`, `meta/**`, `journal/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
 
-**Personal preferences live in knowledge, not in AGENTS.md.** When the human expresses a preference, store it as a `preference` note in `knowledge/meta/`. AGENTS.md defines the generic OS protocol — it should work for any user.
+**Personal preferences live in `meta/`, not in AGENTS.md.** When the human expresses a preference, store it as a `preference` note in `superpaper/meta/`. AGENTS.md defines the generic OS protocol — it should work for any user.
 
 ---
 
@@ -1259,11 +1308,12 @@ Install all: `obsidian plugin:install id=<id> enable` for each row above. Then c
 **File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with hide filters to keep infrastructure out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `AGENTS` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` files across the vault.
+- Hide `inbox` (wildcard, `FILES_AND_DIRECTORIES`) — agent-managed; humans capture via Quick Capture UI, not by browsing inbox.
 
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
 **Graph View color groups** (configure in `.obsidian/graph.json`):
-- `path:superpaper/knowledge` green, `path:superpaper/journal` purple, `path:superpaper/projects` blue, `path:daily` gray, `[type:preference]` gold, `[type:claim]` orange, `[status:blocked]` red.
+- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/journal` purple, `path:superpaper/projects` blue, `path:daily` gray, `[type:preference]` gold, `[type:claim]` orange, `[status:blocked]` red.
 
 ---
 
@@ -1318,12 +1368,13 @@ git clone --no-checkout --filter=blob:none https://github.com/superinterface-lab
 
 ### 1. Index existing context
 
-Scan the vault for existing folders, projects, notes, and files outside `superpaper/`. Sibling folders (code repos, writing projects, research directories) are assets — index them into `knowledge/sources/` as `source` notes with brief descriptions and links. The human's existing work is the richest starting context. Don't reorganize it; just make it findable and warmup the knowledge, go through them meticulously.
+Scan the vault for existing folders, projects, notes, and files outside `superpaper/`. Sibling folders (code repos, writing projects, research directories) are assets — index them into `sources/` as `source` notes with brief descriptions and links. The human's existing work is the richest starting context. Don't reorganize it; just make it findable and warmup the knowledge, go through them meticulously.
 
 ### 2. Set up environment
 
 This step is non-negotiable — do not skip or defer it.
 
+0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to a folder (e.g. `_attachments/`).
 1. **Try CLI first.** Ask the human to enable it in Obsidian: Settings → General → Advanced → Command-line interface. Then use it to install each required plugin programmatically.
 2. **If CLI is unavailable,** walk the human through installing each plugin manually: open Settings → Community plugins → Browse → search → install → enable. Do this one plugin at a time, confirming each is active before moving on.
 3. **Configure every plugin.** Look up each plugin's latest docs and settings schema online before touching config. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
@@ -1331,15 +1382,21 @@ This step is non-negotiable — do not skip or defer it.
 
 ### 3. Create vault structure
 
-Create only the top-level function folders: `superpaper/knowledge/`, `superpaper/journal/`, `superpaper/projects/`, `superpaper/apps/`, `superpaper/inbox/`, `daily/`, `.archive/`, `.scripts/`, `_templates/`. Then create `superpaper/knowledge/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`, `.evidence/`, `journal/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 ### 4. Create templates
 
-Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
+Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, **Person template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
 
-### 5. Create a first artifact
+### 5. Create Quick Capture UI
 
-Create a demo artifact in `superpaper/projects/scratchpad/` — an interactive `code-button` UI with `isRaw: true` and `shouldAutoRun: true` (e.g. habit tracker, pomodoro timer, or quick-capture form). This demonstrates TypeScript artifacts and the scratch subproject as a home for loose deliverables.
+Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
+- *Thought* → appends to today's daily note under `## Captures`
+- *Task* → creates a card on `apps/mission-control.md` under **Todo**
+- *Idea* → creates a note in `concepts/` with `type: idea`
+- *Link* → creates a `type: bookmark` note in `inbox/`
+
+This is the human's primary capture surface. Pin it to a sidebar tab. It replaces direct browsing of `inbox/` — the agent ingests from inbox behind the scenes.
 
 ### 6. Create a first knowledge note
 
@@ -1357,7 +1414,7 @@ Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
-Capture what you learn as `preference` notes in `knowledge/meta/`.
+Capture what you learn as `preference` notes in `meta/`.
 
 ### 10. Demo the full system
 
@@ -1397,8 +1454,8 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 Agents have succeeded when:
 
 - The human can **navigate work and ideas across every domain of their life through this vault.**
-- Insights, patterns, preferences, and decisions live in `superpaper/knowledge/` as **atomic, well-linked notes** — regardless of whether they're about software, health, philosophy, parenting, or anything else.
-- The human actively reflects, tracks growth, and nurtures ideas through `journal/` and `knowledge/ideas/`.
+- Insights, patterns, preferences, and decisions live in entity folders (`concepts/`, `people/`, `questions/`, `sources/`) as **atomic, well-linked notes** — regardless of domain.
+- The human actively reflects, tracks growth, and nurtures ideas through `journal/` and `concepts/`.
 - Frequent workflows are supported by **simple, reliable artifacts and skills**.
 - The human can return to any topic weeks later and quickly reconstruct what was done, why, and what was learned.
 - The vault doesn't just store — it **generates**. Cross-domain bridges surface non-obvious connections. Claims produce testable predictions. Experiments update beliefs. The system actively creates novel insights, identifies structural patterns, and synthesizes new understanding in collaboration with the human.

@@ -24,7 +24,7 @@ description: Process a meeting transcript — extract decisions, action items, i
 
 ### STEP 1 — Store source
 
-Save the raw transcript to `superpaper/knowledge/sources/meetings/` with frontmatter:
+Save the raw transcript to `superpaper/sources/meetings/` with frontmatter:
 ```yaml
 type: source
 source: meeting
@@ -45,7 +45,7 @@ Read the full transcript. Retrieve knowledge neighborhood for mentioned concepts
 ### STEP 3 — Route
 
 - **Decisions** → append to [[Decisions log]] with date, participants, reasoning
-- **Insights worth keeping** → create atomic knowledge notes in `superpaper/knowledge/`. Link to source transcript and related existing notes.
+- **Insights worth keeping** → create atomic notes in `superpaper/concepts/`. Link to source transcript and related existing notes.
 - **Learnings** → append to [[Learning log]]
 - **Action items** → add to today's daily note under `## Plan` as tasks
 - **Project-relevant items** → update the relevant project note in `superpaper/projects/`
@@ -65,9 +65,9 @@ Append to today's daily note under `## Notes`:
 
 ## Outputs
 
-- Source transcript in `superpaper/knowledge/sources/meetings/`
+- Source transcript in `superpaper/sources/meetings/`
 - Updated living documents (Decisions log, Learning log)
-- 0+ new atomic knowledge notes
+- 0+ new atomic notes in entity folders
 - Action items in daily note
 - Daily note meeting summary
 
