@@ -69,7 +69,7 @@ For each item:
 1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?
 2. **Route:**
    - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), create source note in `sources/`, extract insights into atomic notes, connect to graph, update bookmark status. High priority — the human shared it because it matters.
-   - *Meeting or conversation transcript* → `superpaper/events/`. Run [[process-meeting]] if structured enough.
+   - *Meeting or conversation transcript* → `superpaper/personal/events/`. Run [[process-meeting]] if structured enough.
    - *Fleeting thought* → `superpaper/concepts/` with `type: fleeting`. Link to 1–2 existing notes.
    - *Source material* → `superpaper/sources/`. Extract key evidence if high-signal.
    - *Project idea* → `superpaper/projects/scratchpad/` or the relevant project folder.

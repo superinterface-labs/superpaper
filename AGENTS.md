@@ -803,7 +803,7 @@ Any command can be bound to a keyboard shortcut. The goal is flow state — the 
 
 ### Philosophy
 
-Atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `events/`, `places/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist.
+Atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist.
 
 Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
 
@@ -834,6 +834,7 @@ Set `type` in frontmatter:
 - **Person** — anyone — contact, collaborator, mentor, author, public figure. Lives in `superpaper/people/`. Has `role`, `context`, `last-contact` fields.
 - **Pattern** — domain-general structural essence (e.g. `[[pattern/feedback-loop]]`). Cross-domain hub that many notes link *to*.
 - **Bridge** — explicit analogy map between two concepts/domains. What maps, what's preserved, where it breaks, what it predicts.
+- **Analogy** — a deep structural parallel between distant domains. Goes beyond surface similarity to map *why* the parallel holds: shared constraints, isomorphic dynamics, common generating functions. The highest-leverage note type for cross-disciplinary insight — "cells are to organisms as employees are to companies" is surface; "both face principal-agent alignment problems under information asymmetry" is an analogy note. Links to the bridged concepts, names what transfers, and flags where the mapping breaks.
 - **Model** — a formal structure (causal graph, mechanism, mathematical model) that explains how something works. Links to claims it supports and experiments that test it.
 - **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods. Must track status (open/answered/superseded) and link to hypotheses and evidence.
 - **Experiment** — a test plan with a prediction, procedure, and outcome. Links to the hypothesis it tests. Records whether the prediction held.
@@ -967,9 +968,6 @@ The `relations` field in frontmatter makes connections queryable by Dataview. Th
 type: daily
 created: YYYY-MM-DD
 ---
-
-## Intention
-One thing that matters today:
 
 ## Intention
 One thing that matters today:
@@ -1282,9 +1280,9 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   ├── concepts/               # What I understand — ideas, patterns, principles, claims
 │   ├── questions/              # What I'm exploring — open threads, retrieval magnets
 │   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── events/                 # Time — meetings, conversations, logs, history
-│   ├── places/                 # Space — physical & virtual locations
 │   ├── personal/               # My life — health, relationships, finances, hobbies, journal
+│   │   ├── events/             # Time — meetings, conversations, logs, history
+│   │   ├── places/             # Space — physical & virtual locations
 │   │   └── journal/            # Self-reflection and growth
 │   ├── meta/                   # How we think — shared AI+human introspection layer
 │   ├── .evidence/              # (hidden) granular evidence for AI citation
@@ -1301,13 +1299,13 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `events/`, `places/`, `personal/`, `meta/`) are broad enough to last forever. Subfolders within them emerge only when volume demands it — never before. A clean vault invites use; a pre-organized one intimidates.
+**Elegant simplicity.** Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`) are broad enough to last forever. Subfolders within them emerge only when volume demands it — never before. A clean vault invites use; a pre-organized one intimidates.
 
 ### Scaling principle
 
 Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domain/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
 
-**inbox → sources/events → concepts/questions → personal/journal → projects → daily**
+**inbox → sources/personal/events → concepts/questions → personal/journal → projects → daily**
 
 ### When subfolders emerge
 
@@ -1319,7 +1317,7 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 | `<domain>/` (e.g. `ai/`, `philosophy/`), `mental-models/`, `frameworks/`, `patterns/`, `claims/` | 5+ concept notes in one domain or kind | `concepts/` |
 | `active/`, `parked/`, `resolved/` | Volume of questions grows | `questions/` |
 | `papers/`, `books/`, `articles/`, `podcasts/`, `courses/` | Source type accumulates | `sources/` |
-| `meetings/`, `conversations/` | Regular event transcripts | `events/` |
+| `meetings/`, `conversations/` | Regular event transcripts | `personal/events/` |
 | `health/`, `finances/`, `relationships/`, `goals/`, `hobbies/`, `possessions/` | 5+ notes in a life area | `personal/` |
 | `journal/`, `reflections/`, `weekly-reviews/`, `retrospectives/`, `gratitude/` | First long-form reflection or review | `personal/` |
 | `experiments/` | First designed personal trial (sleep, habits, routines) | `personal/` |
@@ -1341,8 +1339,8 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | An insight, pattern, principle, claim, mental model | `concepts/` | The "what I understand" bucket |
 | An open question I'm exploring | `questions/` | Retrieval magnet — pulls neighborhoods |
 | A link, article, paper, book | `sources/` | Raw material — immutable reference |
-| A meeting, conversation, or time-bound event | `events/` | Temporal record — what happened when |
-| A physical or virtual location | `places/` | Spatial anchor — where things happen |
+| A meeting, conversation, or time-bound event | `personal/events/` | Temporal record — what happened when |
+| A physical or virtual location | `personal/places/` | Spatial anchor — where things happen |
 | A creative hunch, brainstorm, what-if | `concepts/` | `type: idea` — low pressure, no structure required |
 | Something personal (health, relationships, finances) | `personal/` | Private life knowledge |
 | Processing an experience or struggle | `personal/journal/` | Self-reflection, growth |
@@ -1391,7 +1389,7 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 The vault has two layers:
 
 - **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md`, `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`, `AGENTS.md` files in any folder.
-- **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `events/**`, `places/**`, `personal/**`, `meta/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
+- **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**` (includes `events/`, `places/`, `journal/`), `meta/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
 
 **Personal preferences live in `meta/`, not in AGENTS.md.** When either party — human or AI — notices a preference, reasoning pattern, alignment insight, or taste judgment, store it in `superpaper/meta/`. AGENTS.md defines the generic OS protocol; `meta/` holds the specific calibration of *this* partnership.
 
@@ -1433,7 +1431,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
 **Graph View color groups** (configure in `.obsidian/graph.json`):
-- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/personal` purple, `path:superpaper/events` amber, `path:superpaper/places` indigo, `path:superpaper/meta` gold, `path:superpaper/projects` blue, `path:daily` gray, `[type:claim]` orange, `[status:blocked]` red.
+- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/personal` purple, `path:superpaper/personal/events` amber, `path:superpaper/personal/places` indigo, `path:superpaper/meta` gold, `path:superpaper/projects` blue, `path:daily` gray, `[type:claim]` orange, `[status:blocked]` red.
 
 ---
 
@@ -1503,7 +1501,7 @@ This step is non-negotiable — do not skip or defer it.
 
 ### 3. Create vault structure
 
-Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `events/`, `places/`, `personal/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/events/`, `personal/places/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 ### 4. Create templates
 
@@ -1552,6 +1550,17 @@ Capture what you learn as notes in `meta/` — preferences, alignment observatio
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
+### 12. Verify environment
+
+Final check before declaring setup complete:
+
+1. **File Explorer++ hiding:** Ask the human: "Can you see any `AGENTS.md` files in your file explorer sidebar?" If yes, the hide filters aren't working — debug `.obsidian/plugins/file-explorer-plus/data.json` and reload. Also confirm `_templates` and `inbox` are hidden.
+2. **Pinned tabs:** Confirm Quick Capture, Meta dashboard (if created), and daily note are pinned or in sidebar tabs.
+3. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
+4. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
+
+**Never assume hiding works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
+
 ### Throughout setup
 
 - Explain each step before doing it — why it matters, what it enables.
@@ -1586,7 +1595,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 Agents have succeeded when:
 
 - The human can **navigate work and ideas across every domain of their life through this vault.**
-- Insights, patterns, preferences, and decisions live in entity folders (`concepts/`, `people/`, `questions/`, `sources/`, `events/`, `places/`) as **atomic, well-linked notes** — regardless of domain.
+- Insights, patterns, preferences, and decisions live in entity folders (`concepts/`, `people/`, `questions/`, `sources/`, `personal/`) as **atomic, well-linked notes** — regardless of domain.
 - The human actively reflects, tracks growth, and nurtures ideas through `personal/journal/` and `concepts/`.
 - Frequent workflows are supported by **simple, reliable artifacts and skills**.
 - The human can return to any topic weeks later and quickly reconstruct what was done, why, and what was learned.

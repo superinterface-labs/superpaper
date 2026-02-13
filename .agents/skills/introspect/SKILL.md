@@ -62,7 +62,7 @@ The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templat
 
 ### LAYER 3 — Memory quality
 
-The knowledge graph across entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `events/`, `places/`) is the vault's most valuable asset. Audit its health.
+The knowledge graph across entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `personal/events/`, `personal/places/`) is the vault's most valuable asset. Audit its health.
 
 1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one typed relation? Target: >80%.
 2. **Confidence hygiene:** Are `confidence` scores present and numeric? Flag notes with missing or stale confidence.
@@ -134,7 +134,7 @@ The subtle, high bar for ideas. The hardest dimension to build. Read every note 
 2. **Empty sections:** Placeholder content (`- —`, empty tables, template boilerplate left unfilled).
 3. **Missing templates:** Note types referenced in [[AGENTS]] that don't have a corresponding template in `_templates/`.
 4. **Skill coverage:** Are there recurring workflows the human does that could be a skill? Check daily notes for patterns.
-5. **Source pipeline:** Are there sources in `superpaper/sources/` or events in `superpaper/events/` without corresponding evidence/claim notes in `superpaper/concepts/`? Flag unprocessed sources and events.
+5. **Source pipeline:** Are there sources in `superpaper/sources/` or events in `superpaper/personal/events/` without corresponding evidence/claim notes in `superpaper/concepts/`? Flag unprocessed sources and events.
 6. **Journal pipeline:** Are there `personal/journal/` reflections that surfaced insights but never created atomic notes? Flag unextracted value.
 7. **Base health:** Do the high-leverage `.base` files from [[AGENTS]] exist? Are their filters still valid (correct paths, properties)? Are bases being embedded where specified (Knowledge map, sidebar)? Flag missing or stale bases. Suggest new bases when a folder reaches sufficient volume.
 
