@@ -1,7 +1,7 @@
 # AGENT.md – Superpaper: an AI Agent Swarm interface in Obsidian
 <!-- by Darshil Dhameliya (@dvrshil) · MIT License · https://github.com/superinterface-labs/superpaper -->
 
-> You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time.
+> You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time. Always read the full root AGENTS.md file when you start working on a user's request.
 
 Five things make this system work:
 
@@ -215,7 +215,7 @@ LIMIT 20
 ````markdown
 ```dataview
 LIST
-FROM #domain/design
+FROM #domains/design
 WHERE type = "permanent"
 SORT file.name ASC
 ```
@@ -237,7 +237,7 @@ Obsidian has a built-in `query` code block that embeds live search results — n
 
 ````markdown
 ```query
-tag:#domain/ai path:superpaper/concepts
+tag:#domains/ai path:superpaper/concepts
 ```
 ````
 
@@ -310,20 +310,20 @@ views:
   - type: table
     name: "Unprocessed"                                    # ← View 1: triage queue
     filters: 'status != "processed"'                       # ← Per-view filter (stacks on All views)
-    order: [file.name, url, tags, formula.days_waiting]
+    order: [file.link, url, tags, formula.days_waiting]
     limit: 30
   - type: table
     name: "Library"                                        # ← View 2: everything, newest first
-    order: [file.name, url, tags, formula.insight_count, created]
+    order: [file.link, url, tags, formula.insight_count, created]
     limit: 50
   - type: table
     name: "Stale"                                          # ← View 3: needs attention
     filters: 'formula.days_waiting > 7 && status == "unprocessed"'
-    order: [file.name, url, formula.days_waiting]
+    order: [file.link, url, formula.days_waiting]
   - type: table
     name: "Connected"                                      # ← View 4: contextual — changes per note
     filters: 'formula.related'                             # ← Only bookmarks linked to current note
-    order: [file.name, tags, formula.insight_count]
+    order: [file.link, tags, formula.insight_count]
 ```
 
 **Key primitives:**
@@ -331,13 +331,13 @@ views:
 | Primitive | Example | What it does |
 |-----------|---------|-------------|
 | `inFolder(file.file, "path")` | `inFolder(file.file, "superpaper/sources")` | Notes in a folder |
-| `taggedWith(file.file, "tag")` | `taggedWith(file.file, "domain/ai")` | Notes with a specific tag |
+| `taggedWith(file.file, "tag")` | `taggedWith(file.file, "domains/ai")` | Notes with a specific tag |
 | `linksTo(file.file, "Note")` | `linksTo(file.file, "AI safety")` | Notes that link to a specific note |
 | `file.hasLink(this.file)` | filter: `file.hasLink(this.file)` | Backlinks to the currently focused note |
 | `this.file.hasLink(file)` | filter: `this.file.hasLink(file)` | Outlinks from the currently focused note |
 | `file.backlinks` / `file.links` | `file.backlinks.length` | All backlinks / outlinks as lists |
 | `dateDiff(now(), date(field), 'days')` | formula: `dateDiff(now(), date(created), 'days')` | Days since a date field |
-| `list(prop).map(...)` / `.filter(...)` | `list(tags).filter(value.contains("domain"))` | Safe iteration over list properties |
+| `list(prop).map(...)` / `.filter(...)` | `list(tags).filter(value.contains("domains"))` | Safe iteration over list properties |
 | `formula["name"]` | `formula["days_waiting"] > 7` | Reuse a formula in filters or other formulas |
 | `note["prop-name"]` | `note["last-contact"]` | Access properties with dashes |
 | `if(cond, then, else)` | `if(status == "processed", "✅", "⏳")` | Conditional values |
@@ -347,6 +347,42 @@ views:
 | `value.asFile()` | `file.backlinks.map(value.asFile())` | Convert link to file object |
 
 **`this` — the self-referential keyword.** In an embedded base, `this` refers to the note containing the embed. In the sidebar, `this` refers to the currently active note. This enables contextual, dynamic views that change based on what you're looking at.
+
+**View types:**
+
+| Type | Use for | Key properties |
+|------|---------|---------------|
+| `table` | Default — sortable rows and columns | `order`, `sort`, `limit`, `columnSize` |
+| `cards` | Visual browsing — images, covers, media | `image` (property or formula for the image source) |
+| `map` | Spatial browsing — places, trips, events | `coordinates`, `defaultZoom`, `markerIcon`, `markerColor` |
+
+**Cards example** — browse books/movies with covers:
+```yaml
+views:
+  - type: cards
+    name: Library
+    order: [file.name, rating, genre]
+    sort:
+      - property: rating
+        direction: DESC
+    image: cover
+```
+
+**Map example** — places with typed markers:
+```yaml
+formulas:
+  Icon: list(type)[0].asFile().properties.icon
+  Color: list(type)[0].asFile().properties.color
+views:
+  - type: map
+    name: Map
+    coordinates: note.coordinates
+    markerIcon: formula.Icon
+    markerColor: formula.Color
+    defaultZoom: 2
+```
+
+Type notes (e.g. `[[Restaurant]]`, `[[Museum]]`) carry `icon` and `color` properties so the map computes marker appearance dynamically.
 
 **When to use Bases vs Dataview:**
 
@@ -368,8 +404,11 @@ views:
 | `Bookmarks.base` | `superpaper/sources/` | The human's read-later library. Views: unprocessed (triage), library (browse all), stale (>7 days unprocessed), connected (backlinks to current note via `this`). Formulas: days waiting, insight count, tag coverage. The showcase base — see syntax example above. |
 | `Experiments.base` | `superpaper/` | All experiments (personal + project). Views by status: active, completed, abandoned. Track hypothesis → outcome. |
 | `Contextual backlinks.base` | sidebar | Filter: `file.hasLink(this.file)`. Drag to sidebar — dynamic backlinks with editable properties for whatever note you're viewing. |
+| `Related.base` | sidebar | Computes link overlap + tag overlap between current note and all others. Surfaces structurally related notes *without manual linking*. The automatic connection discovery engine. |
+| `Ratings.base` | `superpaper/` | Everything you've ever rated, cross-category. Views: all ratings by recency, recent (last 60 days). "Show me all 7s" returns best books, movies, restaurants, trips in one view. |
+| `Map.base` | `superpaper/sources/` | Geo-spatial view of all notes with `coordinates`. Type notes carry `icon` + `color` for marker appearance. Views: global map, location-filtered, type-filtered. |
 
-Don't create all of these at once. Start with **Bookmarks** during bootstrap — it's the first base the human will use daily. Others emerge as content grows.
+Don't create all of these at once. Start with **Bookmarks** and **Related** during bootstrap — it's the first base the human will use daily. Others emerge as content grows.
 
 ---
 
@@ -589,19 +628,21 @@ export async function cleanup(app: App): Promise<void> {
 
 ### My tasks (`apps/My tasks.md`)
 
-A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue.
+A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue. Configure with `prepend-archive-separator`, `prepend-archive-date`, and — critically — no submit button: cards save on every keystroke (`new-card-insertion-method: obsidian-default`). The board must feel like a text file, not a form.
 
 **How it works:**
 - The human or agent adds cards with a one-line description. Each card can link to a project, note, or inbox item.
 - The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
 - Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
 
+**Every card MUST link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
+
 **Task lifecycle:**
 
 ```
 1. CAPTURE   → Card added to Todo (link to inbox item or inline description)
 2. PICK UP   → Move to In Progress — agent begins work
-3. SHIP      → Move to Done — append @{YYYY-MM-DD}, log to inbox/log/
+3. SHIP      → Move to Done — append @{YYYY-MM-DD} + link to log entry
 4. ARCHIVE   → After 7 days in Done — heartbeat removes card, log persists
 5. BLOCKED   → Move to Blocked — comment explains why, escalate to human
 ```
@@ -626,7 +667,7 @@ Links to created/updated notes.
 Next steps or "complete".
 ```
 
-The heartbeat appends a summary of task board activity to the daily note. Over time, `inbox/log/` becomes a complete audit trail of everything the agents did and why.
+The heartbeat links task board activity summaries to the agent's daily log (`[[inbox/log/YYYY-MM-DD]]`), not the human's daily note. Over time, `inbox/log/` becomes a complete audit trail of everything the agents did and why. The human's `daily/` stays clean — only their own fragments and life events surface in backlinks.
 
 ---
 
@@ -675,8 +716,8 @@ type: permanent
 source: "https://example.com"
 confidence: 0.8
 tags:
-  - domain/design
-  - topic/memory
+  - domains/design
+  - topics/memory
 aliases:
   - Alternate name
 cssclasses:
@@ -698,6 +739,23 @@ links: ["[[A]]", "[[B]]"]
 ```
 
 Queryable by Dataview, visible in Obsidian's Properties view, machine-readable by agents.
+
+**Property design rules:**
+
+- **Default to `list` over `text`** if there's any chance a property might contain more than one value in the future. Changing type later is painful; starting as list is free.
+- **Short names.** `start` not `start-date`. `loc` not `location-name`. Faster to type, less noise in frontmatter.
+- **Reuse across categories.** `genre` is shared across books, movies, shows, and albums — one query surfaces all sci-fi media. `author` works for books, articles, and recipes. `rating` is universal. Design properties so they cross category boundaries.
+- **Five property families** cover most notes:
+
+| Family | Properties | Used by |
+|--------|-----------|---------|
+| Dates | `created`, `start`, `end`, `last`, `published` | Everything |
+| People | `author`, `director`, `artist`, `cast`, `host`, `guests`, `via` | Media, sources, events |
+| Themes | `genre`, `type`, `topics`, `categories` | Cross-cutting retrieval |
+| Locations | `loc`, `coordinates` | Places, trips, events |
+| Ratings | `rating` (1–7) | Anything worth evaluating |
+
+- **Composable templates = composable properties.** Since templates are mixins, property sets merge naturally. A note with both Person and Author templates gets both property sets without conflict.
 
 ### Block IDs
 
@@ -737,18 +795,20 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 `#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders.
 
-**Three namespaces** — all lowercase, singular, kebab-case:
+**Three namespaces** — all lowercase, **always plural**, kebab-case:
 
 | Namespace | Purpose | Examples |
 |-----------|---------|----------|
-| `#domain/` | Field or life area | `#domain/ai`, `#domain/health`, `#domain/finance` |
-| `#topic/` | Specific concept | `#topic/memory`, `#topic/feedback-loops`, `#topic/sleep` |
+| `#domains/` | Field or life area | `#domains/ai`, `#domains/health`, `#domains/finance` |
+| `#topics/` | Specific concept | `#topics/memory`, `#topics/feedback-loops`, `#topics/sleep` |
 | `#status/` | Lifecycle state | `#status/active`, `#status/paused`, `#status/review` |
+
+**Always pluralize tags and categories.** This eliminates decision fatigue — you never wonder "is it `#domains/book` or `#domains/books`?" The answer is always plural. One rule, hundreds of future decisions collapsed.
 
 **Conventions:**
 - Frontmatter `tags:` for file-level tags. Inline `#tag` for block-level context.
-- Nest when hierarchy aids retrieval — `#domain/ai/nlp` is useful; four levels deep is not.
-- Searching `tag:#domain/ai` returns all subtags beneath it ([docs](https://help.obsidian.md/tags)).
+- Nest when hierarchy aids retrieval — `#domains/ai/nlp` is useful; four levels deep is not.
+- Searching `tag:#domains/ai` returns all subtags beneath it ([docs](https://help.obsidian.md/tags)).
 - Don't duplicate what `type`, `kind`, or folders already express — tags are for *retrieval*, not classification.
 
 ### Filenames
@@ -860,7 +920,7 @@ Set `type` in frontmatter:
 - **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/personal/journal/`. Accumulates dated entries that link to atomic notes.
 - **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
 
-Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domain/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domains/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
 
 ### Epistemic contract
 
@@ -924,7 +984,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 2. **Link to 2+ existing notes — and update 1–3 of them to link back.** This distributed write makes the note reachable from many cues. Search before creating — the concept may already exist.
 3. **Add relations** in `## Relates` as natural prose. Write the way you'd explain a connection to a friend: "This builds on [[note]] because...", "Sits in tension with [[note]] — they disagree on...". The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
 4. **Start as fleeting.** Promote to permanent only after the idea survives use and refinement.
-5. **Tag for retrieval.** `#domain/X` for the field, `#topic/Y` for the concept.
+5. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
 6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
 7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`. Don't silently edit old claims.
 8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?" Link to a `[[pattern/...]]` note or create a bridge note. Cross-domain connections are the highest-value links.
@@ -940,13 +1000,17 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 ---
 type: fleeting
 kind: fact | concept | procedure | principle | goal | habit | ritual | review | creation | prompt | recipe | preference | claim | pattern | bridge | idea | reflection |...
+categories: []
 id: ""
 status: draft | active | supported | falsified | paused | superseded
 confidence: 0.5
+rating:
 source: ""
+via: ""
 connections: []
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+last: YYYY-MM-DD
 superseded_by: ""
 evidence_for: []
 evidence_against: []
@@ -974,6 +1038,48 @@ This builds on [[Other note]] by taking the idea further into territory X. It si
 
 The `relations` field in frontmatter makes connections queryable by Dataview. The `## Relates` body section is prose — readable without any tooling.
 
+### Categories — multi-belonging without folders
+
+Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` property. A restaurant review can be `[[Places]]` AND `[[Recipes]]`. A person can be `[[People]]` AND `[[Companies]]`. Folders give physical location; categories give conceptual membership — a note can have many.
+
+**The category trinity.** Every category is three files:
+
+1. **Template** (`_templates/Book Template.md`) — frontmatter schema. Defines the properties every note in this category starts with.
+2. **Base** (`_templates/Bases/Books.base`) — database view. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
+3. **Category page** (`Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point. Lives wherever makes sense (root, `sources/`, `superpaper/`).
+
+This trinity is the repeatable unit for growing the vault. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
+
+```mermaid
+graph LR
+  T["Book Template"] -->|creates notes with| P["categories: [[Books]]"]
+  B["Books.base"] -->|filters on| P
+  H["Books.md"] -->|embeds| B
+```
+
+**Contextual views via `this`.** Bases become dynamic when they filter on the current note. A `Books.base` with a view `list(author).contains(this)` shows all books by an author — *when embedded on that author's page*. A `Places.base` with `list(loc).contains(this)` shows all places in a city — *when viewed from that city's note*. Design every base with at least one `this`-filtered view.
+
+### Rating system (1–7)
+
+Anything with a `rating` uses an integer from 1 to 7:
+
+| Rating | Meaning |
+|--------|---------|
+| 7 | Perfect — life-changing, go out of your way |
+| 6 | Excellent — worth repeating |
+| 5 | Good — enjoyable, don't go out of your way |
+| 4 | Passable — works in a pinch |
+| 3 | Bad — avoid if you can |
+| 2 | Atrocious — actively repulsive |
+| 1 | Evil — life-changing in a bad way |
+
+### Tracking properties
+
+Two small properties with outsized value:
+
+- **`last`** — when you last engaged with something (watched, read, visited, reviewed). Enables "recently experienced" and "haven't revisited in a while" views.
+- **`via`** — who recommended it or how you found it (`via: "[[Alex]]"` or `via: "Hacker News"`). Creates a social graph of taste: "everything [[Alex]] recommended" becomes a single query.
+
 ### Daily note template
 
 ```markdown
@@ -981,32 +1087,30 @@ The `relations` field in frontmatter makes connections queryable by Dataview. Th
 type: daily
 created: YYYY-MM-DD
 ---
-
-## Intention
-One thing that matters today:
-
-## Freewrite
-
-
-## Captures
-
-
-## Plan
-- [ ] 
-
-## Notes
-
-
-## Review
-- **Energy:** /10
-- **Mood:** /10
-- **Gratitude:**
-- **Win:**
-- **Struggle:**
-- **Tomorrow:** 
-
-> [!info]- AI Agent Updates
 ```
+
+**Daily notes are the human's space.** They exist solely to be linked to from the human's own entries — journal fragments, meals, workouts, meetings, moods. The value is in backlinks. No sections, no prompts, no friction.
+
+**Agent logs are separate.** Agents link to `[[inbox/log/YYYY-MM-DD]]` — their own daily anchor. This keeps the human's daily note backlinks clean: only *their* life shows up, never agent task churn.
+
+This is counterintuitive but powerful: an empty note with rich backlinks is more useful than a structured template the human feels guilty about not filling in. The daily note is a **date anchor**, not a form.
+
+**Help the human build this habit.** When they create a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever "writing" in it.
+
+### Fractal journaling
+
+Throughout the day, create timestamped thought fragments using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. No structure required. Just capture. Link each fragment to today's daily note.
+
+Every few days, review fragments and compile salient thoughts into a weekly review. Monthly reviews distill weekly reviews. Yearly reviews distill monthly reviews. The result is a **fractal web** you can zoom in and out of at varying detail.
+
+| Cadence | Template | What it does |
+|---------|----------|-------------|
+| Daily | `YYYY-MM-DD HHmm Title.md` | Raw fragments — thoughts as they come |
+| Weekly | `YYYY-[W]ww.md` | Compile the week's salient themes |
+| Monthly | `YYYY-MM.md` | Distill monthly patterns, review weekly reviews |
+| Yearly | `YYYY.md` | [40 questions](https://stephango.com/40-questions) — review the year's monthly reviews |
+
+Review templates live in `_templates/`. The human traces back where individual thoughts came from and how they bubbled up into bigger themes. Create review templates as the cadence is adopted — don't front-load.
 
 ### Idea note template
 
@@ -1069,6 +1173,48 @@ How I know them. Why they matter. Key context.
 > - YYYY-MM-DD — Created. Reason.
 ```
 
+### Place template
+
+```markdown
+---
+type: source
+categories: ["[[Places]]"]
+loc: []
+coordinates:
+type: []
+rating:
+last: YYYY-MM-DD
+via: ""
+created: YYYY-MM-DD
+tags: []
+aliases: []
+---
+
+What this place is. Why it matters.
+```
+
+Place `type` values (e.g. `[[Restaurant]]`, `[[Museum]]`, `[[Park]]`, `[[Café]]`) are their own notes with `icon` and `color` properties — the `Map.base` looks up `list(type)[0].asFile().properties.icon` for marker appearance. `loc` is a list of location links (`["[[Kyoto]]", "[[Japan]]"]`). `coordinates` is a string `"lat,lng"` for map views.
+
+### Reference templates — composable by design
+
+Templates are **composable mixins**, not rigid forms. A contact who wrote a book gets both Person template and Author template applied. A restaurant that's also a recipe source gets Place + Recipe. Layer templates freely — properties merge.
+
+Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page wherever it belongs. Create the trinity when the human first needs the category, not before.
+
+| Template | Key properties | Base views |
+|----------|---------------|-----------|
+| Book | `author`, `genre`, `pages`, `year`, `rating`, `cover`, `isbn` | All, Top rated, By author (`list(author).contains(this)`), By genre (`list(genre).contains(this)`) |
+| Movie / Show | `director`, `cast`, `genre`, `year`, `rating`, `runtime` | All, Top rated, By director, By genre |
+| Place | `loc`, `coordinates`, `type`, `rating`, `last` | All, By location (`list(loc).contains(this)`), By type, Map view, Related (`file.hasLink(this)`) |
+| Recipe | `cuisine`, `ingredients`, `author`, `rating` | All, By cuisine, By author |
+| Trip | `loc`, `start`, `end`, `companions` | All, By location, Map view |
+| Album | `artist`, `genre`, `year`, `rating` | All, Top rated, By artist, By genre |
+| Product | `brand`, `price`, `rating`, `url` | All, By brand, Top rated |
+| Quote | `author`, `source` | All, By author |
+| Podcast / Episode | `host`, `guests`, `url`, `rating` | All, By host, By guests |
+
+All reference notes use `categories` for cross-cutting retrieval and the 7-point `rating` scale. Shared properties (`genre`, `author`, `rating`, `last`) work across categories — one query surfaces all sci-fi across books, movies, and shows.
+
 ### Bookmark template
 
 ```markdown
@@ -1079,10 +1225,11 @@ source: ios | share-sheet
 url: ""
 status: unprocessed | processed | failed
 rating:
+via: ""
 created: YYYY-MM-DD
 tags:
   - inbox
-  - "#domain/..."                  ← add domain tag(s) during processing
+  - "#domains/..."                 ← add domain tag(s) during processing
 ---
 
 (URL, text, or image reference goes here)
@@ -1094,10 +1241,10 @@ When a bookmark arrives in `inbox/`:
 
 1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
 2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
-3. **Enrich the bookmark** — add a `## Summary` and `## Key ideas` section to the bookmark note itself. Add `#domain/` tags and a `rating` (1–5) if quality is assessable. The bookmark becomes the source — no separate source note needed. NEVER manually rewrite the source content; quote or transclude it.
-4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes in `concepts/`, `.evidence/`, etc. Link back to the bookmark.
+3. **Enrich the bookmark** — add a `## Summary` and `## Key ideas` section to the bookmark note itself. Add `#domains/` tags and a `rating` (1–7) if quality is assessable. The bookmark becomes the source — no separate source note needed. NEVER manually rewrite the source content; quote or transclude it.
+4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes in `concepts/`, `.evidence/`, etc. Every extracted note MUST link back to the bookmark file (`[[bookmark-title]]`) so the base views can surface it via `file.link`.
 5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
-6. **Move to library** — set `status: processed`, move to `sources/bookmarks/`. The bookmark is now browsable in `Bookmarks.base`.
+6. **Move to library** — set `status: processed`, move to `sources/bookmarks/`. The bookmark is now browsable in `Bookmarks.base` with `file.link` as the primary navigation column.
 
 ### Anti-patterns
 
@@ -1109,6 +1256,7 @@ When a bookmark arrives in `inbox/`:
 
 ### Consolidation (periodic)
 
+- **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — "doing this maintenance helps me understand my own patterns." Don't automate what builds understanding.
 - **Merge** notes that evolved into the same insight → keep one, mark others with `superseded_by`
 - **Strengthen** connections between notes that keep co-occurring in retrievals
 - **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 `[[pattern/...]]` notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
@@ -1280,6 +1428,10 @@ When onboarding or teaching:
 3. **Signpost progress.** Regularly state what we’ve covered, what’s next, and roughly how far we are (“2 of 5 steps done”).
 4. **Explain tools.** Before using any external tool (web fetch, script, plugin action): say *why*, *what* it accesses/modifies, and how it fits the goal.
 
+### Personal style guide
+
+Encourage the human to create `meta/Style guide.md` — a living document of their consistent practices. Having a consistent style collapses hundreds of future decisions into one. Examples: how they capitalize tags, preferred date formats, naming conventions for people vs companies, whether they use first or last names in links. The AI reads this before creating notes.
+
 ### Changing conventions
 
 If you need to evolve a convention (e.g. knowledge frontmatter schema), propose: the new schema, a migration strategy for existing notes, and why the change is worth the cognitive cost.
@@ -1305,7 +1457,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Daily notes (via Calendar plugin)
+├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
 ├── _templates/                 # Note templates
@@ -1317,7 +1469,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 
 ### Scaling principle
 
-Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domain/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
+Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domains/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
 
 **inbox → sources → concepts/questions → personal/journal → projects → daily**
 
@@ -1375,30 +1527,39 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | A blog, tweet, video, podcast, or link I liked | `inbox/` → `sources/bookmarks/` | Captured in inbox, enriched and moved to library after processing |
 | A task the agent should work on | `apps/My tasks.md` | Kanban card — heartbeat picks it up |
 | A task execution log entry | `inbox/log/mmm-yy/dd/<task>.md` | Granular record of what was done, when, and why |
-| Today's plan, freewrite, captures | `daily/` | Dated, ephemeral, links to durable notes |
+| Agent's daily anchor | `inbox/log/YYYY-MM-DD.md` | Agent activity rolls up here — keeps `daily/` clean |
+| Human's date anchor | `daily/` | Empty — value is in backlinks from the human's own fragments and life |
 
 Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, kinds, and wiki-links handle the rest.
 
 If directory structure regresses, confirm with the user before resetting; maybe they organized based their preferences.
 
-### Folder indexes (`AGENTS.md`)
+### Folder indexes (`AGENTS.md` + `CLAUDE.md`)
 
 Every non-trivial folder gets an `AGENTS.md` that describes what it contains — subfolders, key files, purpose, and conventions specific to that space. Keep these informative so you dont have to look through the folder to understand what it contains: a heading, a table or list, and any local rules.
 
-Update the relevant `AGENTS.md` whenever you create, move, rename, or delete files in that folder. Staleness here is a bug.
+**Every `AGENTS.md` MUST have a corresponding `CLAUDE.md` symlink** in the same directory, so both Claude Code and other agent runtimes discover it:
+
+```bash
+ln -sf AGENTS.md CLAUDE.md
+```
+
+At the vault root, `CLAUDE.md → AGENTS.md`. In every subfolder that has an `AGENTS.md`, create the same symlink. This is a one-line operation when creating the index — never skip it.
+
+Update the relevant `AGENTS.md` (and its symlink) whenever you create, move, rename, or delete files in that folder. Staleness here is a bug.
 
 ### Reorganization
 
 When a folder accumulates too many items (roughly >8–10), cluster them into subfolders by emergent theme. **Always confirm with the human before moving files.** Use `obsidian move` to relocate files — it auto-updates wiki-links. After reorganizing:
 1. Update every `AGENTS.md` affected (parent and children)
 2. Fix any Dataview `FROM` clauses and `.base` filters that referenced old paths
-3. `obsidian daily:append content="Reorganized: ..."` to log the change
+3. Log the change in `inbox/log/` with a link to the agent's daily log (`[[inbox/log/YYYY-MM-DD]]`)
 
 ### No deletions
 
 **Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
-**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items or `daily/` notes. You may **append** to them or **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it.
+**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Daily notes are empty date anchors — don't write into them; link *to* them from other notes instead.
 
 ### Infrastructure vs content
 
@@ -1417,11 +1578,10 @@ The vault has two layers:
 
 Docs: https://help.obsidian.md/cli — always refer here for the latest commands and syntax.
 
-The vault is scriptable from the terminal. **Use the CLI as your primary interface to Obsidian** — prefer it over manual file operations for anything it supports: moving/renaming files (preserves wiki-links), querying the graph, appending to daily notes, setting properties, and reloading after changes.
+The vault is scriptable from the terminal. **Use the CLI as your primary interface to Obsidian** — prefer it over manual file operations for anything it supports: moving/renaming files (preserves wiki-links), querying the graph, setting properties, and reloading after changes.
 - **Search/retrieve:** `search query="X"`, `backlinks file=X`, `links file=X`, `tags all counts`
 - **Graph health:** `orphans`, `deadends`, `unresolved`
 - **File ops:** `move file=X to=Y` (auto-updates wiki-links), `create name=X template=Y`
-- **Daily notes:** `daily:append content="X" silent`
 - **Properties:** `property:set name=X value=Y file=Z`
 - **Eval:** `dev:eval code="..."` — run JS in the Obsidian runtime
 
@@ -1509,6 +1669,20 @@ git clone --no-checkout --filter=blob:none https://github.com/superinterface-lab
   && rm -rf /tmp/superpaper
 ```
 
+Then pull community skills from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills):
+
+```bash
+git clone --no-checkout --filter=blob:none https://github.com/kepano/obsidian-skills.git /tmp/obsidian-skills \
+  && cd /tmp/obsidian-skills \
+  && git sparse-checkout set skills \
+  && git checkout \
+  && cp -r skills/* "$OLDPWD/.agents/skills/" \
+  && cd "$OLDPWD" \
+  && rm -rf /tmp/obsidian-skills
+```
+
+After installing, create a `CLAUDE.md` symlink at the vault root (and update `.agents/skills/AGENTS.md` to index all installed skills).
+
 ### 1. Index existing context
 
 Scan the vault for existing folders, projects, notes, and files outside `superpaper/`. Sibling folders (code repos, writing projects, research directories) are assets — index them into `sources/` as `source` notes with brief descriptions and links. The human's existing work is the richest starting context. Don't reorganize it; just make it findable and warmup the knowledge, go through them meticulously.
@@ -1532,15 +1706,19 @@ Create the entity and function folders under `superpaper/`: `people/`, `concepts
 
 Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, **Person template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
 
+Also create `_templates/Bases/` for base templates. Start with `Bookmarks.base` (created in step 6). As the human adopts new categories, each gets the full **category trinity**: template + base + category page. Base templates make spinning up new categories instant.
+
 ### 5. Create Quick Capture UI
 
 Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
-- *Thought* → appends to today's daily note under `## Captures`
+- *Thought* → creates a timestamped fragment note linking to today's daily note (`[[2026-02-16]]`)
 - *Task* → creates a card on `apps/My tasks.md` under **Todo**
 - *Idea* → creates a note in `concepts/` with `type: idea`
 - *Link* → creates a `type: bookmark` note in `inbox/`
 
 This is the human's primary capture surface. Pin it to a sidebar tab. It replaces direct browsing of `inbox/` — the agent ingests from inbox behind the scenes.
+
+**Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → timestamped fragments linking to today's daily note), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
 
 ### 6. Create starter bases
 
@@ -1556,7 +1734,7 @@ Write an atomic concept note together — one idea the human cares about, typed 
 
 ### 8. Set up mobile bookmarking
 
-Help the human set up a Siri Shortcut (iOS) or share sheet action that creates a `type: bookmark` note in `superpaper/inbox/` from any app. Walk through building it step by step — the shortcut should capture the URL, title, and any selected text, then save as a markdown file to the vault. This is how bookmarks flow in from anywhere.
+Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
 ### 9. Add CSS polish
 
