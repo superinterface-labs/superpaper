@@ -1,11 +1,12 @@
 # Superpaper
 
-A new way to think and work with AI agents using simple markdown files in Obsidian.
-You talk, the agent writes files, knowledge compounds. No code, no build steps, no lock-in — just markdown.
+Turn your Obsidian vault into an AI-native workspace where you and your agents think together.
+You talk, the agent writes in your vault, and knowledge compounds. No code. No build steps. No lock-in. Just markdown.
 
 ## Things to know before you start
 
 Your Obsidian vault is just a folder of text files. No database, no lock-in.
+Superpaper lives entirely inside that folder: one shared space between you and your agents.
 
 ### Tools that you will need
 - Install **[Obsidian](https://obsidian.md)** — a free app that renders markdown files into rich, interactive documents. Your vault is an Obsidian folder. [Watch this quick intro](https://youtu.be/z4AbijUCoKU?si=C52APZ14oehdnprN) if you are new to Obsidian.
@@ -29,15 +30,17 @@ Your Obsidian vault is just a folder of text files. No database, no lock-in.
 - You can also setup a vault as a folder that contains all your projets so the agent can use context from them and work on them with you.
 - Obsidian is also available on most platforms, so you can keep track of your notes and (eventually) the agents in the same place.
 - You can use the obsidian-terminal public plugin to run the coding agent from within obsidian.
+- The [Obsidian Web Clipper](https://obsidian.md/clipper) collects links and bookmarks straight into your vault.
 
 ### Future plans
 We are planning on providing a service that will allow you to do all this from any device with zero setup overhead and with additional features like ambient agents.
 
 ## Why this exists
 
+Every day you start new threads across docs, apps, and chats, and most of them never make it back into one place.
 Most AI setups put the chat at the center. Your notes are an afterthought. This flips it.
 
-**Obsidian is the interface. The agent operates inside it.** Every response is a `.md` file you own — not a vanishing chat bubble. Close the chat and everything is still there. Embedded web pages, dashboards, diagrams, interactive TypeScript UIs — all rendering inside your vault.
+**Obsidian is the interface. The agent operates inside it.** It turns your Obsidian vault into a shared workspace between you and AI. Every response is a `.md` file you own — not a vanishing chat bubble. Close the chat and everything is still there. Embedded web pages, dashboards, diagrams, interactive TypeScript UIs — all rendering inside your vault.
 
 Two modes feed each other:
 
@@ -107,4 +110,4 @@ Small actions (filing notes, linking concepts) happen automatically. Big actions
 
 Today it's one agent and a handful of skills. Tomorrow it's dozens of agents running continuously — linking notes, monitoring topics, processing your inbox, building tools. Your vault looks the same either way.
 
-One vault. Plain text. Knowledge that compounds.
+One vault. Plain text. A shared workspace between you and your agents, compounding over years.
