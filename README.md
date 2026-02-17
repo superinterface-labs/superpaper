@@ -16,6 +16,7 @@ Superpaper lives entirely inside that folder: one shared space between you and y
 - **[AGENTS.md](https://agents.md)** — a single markdown file that teaches agents how to operate in your vault.
 - **[Agent Skills](https://agentskills.io)** — reusable instruction packages agents discover and follow automatically.
 - **[Markdown](https://www.markdownguide.org/basic-syntax/)** — headings, links, lists, checkboxes. Enough to read and lightly edit what agents produce.
+- **[How I use Obsidian](https://stephango.com/vault)** — by Steph Ango, creator of Obsidian. Much of Superpaper's design — fractal journaling, 7-point ratings, minimal folders, profuse linking — draws from his approach.
 
 ## Get started under 2 minutes
 
