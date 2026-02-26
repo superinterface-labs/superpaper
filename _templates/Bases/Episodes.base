@@ -4,6 +4,8 @@ filters:
     - '!file.name.contains("Template")'
 formulas:
   connection_count: file.backlinks.length
+  topic_list: list(topics).join(", ")
+  has_papers: list(note["papers-discussed"]).length > 0
 views:
   - type: table
     name: All episodes
@@ -11,10 +13,23 @@ views:
       - file.name
       - podcast
       - published
-      - topics
+      - formula.topic_list
       - formula.connection_count
       - status
     sort:
+      - property: published
+        direction: DESC
+    limit: 100
+  - type: table
+    name: By podcast
+    order:
+      - file.name
+      - podcast
+      - published
+      - formula.topic_list
+    sort:
+      - property: podcast
+        direction: ASC
       - property: published
         direction: DESC
     limit: 100
@@ -30,9 +45,22 @@ views:
       - property: published
         direction: DESC
   - type: table
+    name: With papers
+    filters: formula.has_papers
+    order:
+      - file.name
+      - podcast
+      - published
+      - formula.topic_list
+      - formula.connection_count
+    sort:
+      - property: formula.connection_count
+        direction: DESC
+  - type: table
     name: Connected
     filters: file.hasLink(this.file)
     order:
       - file.name
       - podcast
-      - topics
+      - formula.topic_list
+      - published

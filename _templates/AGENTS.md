@@ -15,7 +15,6 @@ Vault templates used by Templater and other workflows.
 | `Idea note.md` | Low-friction idea capture |
 | `Reflection.md` | Journal reflection with structured prompts |
 | `Place.md` | Location — adds `loc`, `coordinates`, `type`, `rating` |
-| `Podcast episode.md` | Source processing — adds `podcast`, `url`, `host`, `guests`, `topics` |
 | `Daily note.md` | Pure date anchor — nothing is written here, value is entirely in backlinks |
 | `Sequence.md` | Sequence note — composes atomic notes into ordered causal chains |
 | `Weekly review.md` | Fractal journaling — compile the week's salient themes |
@@ -52,8 +51,8 @@ Vault templates used by Templater and other workflows.
 | `Books.base` | All/top rated/by author/connected |
 | `Essays.base` | Long-form web essays |
 | `Reports.base` | Analyst reports, syntheses |
-| `Podcasts.base` | Show/feed hubs |
-| `Episodes.base` | Individual podcast/video episodes |
+| `Podcasts.base` | Podcast show hubs |
+| `Episodes.base` | Podcast/video episodes — all, by podcast, unprocessed, with papers, connected |
 | `Projects.base` | Active work streams |
 | `Questions.base` | Open threads |
 | `Places.base` | Locations with map view |

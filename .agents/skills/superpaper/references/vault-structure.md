@@ -33,7 +33,7 @@ Full vault structure for [[../SKILL.md|Superpaper]]: folder tree, scaling princi
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
+**This is a reference map, not a day-one checklist.** Only `superpaper/`, `superpaper/inbox/`, and `daily/` are created during bootstrap. Everything else — `people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/` — appears **the first time the human actually needs it**. Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. If the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 ---
 

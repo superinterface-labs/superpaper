@@ -75,7 +75,7 @@ Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` [[ren
 2. **Base** (`_templates/Bases/Books.base`) — [[rendering-guide.md#Bases — vault usage patterns|database view]]. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
 3. **Category page** (`categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point.
 
-The most common trinities (26 categories, 37 bases — including 11 utility bases — and 15 note templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
+The most common trinities (26 categories, 36 bases — including 11 utility bases — and 14 note templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
 
 ```mermaid
 graph LR
@@ -270,7 +270,7 @@ Each template below implies the full **category trinity** — a template in `_te
 | Album | `artist`, `genre`, `year`, `rating` | All, Top rated, By artist, By genre |
 | Product | `brand`, `price`, `rating`, `url` | All, By brand, Top rated |
 | Quote | `author`, `source` | All, By author |
-| Podcast / Episode | `host`, `guests`, `url`, `rating` | All, By host, By guests |
+| Episode | `podcast`, `host`, `guests`, `url`, `published`, `topics`, `status` | All, By podcast, Unprocessed, With papers, Connected |
 
 All reference notes use `categories` for cross-cutting retrieval and the 7-point `rating` scale. Shared properties (`genre`, `author`, `rating`, `last`) work across categories — one query surfaces all sci-fi across books, movies, and shows.
 

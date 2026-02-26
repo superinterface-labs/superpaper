@@ -1,0 +1,29 @@
+{
+  "name": "superpaper",
+  "version": "0.1.2",
+  "description": "Set up a Superpaper vault — AI Agent Swarm interface in Obsidian",
+  "license": "MIT",
+  "author": "Darshil Dhameliya (@dvrshil)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/superinterface-labs/superpaper"
+  },
+  "bin": {
+    "superpaper": "./bin/superpaper.js"
+  },
+  "files": [
+    "bin/",
+    "README.md"
+  ],
+  "keywords": [
+    "obsidian",
+    "zettelkasten",
+    "ai-agents",
+    "knowledge-graph",
+    "superpaper"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}

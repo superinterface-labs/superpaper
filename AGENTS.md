@@ -1106,7 +1106,7 @@ See `_templates/Place.md`. Adds `loc`, `coordinates`, `rating`, `last`, `via`. P
 
 Templates are **composable mixins**, not rigid forms. A contact who wrote a book gets both Person template and Author template applied. A restaurant that's also a recipe source gets Place + Recipe. Layer templates freely — properties merge.
 
-Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page in `categories/`. The most common trinities ship with the repo (26 categories, 37 bases — including 11 utility bases — and 15 note templates; see `_templates/AGENTS.md` for the full inventory). When a new category emerges, spin up all three — the base templates make this instant.
+Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page in `categories/`. The most common trinities ship with the repo (26 categories, 36 bases — including 11 utility bases — and 14 note templates; see `_templates/AGENTS.md` for the full inventory). When a new category emerges, spin up all three — the base templates make this instant.
 
 | Template | Key properties | Base views |
 |----------|---------------|-----------|
@@ -1118,7 +1118,7 @@ Each template below implies the full **category trinity** — a template in `_te
 | Album | `artist`, `genre`, `year`, `rating` | All, Top rated, By artist, By genre |
 | Product | `brand`, `price`, `rating`, `url` | All, By brand, Top rated |
 | Quote | `author`, `source` | All, By author |
-| Podcast / Episode | `host`, `guests`, `url`, `rating` | All, By host, By guests |
+| Episode | `podcast`, `host`, `guests`, `url`, `published`, `topics`, `status` | All, By podcast, Unprocessed, With papers, Connected |
 
 All reference notes use `categories` for cross-cutting retrieval and the 7-point `rating` scale. Shared properties (`genre`, `author`, `rating`, `last`) work across categories — one query surfaces all sci-fi across books, movies, and shows.
 
@@ -1577,120 +1577,83 @@ Every worker update states: **what changed**, **why**, **how it was validated**,
 
 If the vault isn't already configured, walk the human through these steps one at a time. Confirm readiness before each step. Don't rush.
 
-### 0. Install skills
+### 1. Verify installation
 
-If `.agents/` doesn't already exist in the vault root, fetch it from the repo:
+**Assume `npx superpaper init` has already been run.** Don't run it yourself. Instead, verify the infrastructure is in place by checking for these markers:
+
+| Check for | Means |
+|-----------|-------|
+| `.agents/skills/` exists with skill folders | Skills installed |
+| `_templates/` exists with `.md` and `Bases/` | Templates installed |
+| `categories/` exists with hub pages | Category pages installed |
+| `.obsidian/types.json` exists | Property types copied |
+| `superpaper/inbox/` exists | Minimal structure created |
+| `daily/` exists | Daily notes folder created |
+| `CLAUDE.md` symlink → `AGENTS.md` | Agent integration set up |
+
+**If any of these are missing**, ask the human to run the installer:
 
 ```bash
-git clone --no-checkout --filter=blob:none https://github.com/superinterface-labs/superpaper.git /tmp/superpaper \
-  && cd /tmp/superpaper \
-  && git sparse-checkout set .agents \
-  && git checkout \
-  && cp -r .agents "$OLDPWD" \
-  && cd "$OLDPWD" \
-  && rm -rf /tmp/superpaper
+npx superpaper init
 ```
 
-Then pull community skills from [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills):
+Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates/categories/skills, setting up property types, creating minimal folders, and creating agent symlinks.
 
-```bash
-git clone --no-checkout --filter=blob:none https://github.com/kepano/obsidian-skills.git /tmp/obsidian-skills \
-  && cd /tmp/obsidian-skills \
-  && git sparse-checkout set skills \
-  && git checkout \
-  && cp -r skills/* "$OLDPWD/.agents/skills/" \
-  && cd "$OLDPWD" \
-  && rm -rf /tmp/obsidian-skills
-```
+Once verified, update `.agents/skills/AGENTS.md` to index all installed skills if not already done.
 
-After installing, create a `CLAUDE.md` symlink at the vault root (and update `.agents/skills/AGENTS.md` to index all installed skills).
+**What ships with the repo (no need to create):**
+- **Templates** (`_templates/`) — 14 note templates + 36 base templates (including 11 utility bases). Read `_templates/AGENTS.md` for the full inventory.
+- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
+- **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
+- **Base templates** (`_templates/Bases/`) — deploy bases only when the content they serve exists. Don't copy 36 bases into an empty vault. When the human creates their first bookmark, deploy `Bookmarks.base`. When they write their first concept, deploy `Concepts.base`. Bases earn their place by having something to show.
 
-### 1. Index existing context
+Briefly explain the category system: each category is a **trinity** of template + base + category page. When a new category emerges, spin up all three — the templates make this instant.
 
-Scan the vault for existing folders, projects, notes, and files outside `superpaper/`. Sibling folders (code repos, writing projects, research directories) are assets — index them into `sources/` as `source` notes with brief descriptions and links. The human's existing work is the richest starting context. Don't reorganize it; just make it findable and warmup the knowledge, go through them meticulously.
-
-### 2. Set up environment
+### 2. Configure plugins
 
 This step is critical — the vault needs plugins to function well.
 
-0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to a folder (e.g. `_attachments/`).
+0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to `_attachments/`.
 1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
-2. **Try CLI first.** If not available, ask the human to enable it in Obsidian: Settings → General → Advanced and turn on **Command-line interface**.
-3. **If CLI is unavailable, even after the user tries it**, walk the human through installing each plugin manually: open Settings → Community plugins → Browse → search → install → enable. Do this one plugin at a time, confirming each is active before moving on.
-4. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
-5. **Verify.** Confirm each plugin is installed, enabled, and configured before proceeding.
+2. **Install community plugins.** Try Obsidian CLI first (`obsidian install <plugin-id>`). If unavailable, walk the human through: Settings → Community plugins → Browse → search → install → enable. Required: **Dataview**, **Templater**, **CodeScript Toolkit**, **Calendar**, **Kanban**, **File Explorer++**.
+3. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions. Key configs:
+   - **Daily notes (core):** date format `YYYY-MM-DD`, new file location `daily/`, template `_templates/Daily note.md`, **open daily note on startup** enabled. This auto-creates today's daily note when Obsidian launches — fragments always have a backlink target.
+   - **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer). Agents override to `ai` programmatically. Zero friction for the human.
+   - **Dataview:** enable JavaScript queries and inline queries.
+   - **File Explorer++:** see the **Environment & tools** section above for hide/pin filters.
+4. **Verify with human.** Ask: "Can you see any `AGENTS.md` files in your file explorer?" If yes, debug the hide filters. Confirm `_templates` and `inbox` are hidden. Confirm plugins are working. **The human's visual confirmation is the only proof.**
 
-### 3. Customize and create vault structure
+### 3. First conversation
 
-**This is a conversation, not a script.** Present the default folder layout (see **Vault structure** above) and walk through it with the human. Ask:
-- "Here's a suggested structure — does this match how you think about your stuff, or would you organize differently?"
-- "Do you prefer folders, a flat vault with tags, or something in between?"
-- "Any folders you'd add, rename, or skip?"
+This is the real bootstrap — everything else grows from here.
 
-Adapt the structure to their answers. Create whatever they agree to. The defaults (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`, `projects/`, `apps/`, `inbox/` under `superpaper/`, plus `daily/`, `.archive/`, `.scripts/` at root) work well — but they're suggestions, not requirements. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+**Get to know the human.** Have an easy, curious conversation. What are they working on? What do they nerd out about? What's on their mind? Let it wander. This isn't a step to rush through — it's the foundation of the partnership.
 
-**What ships with the repo (no need to create):**
-- **Templates** (`_templates/`) — 15 note templates + 37 base templates (including 11 utility bases). Read `_templates/AGENTS.md` for the full inventory.
-- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
-- **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
-- **Base templates** (`_templates/Bases/`) — copy relevant `.base` files to their destination folders (e.g. `Bookmarks.base` → `superpaper/sources/`, `People.base` → `superpaper/people/`). Don't deploy all bases at once — start with Bookmarks in the Knowledge map and add others as content grows.
+**Write the first note together.** Pick something the human cares about and write an atomic concept note together. Show the write protocol in action: one idea per note, sentence-like title, typed relations, links to future notes that don't exist yet. Explain why fewer, denser, better-linked notes win. Use a transclusion, a callout, a Dataview query — whatever fits naturally. Don't force a demo. The human sees the system's power through their own idea, not a canned example.
 
-Walk the human through what shipped so they understand the category system: each category is a **trinity** of template + base + category page. When they want a new category, spin up all three. The templates make this instant.
+**Index existing context.** If the vault has existing content, scan it now. Don't reorganize. Just make it findable: create `source` notes in `superpaper/sources/` (create the folder now if needed) with brief descriptions and links. The human's existing work is the richest starting context — go through it meticulously.
 
-**Update this file** with whatever structure the human chose so future agents know the actual layout.
+**Seed the meta layer.** Capture what you learned about the human as notes in `superpaper/meta/` (create the folder now) — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve.
 
-### 4. Create Quick Capture UI
+Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification — the vault's browsable entry point.
 
-Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
-- *Thought* → creates a timestamped fragment note linking to today's daily note (`[[2026-02-16]]`)
-- *Task* → creates a card on `apps/My tasks.md` under **Todo**
-- *Idea* → creates a note in `concepts/` with `type: idea`
-- *Link* → creates a `type: bookmark` note in `inbox/`
+**Update this file** with whatever structure and preferences emerged so future agents know the actual layout.
 
-This is the human's primary capture surface. Pin it to a sidebar tab. It replaces direct browsing of `inbox/` — the agent ingests from inbox behind the scenes.
+### 4. Evolve — features that earn their place
 
-**Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → timestamped fragments linking to today's daily note), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
+These aren't bootstrap steps — they're features that appear when the human's workflow calls for them. Suggest each one at the natural moment, not upfront.
 
-### 5. Create a first knowledge note
-
-Write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
-
-### 6. Set up mobile bookmarking
-
-Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
-
-### 7. Add CSS polish
-
-Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
-
-### 8. SUPER IMPORTANT: Verify environment from humans
-
-Final check before declaring setup complete:
-
-1. **File Explorer++ hiding:** Ask the human: "Can you see any `AGENTS.md` files in your file explorer sidebar?" If yes, the hide filters aren't working — debug `.obsidian/plugins/file-explorer-plus/data.json` and reload. Also confirm `_templates` and `inbox` are hidden.
-2. **File Explorer++ pinning:** Confirm `superpaper/apps/`, `personal/`, `projects/` are pinned. Confirm `My tasks.md` and `.base` files are pinned. Knowledge map must never be pinned.
-3. **Pinned tabs:** Confirm Quick Capture, Meta dashboard (if created), and daily note are pinned or in sidebar tabs.
-4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
-5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
-
-### 9. Get to know the human
-
-By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
-
-Capture what you learn as notes in `meta/` — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve. See [[introspect]] for how meta dimensions grow.
-
-### 10. Demo the full system
-
-Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
-
-**Never assume hiding/pinning using the File Explorer++ works from config alone.** The human's visual confirmation is the only proof. Don't say "we're 100% set up" until they confirm.
+- **Quick Capture UI** — when the human starts capturing thoughts regularly. Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` rendering four capture buttons: **Thought** (→ timestamped fragment linking to today's daily note), **Task** (→ kanban card on `apps/My tasks.md`), **Idea** (→ `concepts/` with `type: idea`), **Link** (→ `inbox/` with `type: bookmark`). Pin to sidebar. Add a `## Drops` section for cross-device capture (`- [ ] text or URL` per line). The heartbeat scans for unchecked drops during triage. This is the single capture surface across all devices.
+- **Mobile bookmarking** — when the human mentions saving links from their phone. Set up a Siri Shortcut / share sheet action.
+- **CSS polish** — when the human notices visual rough edges. Create `.obsidian/snippets/agent-ui.css`.
+- **File Explorer++ tuning** — as new folders and pinned files emerge from use. Knowledge map must never be pinned.
 
 ### Throughout setup
 
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 4 of 10 — almost halfway."
+- Signpost progress: "Step 2 of 3 — almost there."
 
 ---
 
