@@ -42,13 +42,17 @@ Read the full transcript. Retrieve knowledge neighborhood for mentioned concepts
 4. **Open questions** — unresolved topics that need follow-up
 5. **Commitments** — promises made (by human or others)
 
-### STEP 3 — Route
+### STEP 3 — Route (atomic-first)
 
-- **Decisions** → append to [[Decisions log]] with date, participants, reasoning
-- **Insights worth keeping** → create atomic notes in `superpaper/concepts/`. Link to source transcript and related existing notes.
+Extract aggressively — every distinct concept, quote, decision, and finding deserves its own atomic note. A quote by a participant → its own note linked to that person's `people/` entry. A framework or mental model mentioned → its own concept note. The more atoms, the richer the connection network.
+
+- **Decisions** → append to [[Decisions log]] with date, participants, reasoning. If the decision reasoning is substantial, also create an atomic `type: decision` note.
+- **Insights worth keeping** → create atomic notes in `superpaper/concepts/`. One concept per note. Link to source transcript (`![[transcript#^passage]]`) and related existing notes. Preserve attribution — who said it, in what context.
+- **People context** → create or update `people/` notes for participants. Add new context, relationship info, or notable quotes (as their own linked notes).
 - **Learnings** → append to [[Learning log]]
 - **Action items** → add to the task board (`apps/My tasks.md`) under **Todo**
 - **Project-relevant items** → update the relevant project note in `superpaper/projects/`
+- If the meeting produced 3+ atomic notes, create a lightweight hub note that embeds them with connective prose — this becomes the "processed meeting summary."
 
 ### STEP 4 — Agent log summary
 

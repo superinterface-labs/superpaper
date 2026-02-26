@@ -1139,11 +1139,14 @@ When a bookmark arrives in `inbox/`:
 
 ### Anti-patterns
 
-- **Hoarding** — more notes ≠ smarter. Fewer, denser, better-linked notes = smarter. Prune ruthlessly.
+- **Monolithic notes** — a long note covering five ideas is five missed connections. Split into atoms first, then compose a hub that embeds them. The atoms are reusable; the monolith isn't.
+- **Top-down summaries** — writing a summary that paraphrases sources instead of embedding them (`![[source#^finding]]`) destroys attribution and creates drift. Summarize with connective prose *between* embeds, not *instead of* them.
+- **Hoarding** — more notes ≠ smarter, but more *atomic, well-linked* notes absolutely = smarter. The distinction matters: a vault of 500 dense atoms with 3+ links each is exponentially more valuable than 50 long notes with 1 link each. Prune vague notes; split dense ones.
 - **Orphans** — a note with no links is invisible to the graph. Always connect.
 - **Duplicates** — search first. Strengthen an existing note rather than creating a parallel one.
 - **Vagueness** — "interesting idea about X" is worthless. Be precise: "X works because Y, which implies Z for context W."
 - **Premature permanence** — don't mark notes permanent until they've proven useful. Let fleeting notes earn promotion.
+- **Unattributed claims** — a quote, finding, or idea without a link to its source (person, paper, book, conversation) loses provenance. Every atom should trace to where it came from.
 
 ### Evergreen notes
 
@@ -1158,9 +1161,12 @@ In the Superpaper system, evergreen notes are knowledge notes with `type: perman
 ### Consolidation (periodic)
 
 - **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — the maintenance *is* the understanding. [Don't delegate understanding.](https://stephango.com/understand)
+- **Split monoliths** — scan for notes covering multiple concepts. Split each idea into its own atomic note, then replace the original with a hub that embeds the atoms. Every split increases the graph's connectable surface area.
+- **Extract unattributed atoms** — find quotes, findings, or claims embedded in longer notes without their own note or `^block-id`. Give each one a block ID or its own note so it's independently linkable. A quote by a person should be its own note linked to that person's `people/` entry.
 - **Merge** notes that evolved into the same insight → keep one, mark others with `superseded_by`
 - **Strengthen** connections between notes that keep co-occurring in retrievals
 - **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 existing analogy or concept notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
+- **Audit embed composition** — check hub notes and project deliverables: are they embedding atomic notes or rewriting content? Convert paraphrased sections to transclusions (`![[atom#^core-claim]]`) wherever possible.
 - **Prune** — `obsidian orphans` lists notes with zero inbound links; `obsidian deadends` finds notes with no outbound links
 - **Find bridges** — two-hop scan: A ↔ B ↔ C but A not linked to C → propose an analogy or claim
 - **Harvest contradictions** — every `contradicts` link should generate a question or experiment note if one doesn't exist
@@ -1220,9 +1226,9 @@ Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. **Em
 5. **Block embeds for evidence.** `![[source#^key-finding]]` shows exactly the passage you're citing. Give key paragraphs `^block-ids` so they're embeddable everywhere.
 6. **Foldable sections.** Use `> [!info]- Full details` for anything the reader might skip.
 7. **Knowledge map as entry point.** Never dump 50 links. Organize into clusters with descriptions.
-8. **Hub notes.** Overviews for topics, projects, or sources — short summary + transclusions/embeds of atomic notes + Dataview rollups. Hub notes should read like a document, not a link dump.
-9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
-10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere.
+8. **Hub notes are compositions, not rewrites.** Overviews for topics, projects, or sources — short connective prose + transclusions of atomic notes (`![[note]]`, `![[note#^block]]`) + Dataview rollups. The hub reads like a document, but every substantive claim traces to its atomic source. Create the atoms *first*, then compose the hub by embedding them.
+9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info. Extract each key finding, quote, or claim as its own atomic note (or block-referenced passage with `^block-id`) so it's independently linkable and embeddable. Never rely on a raw imported article as the only representation.
+10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere. The final document should be mostly embeds with thin connective prose — this is the atomic-first principle in action.
 
 ---
 
@@ -1295,7 +1301,7 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 - **Link everything.** Every concept you mention should be a `[[wiki-link]]`. Grow the graph with every interaction.
 - **Cite with URLs.** When referencing external sources, always embed the URL: `[Source title](https://url)`. The human should be able to open or copy it without searching.
 - **Embed, don't describe.** Default to transclusion (`![[note#section]]`) and iframes over describing or linking. If a note, section, or web page is relevant — embed it inline. The reader should never navigate away to get context.
-- **Atomic outputs.** Each note you create should be one concept. If a response covers three topics, create three notes and link them.
+- **Atomic-first construction.** Always build from atoms upward, never top-down. When creating any deliverable — a research summary, project brief, analysis, or hub note — first create the atomic notes (one concept, one quote, one finding, one claim per note), then compose the final artifact by embedding them (`![[note]]`, `![[note#^block]]`). A quote by someone → its own note attributed to that person. A finding from a paper → its own block-referenced note in the source. A principle extracted from experience → its own evergreen-titled note. The more atomic notes, the richer the connection network — each new atom creates N-1 potential bridges with every existing note. Higher-level notes are *compositions of embeds*, not rewrites. This preserves attribution, enables reuse, and makes the graph's value compound quadratically.
 - **Projects for multi-file work.** When a task needs more than one central file, create a project in `projects/`. Knowledge notes are atomic singles; projects hold coordinated efforts.
 - **Build apps proactively.** When a workflow would benefit from an interactive tool — a tracker, calculator, planner, dashboard, form — suggest building one in `apps/`. Bias toward making things the human can open and use daily. The best vault is one where half the notes are alive.
 - **File-backed everything.** Never store meaningful state in localStorage alone. Trackers, logs, and app data must live in markdown files or frontmatter so the human can always access history.

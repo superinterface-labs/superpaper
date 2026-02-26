@@ -82,11 +82,14 @@ After this step, inbox should contain only `AGENTS.md` and items <48h old that n
 
 Skip if entity folders have fewer than 5 non-index notes total.
 
-1. **Merge duplicates:** If 2+ notes cover the same concept, merge. Mark redundant notes with `superseded_by`.
-2. **Promote fleeting → permanent (evergreen):** Notes with `type: fleeting`, >7 days old, and inbound links > 0 deserve promotion. Ensure 2+ outbound wiki-links and update existing notes to link back. Also scan human-written notes for evergreen candidates — sentence-like titles, 2+ inbound links, 7+ days old. **Suggest** promotion to the human; never auto-promote. Add candidates to the board as a card: "Evergreen candidates ready for review."
-3. **Prune stale fleeting notes:** Zero inbound links + >30 days old → propose deletion to human (list them; don't delete autonomously).
-4. **Strengthen connections:** Convert plain-text concept mentions to `[[wiki-links]]`. Resolve contradictions (create question notes). Bridge notes in the same domain that should be linked.
-5. **Elevate meta awareness:** Deepen the introspective core by seeding new meta notes or amending existing dimensions. If a convention in `AGENTS.md` drifted from practice, update the protocol. Update [[Knowledge map]] and `.base` views if the graph changed.
+1. **Split monoliths:** Scan for notes covering multiple concepts. Split each idea into its own atomic note, then replace the original with a hub that embeds the atoms. Every split increases the graph's connectable surface area.
+2. **Extract unattributed atoms:** Find quotes, findings, or claims embedded in longer notes without their own note or `^block-id`. Give each one a block ID or its own note so it's independently linkable. A quote by a person → its own note linked to that person's `people/` entry.
+3. **Merge duplicates:** If 2+ notes cover the same concept, merge. Mark redundant notes with `superseded_by`.
+4. **Promote fleeting → permanent (evergreen):** Notes with `type: fleeting`, >7 days old, and inbound links > 0 deserve promotion. Ensure 2+ outbound wiki-links and update existing notes to link back. Also scan human-written notes for evergreen candidates — sentence-like titles, 2+ inbound links, 7+ days old. **Suggest** promotion to the human; never auto-promote. Add candidates to the board as a card: "Evergreen candidates ready for review."
+5. **Prune stale fleeting notes:** Zero inbound links + >30 days old → propose deletion to human (list them; don't delete autonomously).
+6. **Strengthen connections:** Convert plain-text concept mentions to `[[wiki-links]]`. Resolve contradictions (create question notes). Bridge notes in the same domain that should be linked.
+7. **Audit embed composition:** Check hub notes and project deliverables — are they embedding atomic notes or rewriting content? Convert paraphrased sections to transclusions (`![[atom#^core-claim]]`). Higher-level notes should be compositions of embeds with thin connective prose.
+8. **Elevate meta awareness:** Deepen the introspective core by seeding new meta notes or amending existing dimensions. If a convention in `AGENTS.md` drifted from practice, update the protocol. Update [[Knowledge map]] and `.base` views if the graph changed.
 
 ### STEP 6 — Archive stale Done cards
 

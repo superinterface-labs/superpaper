@@ -310,20 +310,26 @@ When a bookmark arrives in `inbox/`:
 
 ## Anti-patterns
 
-- **Hoarding** — more notes ≠ smarter. Fewer, denser, better-linked notes = smarter. Prune ruthlessly.
+- **Monolithic notes** — a long note covering five ideas is five missed connections. Split into atoms first, then compose a hub that embeds them. The atoms are reusable; the monolith isn't.
+- **Top-down summaries** — writing a summary that paraphrases sources instead of embedding them (`![[source#^finding]]`) destroys attribution and creates drift. Summarize with connective prose *between* embeds, not *instead of* them.
+- **Hoarding** — more notes ≠ smarter, but more *atomic, well-linked* notes absolutely = smarter. The distinction matters: a vault of 500 dense atoms with 3+ links each is exponentially more valuable than 50 long notes with 1 link each. Prune vague notes; split dense ones.
 - **Orphans** — a note with no links is invisible to the graph. Always connect.
 - **Duplicates** — search first. Strengthen an existing note rather than creating a parallel one.
 - **Vagueness** — "interesting idea about X" is worthless. Be precise: "X works because Y, which implies Z for context W."
 - **Premature permanence** — don't mark notes permanent until they've proven useful. Let fleeting notes earn promotion.
+- **Unattributed claims** — a quote, finding, or idea without a link to its source (person, paper, book, conversation) loses provenance. Every atom should trace to where it came from.
 
 ---
 
 ## Consolidation (periodic)
 
 - **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — "doing this maintenance helps me understand my own patterns." Don't automate what builds understanding.
+- **Split monoliths** — scan for notes covering multiple concepts. Split each idea into its own atomic note, then replace the original with a hub that embeds the atoms. Every split increases the graph's connectable surface area.
+- **Extract unattributed atoms** — find quotes, findings, or claims embedded in longer notes without their own note or `^block-id`. Give each one a block ID or its own note so it's independently linkable. A quote by a person should be its own note linked to that person's `people/` entry.
 - **Merge** notes that evolved into the same insight → keep one, mark others with `superseded_by`
 - **Strengthen** connections between notes that keep co-occurring in retrievals
 - **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 `[[pattern/...]]` notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
+- **Audit embed composition** — check hub notes and project deliverables: are they embedding atomic notes or rewriting content? Convert paraphrased sections to transclusions (`![[atom#^core-claim]]`) wherever possible.
 - **Prune** — `obsidian orphans` lists notes with zero inbound links; `obsidian deadends` finds notes with no outbound links
 - **Find bridges** — two-hop scan: A ↔ B ↔ C but A not linked to C → propose a bridge or hypothesis
 - **Harvest contradictions** — every `contradicts` link should generate a question or experiment note if one doesn't exist

@@ -53,15 +53,18 @@ The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templat
 
 The knowledge graph is the vault's most valuable asset. Audit across whatever entity folders the human uses.
 
-1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one relation? Target: >80%.
-2. **Link health:** Spot-check notes for distributed write compliance (2+ outbound links, existing notes updated to link back). Flag plain-text concept mentions that should be `[[wiki-links]]`.
-3. **Contradiction health:** Notes with `contradicts` relations — is there a corresponding question or experiment note? Stale contradictions are waste.
-4. **Fleeting backlog:** Fleeting notes older than 14 days. Flag those with zero inbound links as prune candidates.
-5. **Hub identification:** Top notes by inbound link count — the emerging ontology.
-6. **[[Knowledge map]] freshness:** Does it reflect current clusters?
-7. **Evergreen health:** Are `type: permanent` notes actually evergreen-caliber? Check: sentence-like titles, 2+ inbound links, confidence ≥ 0.6. Flag permanent notes that look premature (low links, vague titles). Also flag fleeting/idea notes that *should* be evergreen — sentence-like titles, 2+ inbound links, >7 days old. Surface these as promotion candidates for the human.
+1. **Atomicity audit:** Scan for monolithic notes covering multiple concepts — these should be split into atoms with a hub that embeds them. Flag notes longer than ~500 words that lack `^block-ids` on key passages. Count the ratio of atomic notes (single-concept, <300 words) to hub/long notes — a healthy vault trends toward many small atoms composed into fewer hubs.
+2. **Attribution coverage:** What % of quotes, findings, and claims trace to their source (person link, source link, or `via` property)? Flag unattributed atoms — a quote without a person link, a finding without a source link. Target: >90% attributed.
+3. **Embed composition health:** Check hub notes and project deliverables — are they embedding atomic notes (`![[note]]`, `![[note#^block]]`) or rewriting content? Flag hubs where substantive claims appear as inline text rather than transclusions. The ideal hub is thin connective prose between embeds.
+4. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one relation? Target: >80%.
+5. **Link health:** Spot-check notes for distributed write compliance (2+ outbound links, existing notes updated to link back). Flag plain-text concept mentions that should be `[[wiki-links]]`.
+6. **Contradiction health:** Notes with `contradicts` relations — is there a corresponding question or experiment note? Stale contradictions are waste.
+7. **Fleeting backlog:** Fleeting notes older than 14 days. Flag those with zero inbound links as prune candidates.
+8. **Hub identification:** Top notes by inbound link count — the emerging ontology.
+9. **[[Knowledge map]] freshness:** Does it reflect current clusters?
+10. **Evergreen health:** Are `type: permanent` notes actually evergreen-caliber? Check: sentence-like titles, 2+ inbound links, confidence ≥ 0.6. Flag permanent notes that look premature (low links, vague titles). Also flag fleeting/idea notes that *should* be evergreen — sentence-like titles, 2+ inbound links, >7 days old. Surface these as promotion candidates for the human.
 
-**Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes, evergreen candidates.
+**Output:** memory quality report — atomicity ratio, attribution coverage %, embed composition score, relation coverage %, fleeting backlog, pruning candidates, hub notes, evergreen candidates.
 
 ### LAYER 4 — Meta (introspective core)
 

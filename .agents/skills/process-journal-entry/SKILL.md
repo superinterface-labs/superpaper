@@ -47,12 +47,15 @@ For each insight type found in the entry, append a dated entry:
 
 Each entry: one paragraph, dated, with wiki-links to related notes.
 
-### STEP 4 — Create atomic notes
+### STEP 4 — Create atomic notes (atomic-first)
 
-For any genuine insight worth its own note (not just a log entry):
-1. Create a note in the appropriate entity folder (`superpaper/concepts/`, `superpaper/people/`, `superpaper/questions/`, `superpaper/sources/`, `superpaper/meta/`, etc.) using the knowledge note template. Route self-knowledge and alignment insights to `meta/`.
-2. Link to 2+ existing notes. Update 1–3 existing notes to link back.
-3. Link from the log entry to the new atomic note.
+Extract aggressively — more atoms = richer connection network. Every distinct concept, quote, finding, or claim in the journal entry deserves its own note:
+1. **One concept per note.** If the human wrote about three ideas, create three notes. A quote by someone → its own note attributed to that person (`people/` link). A principle or belief → its own evergreen-titled note. A finding or observation → its own note linked to its source context.
+2. Create each note in the appropriate entity folder (`superpaper/concepts/`, `superpaper/people/`, `superpaper/questions/`, `superpaper/sources/`, `superpaper/meta/`, etc.) using the knowledge note template. Route self-knowledge and alignment insights to `meta/`.
+3. **Preserve attribution.** Every atom traces to where it came from — the journal entry, the person who said it, the source that inspired it. Add `^block-ids` to key passages so they're independently embeddable.
+4. Link to 2+ existing notes. Update 1–3 existing notes to link back.
+5. Link from the log entry to the new atomic notes.
+6. If the journal entry produced 3+ atoms, consider creating a lightweight hub note that embeds them with thin connective prose — this becomes the "processed" version of the journal entry.
 
 ### STEP 5 — Evergreen candidate detection
 

@@ -131,7 +131,7 @@ Every `[[wikilink]]` gives the target note a backlink — a passive signal that 
 
 The default approach: atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders give humans browsable structure; wiki-links give agents traversable connections. Both views coexist. Some humans prefer longer, fewer notes — adapt to their style. Notes belong to [[references/knowledge-protocol.md#Categories — multi-belonging without folders|categories]] via frontmatter — a note can live in one folder but belong to many conceptual groups.
 
-Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
+Atomic notes are LEGO bricks — and **you always build from bricks upward, never top-down**. When creating any deliverable, first create the atomic notes (one concept, one quote, one finding, one claim per note), then compose the final artifact by embedding them. A quote by someone → its own note attributed to that person. A finding from a paper → its own block-referenced passage. A principle from experience → its own evergreen-titled note. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes atoms into flowing documents — write once, embed everywhere. Higher-level notes are *compositions of embeds with thin connective prose*, not rewrites. This preserves attribution, enables reuse across contexts, and makes the graph's value compound quadratically — each new atom creates N-1 potential bridges with every existing note.
 
 Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable. Evidence lives inline in source notes as block-referenced passages (`![[source#^finding]]`), not in a separate folder.
 
@@ -212,19 +212,21 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 9. **Growth moment** — the human processes a struggle, celebrates a win, or shifts perspective
 
 **Write protocol:**
-1. **One concept per note.** If you wrote two ideas, split into two notes.
-2. **Link to 2+ existing notes — and update 1–3 of them to link back.** Distributed write makes the note reachable from many cues. Search before creating.
-3. **Add relations** in `## Relates` as natural prose. The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
-4. **Start as fleeting.** Promote to permanent (evergreen) only after the idea survives use and refinement. [Evergreen notes](https://stephango.com/evergreen-notes) have titles that work as standalone statements — usable in a sentence. When you spot a human-written note that's evergreen-caliber, **suggest** promotion; never auto-promote.
-5. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
-6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
-7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`.
-8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?"
-9. **Claim provenance.** Non-obvious assertions must link to evidence — or be marked low-confidence.
-10. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter.
-11. **Essence + surfaces.** Every permanent note should name the invariant mechanism and give 2+ cross-domain examples.
-12. **Predictions over summaries.** Claims should state what you'd expect to observe if true.
-13. **No naked conclusions.** Every conclusion must link to its Evidence/Model/Experiment chain.
+1. **Atomic-first construction.** Always create atoms before composing. If you're building a research summary, project brief, or hub note — extract every distinct concept, quote, finding, and claim as its own note *first*, then compose the deliverable by embedding them (`![[note]]`, `![[note#^block]]`). A quote by someone → its own note linked to that `people/` entry. A finding from a source → its own block-referenced note. The deliverable is connective prose between embeds, not a rewrite.
+2. **One concept per note.** If you wrote two ideas, split into two notes. Each atom should be independently meaningful and linkable.
+3. **Link to 2+ existing notes — and update 1–3 of them to link back.** Distributed write makes the note reachable from many cues. Search before creating.
+4. **Add relations** in `## Relates` as natural prose. The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
+5. **Preserve attribution.** Every atom traces to its source — who said it, where it came from, what evidence supports it. A quote without a person link, a finding without a source link, an idea without a context link — all lose provenance. Block IDs (`^block-id`) make individual passages independently embeddable.
+6. **Start as fleeting.** Promote to permanent (evergreen) only after the idea survives use and refinement. [Evergreen notes](https://stephango.com/evergreen-notes) have titles that work as standalone statements — usable in a sentence. When you spot a human-written note that's evergreen-caliber, **suggest** promotion; never auto-promote.
+7. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
+8. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
+9. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`.
+10. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?"
+11. **Claim provenance.** Non-obvious assertions must link to evidence — or be marked low-confidence.
+12. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter.
+13. **Essence + surfaces.** Every permanent note should name the invariant mechanism and give 2+ cross-domain examples.
+14. **Predictions over summaries.** Claims should state what you'd expect to observe if true.
+15. **No naked conclusions.** Every conclusion must link to its Evidence/Model/Experiment chain.
 
 → **Full details:** [[references/knowledge-protocol.md]]
 
@@ -241,9 +243,9 @@ Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. **Em
 5. **Block embeds for evidence.** `![[source#^key-finding]]` shows exactly the passage you're citing. Give key paragraphs `^block-ids` so they're embeddable everywhere.
 6. **Foldable sections.** Use `> [!info]- Full details` for anything the reader might skip.
 7. **Knowledge map as entry point.** Never dump 50 links. Organize into clusters with descriptions.
-8. **Hub notes.** Overviews for topics, projects, or sources — short summary + transclusions/embeds of atomic notes + [[references/rendering-guide.md#Dynamic queries (Dataview plugin)|Dataview]] rollups. Hub notes should read like a document, not a link dump.
-9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
-10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere.
+8. **Hub notes are compositions, not rewrites.** Overviews for topics, projects, or sources — short connective prose + transclusions of atomic notes (`![[note]]`, `![[note#^block]]`) + [[references/rendering-guide.md#Dynamic queries (Dataview plugin)|Dataview]] rollups. The hub reads like a document, but every substantive claim traces to its atomic source. Create the atoms *first*, then compose the hub by embedding them.
+9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info. Extract each key finding, quote, or claim as its own atomic note (or block-referenced passage with `^block-id`) so it's independently linkable and embeddable. Never rely on a raw imported article as the only representation.
+10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere. The final document should be mostly embeds with thin connective prose — this is the atomic-first principle in action.
 
 ---
 
