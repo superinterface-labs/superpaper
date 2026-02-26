@@ -1,11 +1,11 @@
 ---
 name: heartbeat
-description: Autonomous batch orchestrator — fills the pipeline, dispatches all board tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to daily note, and git syncs. Use when the human says "run a heartbeat", "do housekeeping", or on any scheduled autonomous run.
+description: Autonomous batch orchestrator — fills the pipeline, dispatches all board tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to agent log, and git syncs. Use when the human says "run a heartbeat", "do housekeeping", or on any scheduled autonomous run.
 ---
 
 # heartbeat
 
-> The autonomous batch orchestrator. Bootstraps context, fills the board pipeline, dispatches ALL in-progress tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to daily note, and git syncs. Adapts to whatever vault structure and conventions the human chose — always read the current `AGENTS.md` for the actual layout.
+> The autonomous batch orchestrator. Bootstraps context, fills the board pipeline, dispatches ALL in-progress tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to agent log (`inbox/log/YYYY-MM-DD`), and git syncs. Adapts to whatever vault structure and conventions the human chose — always read the current `AGENTS.md` for the actual layout. Never write to the human's `daily/` notes — they are pure date anchors whose value is in backlinks.
 
 ## When to use
 
@@ -100,22 +100,32 @@ Check the **Done** lane for cards with `@{date}` older than 7 days:
 
 Run a lightweight [[introspect]] with `depth: quick`. Record issues as board cards in Blocked lane — don't fix inline. The human promotes them to Todo when ready.
 
-### STEP 8 — Skill opportunities
+### STEP 8 — Fractal review cadence
 
-Scan recent daily notes for repeated workflows (2+ occurrences). If a pattern isn't already a skill, suggest one: name + one-line description + what it automates.
+Check if any [[fractal-review]] is due. The human's reflective practice runs on cascading timescales — the heartbeat's job is to detect when a review is due and prepare the surface.
 
-### STEP 9 — Daily log
+1. **Weekly:** If today is Sunday (or >7 days since last `review/weekly` tagged note), and fragments exist from the past week → run `fractal-review` with `cadence: weekly`. If the human is absent, create the prep note and leave a board card: "Weekly review ready."
+2. **Monthly:** If today is the 1st (or >30 days since last `review/monthly`), and weekly reviews exist from the past month → run `fractal-review` with `cadence: monthly`.
+3. **Yearly:** If today is in January (or >365 days since last `review/yearly`), and monthly reviews exist → run `fractal-review` with `cadence: yearly`.
 
-Append a summary to today's daily note. Cover: pipeline movement, tasks dispatched/shipped/blocked, inbox triage count, knowledge changes, health flags, meta observations (new seeds, amended dimensions, protocol updates), and anything that needs human input. Keep it scannable — the human should understand what happened in 10 seconds.
+The heartbeat **never writes the review** — it creates the prep note and prompts the human. Reviews are `created-by: human`.
 
-### STEP 10 — Git sync
+### STEP 9 — Skill opportunities
+
+Scan recent agent logs and task progress logs for repeated workflows (2+ occurrences). If a pattern isn't already a skill, suggest one: name + one-line description + what it automates.
+
+### STEP 10 — Agent log
+
+Append a summary to today's agent log (`inbox/log/YYYY-MM-DD`). Cover: pipeline movement, tasks dispatched/shipped/blocked, inbox triage count, knowledge changes, health flags, review prep (if any), meta observations (new seeds, amended dimensions, protocol updates), and anything that needs human input. Keep it scannable — the human should understand what happened in 10 seconds. **Never write to the human's daily note** (`daily/YYYY-MM-DD`) — it's a pure date anchor.
+
+### STEP 11 — Git sync
 
 Last step of every cycle.
 
 1. `git add -A`
 2. `git status --porcelain` — if empty, skip. Log "No changes to sync."
 3. `git commit -m "heartbeat: <one-line summary>"` — e.g. `heartbeat: dispatched 3 tasks, triaged 2 bookmarks, consolidated 1 note`
-4. `git push` — if push fails (conflict), log the error in the daily note. Do NOT force push. Next cycle retries.
+4. `git push` — if push fails (conflict), log the error in the agent log. Do NOT force push. Next cycle retries.
 NOTE: If git is not set up, do git init and if remote is not set up, do git remote, skip git push.
 
 ## Outputs
@@ -128,21 +138,21 @@ NOTE: If git is not set up, do git init and if remote is not set up, do git remo
 - Updated folder indexes where files moved
 - Stale Done cards archived
 - Meta/ growth — new seeds or amended dimensions from this cycle's observations
-- Daily note entry summarizing the cycle
+- Agent log entry (`inbox/log/YYYY-MM-DD`) summarizing the cycle
 - Git commit + optionally push
 
 ## Decision authority
 
-- **YOU DECIDE (act, don't ask):** prioritization, task ordering, triage routing, note promotion, link strengthening, cluster naming, how to partition work across sub-agents, what to archive, daily log content, small protocol updates
+- **YOU DECIDE (act, don't ask):** prioritization, task ordering, triage routing, note promotion, link strengthening, cluster naming, how to partition work across sub-agents, what to archive, agent log content, small protocol updates
 - **ESCALATE TO HUMAN (Blocked lane):** large irreversible impact, creative/subjective input needed, credentials or external access required, structural changes to vault layout or note type system
 
-**Default: ACT.** The human isn't watching. Make the best call. Note it in the daily log. The human will course-correct on their next visit. If you notice a preference pattern, update `AGENTS.md` — small convention tweaks don't need permission, structural changes do.
+**Default: ACT.** The human isn't watching. Make the best call. Note it in the agent log. The human will course-correct on their next visit. If you notice a preference pattern, update `AGENTS.md` — small convention tweaks don't need permission, structural changes do.
 
 ## Conventions
 
 - Heartbeat orchestrates; sub-agents execute. Don't run tasks inline in the heartbeat thread.
 - Follow the current [[AGENTS]] conventions — they're the human's agreed patterns, not fixed rules.
 - Archive, don't delete. Task logs are the audit trail — one per completed task.
-- Knowledge writes: new note + update 1–3 existing notes to link back (distributed write).
+- Knowledge writes: new note + update 1–3 existing notes to link back (distributed write). All agent-created notes must include `created-by: ai`. Never modify the body of `created-by: human` notes — only update their frontmatter properties. To connect human notes, create proxy connection docs (`created-by: ai`).
 - Update `AGENTS.md` indexes when files move. Git sync is the last step every cycle.
 - **Protocol evolution:** If this cycle reveals a convention in `AGENTS.md` doesn't match reality, update it.

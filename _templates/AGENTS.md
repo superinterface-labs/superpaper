@@ -6,7 +6,7 @@ Vault templates used by Templater and other workflows.
 
 | File / Folder | Purpose |
 |---|---|
-| `Knowledge note.md` | Default — 5 fields: `type`, `categories`, `created`, `tags`, `aliases` |
+| `Knowledge note.md` | Default — 6 fields: `type`, `categories`, `created`, `created-by`, `tags`, `aliases` |
 | `Claim.md` | Epistemic — adds `id`, `status`, `confidence`, `evidence_for/against`, `predictions` |
 | `Experiment.md` | Epistemic — adds `id`, `status`, `hypothesis`, `prediction`, `outcome` |
 | `Decision.md` | Epistemic — adds `id`, `status` |
@@ -16,12 +16,14 @@ Vault templates used by Templater and other workflows.
 | `Reflection.md` | Journal reflection with structured prompts |
 | `Place.md` | Location — adds `loc`, `coordinates`, `type`, `rating` |
 | `Podcast episode.md` | Source processing — adds `podcast`, `url`, `host`, `guests`, `topics` |
-| `Daily note.md` | Empty daily anchor (date + backlinks) |
+| `Daily note.md` | Pure date anchor — nothing is written here, value is entirely in backlinks |
 | `Sequence.md` | Sequence note — composes atomic notes into ordered causal chains |
+| `Weekly review.md` | Fractal journaling — compile the week's salient themes |
+| `Monthly review.md` | Fractal journaling — distill monthly patterns from weekly reviews |
+| `Yearly review.md` | Fractal journaling — 40 questions + year arc from monthly reviews |
 | `Bases/` | Reusable `.base` templates — see below |
 
 ### Bases/ contents
-
 | File | Purpose |
 |---|---|
 | `Bookmarks.base` | Bookmarks library (unprocessed/library/stale/connected) |
@@ -46,6 +48,7 @@ Vault templates used by Templater and other workflows.
 ## Conventions
 
 - All templates include `categories: []` as a core field for multi-belonging browse views.
+- All templates include `created-by: human` — agents override to `ai` when they create a note. Values: `human`, `ai`, `ai-assisted`.
 - Templates are composable mixins: applying multiple templates should merge cleanly.
 - Default to list properties where multi-valued fields are plausible (`tags`, `categories`, `loc`).
 - Epistemic fields (`id`, `status`, `confidence`, `evidence_for/against`, `predictions`) only on Claim/Experiment/Decision templates — not on the default Knowledge note.

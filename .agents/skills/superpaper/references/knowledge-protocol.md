@@ -23,7 +23,7 @@ Set `type` in frontmatter:
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`.
-- **Daily** — empty date anchor. Value is in backlinks.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks.
 
 These are the built-in types — the human can add, rename, or remove types as their system evolves. Two axes organize everything: `type` is the structural role (how a note behaves in the graph), `categories` is the browse axis (what it's about). Use `#domains/` tags for the field. The system is domain-agnostic by design.
 
@@ -31,13 +31,14 @@ These are the built-in types — the human can add, rename, or remove types as t
 
 ## Knowledge note template
 
-Every note begins with five fields. Add more when the note earns them:
+Every note begins with six fields. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. Add more fields when the note earns them:
 
 ```markdown
 ---
 type: fleeting
 categories: []
 created: YYYY-MM-DD
+created-by: human
 tags: []
 aliases: []
 ---
@@ -121,19 +122,19 @@ created: YYYY-MM-DD
 ---
 ```
 
-**Daily notes are the human's space.** They exist solely to be linked to from the human's own entries — journal fragments, meals, workouts, meetings, moods. The value is in backlinks. No sections, no prompts, no friction.
+**Nothing is written in daily notes.** They exist solely to be linked *to* from other entries. All named `YYYY-MM-DD.md`, all in `daily/`. The value is entirely in backlinks.
+
+This is counterintuitive but powerful: an empty note with rich backlinks is more useful than a structured template the human feels guilty about not filling in. The daily note is a **date anchor**, not a journal.
 
 **Agent logs are separate.** Agents link to `[[inbox/log/YYYY-MM-DD]]` — their own daily anchor. This keeps the human's daily note backlinks clean: only *their* life shows up, never agent task churn.
 
-This is counterintuitive but powerful: an empty note with rich backlinks is more useful than a structured template the human feels guilty about not filling in. The daily note is a **date anchor**, not a form.
-
-**Help the human build this habit.** When they create a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever "writing" in it.
+**Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it.
 
 ---
 
 ## Fractal journaling
 
-Throughout the day, create timestamped thought fragments using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. No structure required. Just capture. Link each fragment to today's daily note.
+Throughout the day, capture individual thoughts using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. These fragments live in the vault root (or wherever the human writes), not in `daily/`. No structure required. Just capture and link each fragment to today's daily note (`[[2026-02-16]]`).
 
 Every few days, review fragments and compile salient thoughts into a weekly review. Monthly reviews distill weekly reviews. Yearly reviews distill monthly reviews. The result is a **fractal web** you can zoom in and out of at varying detail.
 
@@ -144,7 +145,7 @@ Every few days, review fragments and compile salient thoughts into a weekly revi
 | Monthly | `YYYY-MM.md` | Distill monthly patterns, review weekly reviews |
 | Yearly | `YYYY.md` | [40 questions](https://stephango.com/40-questions) — review the year's monthly reviews |
 
-Review templates live in `_templates/`. The human traces back where individual thoughts came from and how they bubbled up into bigger themes. Create review templates as the cadence is adopted — don't front-load.
+Review templates (`Weekly review.md`, `Monthly review.md`, `Yearly review.md`) ship in `_templates/`. The [[fractal-review]] skill automates the preparation — gathering fragments, surfacing themes, preparing the review surface — while the human writes the actual review. The [[heartbeat]] checks cadences and triggers prep notes when reviews are due.
 
 ---
 

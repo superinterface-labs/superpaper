@@ -10,6 +10,7 @@ topics: []
 papers-discussed: []
 duration: ""
 created: <% tp.date.now("YYYY-MM-DD") %>
+created-by: human
 tags: []
 aliases: []
 ---

@@ -1,6 +1,6 @@
 ---
 name: process-journal-entry
-description: Process a daily freewrite or journal entry — reflect back, route insights to living documents and atomic notes. Use when the human says "process my journal", "process today's writing", or feeds a freewrite/daily note.
+description: Process a freewrite or journal entry — reflect back, route insights to living documents and atomic notes. Use when the human says "process my journal", "process today's writing", or feeds a freewrite/journal fragment.
 ---
 
 # process-journal-entry
@@ -10,14 +10,14 @@ description: Process a daily freewrite or journal entry — reflect back, route 
 ## When to use
 
 - "Process my journal", "process today's writing"
-- Human pastes or points to a freewrite, daily note, or voice transcript
-- After a daily writing session
+- Human pastes or points to a freewrite, journal fragment, or voice transcript
+- After a writing session
 
 ## Inputs
 
 | Input | Required | Description |
 |-------|----------|-------------|
-| entry | yes | The journal text — a daily note path, pasted text, or "today" (reads today's daily note) |
+| entry | yes | The journal text — a file path (e.g. a journal fragment in `personal/journal/`), pasted text, or "today" (finds today's journal fragments by date prefix) |
 
 ## Process
 
@@ -54,9 +54,9 @@ For any genuine insight worth its own note (not just a log entry):
 2. Link to 2+ existing notes. Update 1–3 existing notes to link back.
 3. Link from the log entry to the new atomic note.
 
-### STEP 5 — Daily note update
+### STEP 5 — Agent log update
 
-Append to today's daily note under `## Notes`:
+Append to today's agent log (`inbox/log/YYYY-MM-DD`):
 
 ```markdown
 ### Journal processed — HH:MM
@@ -67,12 +67,14 @@ Append to today's daily note under `## Notes`:
 - **Question to sit with:** [the deepening question from step 2]
 ```
 
+**Never write to the human's daily note** (`daily/YYYY-MM-DD`) — it's a pure date anchor.
+
 ## Outputs
 
 - Conversational reflection (in chat)
 - Updated living documents with dated entries
 - 0+ new atomic knowledge notes
-- Daily note summary
+- Agent log summary (`inbox/log/YYYY-MM-DD`)
 
 ## Decision authority
 

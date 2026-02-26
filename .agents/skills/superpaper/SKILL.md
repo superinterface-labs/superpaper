@@ -164,13 +164,13 @@ The `type` property classifies a note's structural role. These are the built-in 
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]].
-- **Daily** — empty date anchor. Value is in backlinks.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks.
 
 → Full details: [[references/knowledge-protocol.md]] (templates, rating system, reference templates, categories)
 
 ### Epistemic defaults (suggested starting schema)
 
-Every note begins with five fields: `type`, `categories`, `created`, `tags`, `aliases`. Add more when the note earns them. If the human prefers a different base schema, update this section and the templates to match.
+Every note begins with six fields: `type`, `categories`, `created`, `created-by`, `tags`, `aliases`. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. Add more when the note earns them. If the human prefers a different base schema, update this section and the templates to match.
 
 | When | Add |
 |------|-----|
@@ -331,9 +331,9 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 
 The system actively supports the human's growth, wellbeing, and fulfillment:
 
-- **Celebrate wins.** When daily notes or journal entries show progress, acknowledge it.
+- **Celebrate wins.** When journal entries or agent logs show progress, acknowledge it.
 - **Surface patterns.** When recurring signals appear (low energy, skipped habits, repeated struggles), gently name the pattern.
-- **Encourage reflection.** Nudge toward `personal/journal/` when the human is processing something emotional or making a big decision.
+- **Encourage reflection.** Nudge toward `personal/journal/` when the human is processing something emotional or making a big decision. Use the [[fractal-review]] skill to facilitate periodic reviews — the AI prepares the surface, the human writes the review.
 - **Connect to values.** Reference the human's stated goals and preferences when suggesting next steps.
 - **Hold space.** When things are hard, default to reflective friend mode. Don't optimize — listen.
 - **Nurture ideas.** When a creative spark appears, capture it in `concepts/` with `type: idea` immediately. Revisit ideas during consolidation.
@@ -394,9 +394,9 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
+├── daily/                      # Date anchors — nothing written here, value is in backlinks
 ├── .archive/                   # Soft-deleted files — never rm, always move here
-├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
+├── .scripts/                   # Shared TS/JS modules 
 ├── categories/                 # Category hub pages — each embeds its .base
 ├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
@@ -409,7 +409,8 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 - Top-level folders organize by **entity type** and **function**. Domains live in tags and `categories`.
 - Pipeline: **inbox → sources → concepts/questions → personal/journal → projects → daily**
 - **Never delete files.** Move to `.archive/` instead.
-- **User-written content is sacred.** Never overwrite inbox items. Daily notes are empty date anchors.
+- **User-written content is sacred.** Never overwrite inbox items. Nothing is written in daily notes — they exist solely to be linked *to*.
+- **Authorship provenance (`created-by`).** Every note carries `created-by: human`, `ai`, or `ai-assisted`. Always set it accurately. Human-written notes are read-only for agents (aside from adding/updating frontmatter properties). To connect or extend human notes, create AI **proxy connection docs** (`created-by: ai`) that link to them.
 - **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, categories) vs **Content** (everything else).
 - **Personal preferences live in both `meta/` and `AGENTS.md`.** When a preference changes a convention, update `AGENTS.md` so the protocol evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
 
@@ -490,6 +491,7 @@ Steps: 0. Install skills → 1. Index existing context → 2. Set up environment
 | Create a command palette action | Invocable script with `export function invoke(app)` |
 | Query notes by property | `dataview` with `WHERE property = "value"` |
 | Make a note embeddable as a widget | Design it to look good when transcluded (`![[widget]]`) |
+| Facilitate a weekly/monthly/yearly review | Run [[fractal-review]] skill — gathers fragments, surfaces themes, human writes |
 
 ---
 
@@ -499,7 +501,7 @@ Agents have succeeded when:
 
 - The human can **navigate work and ideas across every domain of their life through this vault** — in whatever structure *they* chose.
 - Insights, patterns, preferences, and decisions live as **well-linked notes** — regardless of domain or folder layout.
-- The human actively reflects, tracks growth, and nurtures ideas in whatever way feels natural to them.
+- The human actively reflects, tracks growth, and nurtures ideas in whatever way feels natural to them. Fractal reviews cascade (daily fragments → weekly → monthly → yearly) and the AI facilitates without writing for them.
 - Frequent workflows are supported by **simple, reliable artifacts and skills**.
 - The human can return to any topic weeks later and quickly reconstruct what was done, why, and what was learned.
 - The vault doesn't just store — it **generates**. Cross-domain bridges surface non-obvious connections. Claims produce testable predictions. Experiments update beliefs. The system actively creates novel insights, identifies structural patterns, and synthesizes new understanding in collaboration with the human.

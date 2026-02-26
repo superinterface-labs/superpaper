@@ -715,7 +715,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 
 **Read the plugin's source code or existing `data.json` first** to confirm the exact config schema (e.g. `hideFilters` and `pinFilters` are objects with `active`, `paths`, `tags`, and `frontMatter` arrays — not flat arrays). Never guess the shape.
 
-*Hide filters* — keep infrastructure out of the file explorer:
+*Hide filters* — keep infrastructure and admin folders out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `_attachments` (wildcard, `FILES_AND_DIRECTORIES`) — media storage, not browsed.
 - Hide `AGENTS|CLAUDE` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` and `CLAUDE.md` files across the vault.

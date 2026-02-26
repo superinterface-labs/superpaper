@@ -4,6 +4,7 @@ categories: []
 id: "dec-<% tp.date.now("YYYY-MM-DD") %>-a"
 status: active
 created: <% tp.date.now("YYYY-MM-DD") %>
+created-by: human
 tags: []
 aliases: []
 ---

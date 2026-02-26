@@ -85,7 +85,7 @@ Discover whatever dimensions the human has built in `meta/` (common starting poi
 
 1. **Recency:** Flag if no note in the dimension has been created or updated in >14 days. Stale dimensions mean the AI may be operating on assumptions.
 2. **Specificity:** Vague observations are useless. Look for concrete, actionable content. Flag notes that need sharpening.
-3. **Stated vs. revealed:** Compare what the dimension *claims* against actual behavior visible in daily notes, task logs, and artifacts. Flag gaps between intention and practice.
+3. **Stated vs. revealed:** Compare what the dimension *claims* against actual behavior visible in agent logs (`inbox/log/`), task logs, artifacts, and the human's [[fractal-review|fractal reviews]] (weekly/monthly/yearly). The human's reviews are the richest signal for whether `meta/` accurately reflects their actual thinking — a gap between what reviews say and what `meta/` claims is a calibration opportunity. Flag gaps between intention and practice.
 4. **Contradiction detection:** Do notes within the dimension contradict each other, or contradict recent actions?
 5. **Evolution:** Compare oldest notes to newest. Is the dimension sharpening or fossilized? A healthy dimension shows increasing precision over time.
 6. **Transfer:** Is the AI *applying* what this dimension teaches? Check recent work for alignment with documented preferences. Flag gaps.
@@ -105,7 +105,7 @@ Discover whatever dimensions the human has built in `meta/` (common starting poi
 1. **Thin skills:** `SKILL.md` files with <3 process steps — too much room for interpretation.
 2. **Missing templates:** Note types referenced in [[AGENTS]] without a corresponding template.
 3. **Unprocessed pipelines:** Sources, meetings, bookmarks, or journal entries that surfaced insights but never produced atomic notes. Flag unextracted value.
-4. **Skill coverage:** Recurring workflows (2+ occurrences in daily notes) that aren't yet a skill.
+4. **Skill coverage:** Recurring workflows (2+ occurrences in agent logs or task logs) that aren't yet a skill.
 5. **Base health:** Are `.base` views still valid? Filters referencing correct paths and properties?
 
 **Output:** completeness report — gaps ranked by impact.
@@ -177,12 +177,12 @@ Combine all layers into a single report.
    - Partnership trajectory: [accelerating | improving | stable | drifting | declining]
    ```
 3. If critical issues are found, list them as actionable items for the human.
-4. Log a one-line summary in today's daily note.
+4. Log a one-line summary in today's agent log (`inbox/log/YYYY-MM-DD`).
 
 ## Outputs
 
 - `superpaper/projects/scratchpad/introspection-report.md` — the full report (overwritten each run)
-- Daily note entry summarizing health score
+- Agent log entry (`inbox/log/YYYY-MM-DD`) summarizing health score
 - Optional: knowledge notes for evolution insights worth preserving
 
 ## Decision authority
@@ -192,7 +192,8 @@ Combine all layers into a single report.
 
 ## Conventions
 
-- **Read-only by default.** Don't modify files during the audit. Fixes happen as separate tasks (board cards or heartbeat actions).
+- **Read-only by default.** Don't modify files during the audit. Fixes happen as separate tasks (board cards or heartbeat actions). Exception: the agent may add missing `created-by` properties to frontmatter during the audit.
+- All agent-created notes (reports, evolution insights) must include `created-by: ai`. Flag notes missing `created-by` as a completeness issue.
 - The report is a living document — overwrite it each run so it always reflects current state.
 - Grade honestly. An A means "this would work flawlessly for any agent reading [[AGENTS]] cold." That bar should be hard to hit — but remember the protocol is meant to evolve, so "not yet customized" is different from "broken."
 - **Distinguish intentional divergence from drift.** If the human organized something differently than `AGENTS.md` suggests, that's a protocol update opportunity, not a violation. Ask before "fixing" what might be intentional.

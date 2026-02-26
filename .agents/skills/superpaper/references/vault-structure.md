@@ -24,7 +24,7 @@ Full vault structure for [[../SKILL.md|Superpaper]]: folder tree, scaling princi
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
+├── daily/                      # Date anchors — nothing written here, value is in backlinks
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
 ├── categories/                 # Category hub pages — each embeds its .base
@@ -96,7 +96,7 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | A task the agent should work on | `apps/My tasks.md` | Kanban card — heartbeat picks it up |
 | A task execution log entry | inbox log folder | Granular record of what was done, when, and why |
 | Agent's daily anchor | `inbox/log/YYYY-MM-DD.md` | Agent activity rolls up here — keeps `daily/` clean |
-| Human's date anchor | `daily/` | Empty — value is in backlinks from the human's own fragments and life |
+| Human's date anchor | `daily/` | Nothing is written in daily notes — they exist solely to be linked *to*. Value is in backlinks. |
 
 Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, categories, and wiki-links handle the rest.
 
@@ -125,7 +125,9 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 
 **Never delete files** unless the human explicitly asks. Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
-**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Daily notes are empty date anchors — don't write into them; link *to* them from other notes instead.
+**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Nothing is written in daily notes — they exist solely to be linked *to* from other entries.
+
+**Authorship provenance (`created-by`).** Every note carries `created-by: human`, `created-by: ai`, or `created-by: ai-assisted`. Always set it accurately. Human-written notes are read-only for agents — aside from adding or updating frontmatter properties. To connect, extend, or respond to human notes, create AI **proxy connection docs** (`created-by: ai`) that link to the human note. This keeps originals pristine while weaving them into the graph.
 
 ---
 

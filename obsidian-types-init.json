@@ -40,6 +40,7 @@
     "source_type": "text",
     "date_published": "date",
     "date_updated": "date",
-    "cover": "text"
+    "cover": "text",
+    "created-by": "text"
   }
 }

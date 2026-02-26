@@ -938,13 +938,13 @@ The `type` property classifies a note's structural role. These are the built-in 
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`.
-- **Daily** — empty date anchor. Value is in backlinks.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks.
 
 **Two axes organize everything.** `type` is the structural role — how a note behaves in the graph. `categories` is the browse axis — what it's about (`categories: ["[[Books]]", "[[AI]]"]`). A note can have many categories. Folders give physical location; categories give conceptual membership. `#domains/` tags add a third retrieval surface for fields that cross-cut everything. The system is domain-agnostic by design.
 
 ### Epistemic defaults (suggested starting schema)
 
-The recommended starting point: every note begins with five fields: `type`, `categories`, `created`, `tags`, `aliases`. Add more when the note earns them. If the human prefers a different base schema, update this section and the templates to match:
+The recommended starting point: every note begins with six fields: `type`, `categories`, `created`, `created-by`, `tags`, `aliases`. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. Add more fields when the note earns them. If the human prefers a different base schema, update this section and the templates to match:
 
 | When | Add |
 |------|-----|
@@ -1015,7 +1015,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 
 ### Knowledge note template
 
-See `_templates/Knowledge note.md` (ships with repo). Five fields by default: `type`, `categories`, `created`, `tags`, `aliases`. Add `confidence`, `status`, `source`, `rating`, `superseded_by` when the note earns them (see **Epistemic defaults** above). Relations live in `## Relates` as natural prose — readable without tooling, queryable via backlinks. Every note gets a `^core-claim` block ID on its opening paragraph.
+See `_templates/Knowledge note.md` (ships with repo). Six fields by default: `type`, `categories`, `created`, `created-by`, `tags`, `aliases`. Add `confidence`, `status`, `source`, `rating`, `superseded_by` when the note earns them (see **Epistemic defaults** above). Relations live in `## Relates` as natural prose — readable without tooling, queryable via backlinks. Every note gets a `^core-claim` block ID on its opening paragraph.
 
 ### Categories — multi-belonging without folders
 
@@ -1061,17 +1061,17 @@ Two small properties with outsized value:
 
 ### Daily note template
 
-See `_templates/Daily note.md`. **Daily notes are the human's space.** They exist solely to be linked to from the human's own entries — journal fragments, meals, workouts, meetings, moods. The value is in backlinks. No sections, no prompts, no friction.
+See `_templates/Daily note.md`. **Nothing is written in daily notes.** They exist solely to be linked *to* from other entries. All named `YYYY-MM-DD.md`, all in `daily/`. The value is entirely in backlinks.
+
+This is counterintuitive but powerful: an empty note with rich backlinks is more useful than a structured template the human feels guilty about not filling in. The daily note is a **date anchor**, not a journal.
 
 **Agent logs are separate.** Agents link to `[[inbox/log/YYYY-MM-DD]]` — their own daily anchor. This keeps the human's daily note backlinks clean: only *their* life shows up, never agent task churn.
 
-This is counterintuitive but powerful: an empty note with rich backlinks is more useful than a structured template the human feels guilty about not filling in. The daily note is a **date anchor**, not a form.
-
-**Help the human build this habit.** When they create a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever "writing" in it.
+**Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it. (See Kepano's [vault approach](https://stephango.com/vault) for the inspiration behind this pattern.)
 
 ### Fractal journaling
 
-Throughout the day, create timestamped thought fragments using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. No structure required. Just capture. Link each fragment to today's daily note.
+Throughout the day, capture individual thoughts using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. These fragments live in the vault root (or wherever the human writes), not in `daily/`. No structure required. Just capture and link each fragment to today's daily note (`[[2026-02-16]]`).
 
 Every few days, review fragments and compile salient thoughts into a weekly review. Monthly reviews distill weekly reviews. Yearly reviews distill monthly reviews. The result is a **fractal web** you can zoom in and out of at varying detail.
 
@@ -1082,7 +1082,7 @@ Every few days, review fragments and compile salient thoughts into a weekly revi
 | Monthly | `YYYY-MM.md` | Distill monthly patterns, review weekly reviews |
 | Yearly | `YYYY.md` | [40 questions](https://stephango.com/40-questions) — review the year's monthly reviews |
 
-Review templates live in `_templates/`. The human traces back where individual thoughts came from and how they bubbled up into bigger themes. Create review templates as the cadence is adopted — don't front-load.
+Review templates (`Weekly review.md`, `Monthly review.md`, `Yearly review.md`) ship in `_templates/`. The [[fractal-review]] skill automates the preparation — gathering fragments, surfacing themes, preparing the review surface — while the human writes the actual review. The [[heartbeat]] checks cadences and triggers prep notes when reviews are due.
 
 ### Idea note template
 
@@ -1145,7 +1145,7 @@ When a bookmark arrives in `inbox/`:
 
 ### Consolidation (periodic)
 
-- **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — "doing this maintenance helps me understand my own patterns." Don't automate what builds understanding.
+- **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — the maintenance *is* the understanding. [Don't delegate understanding.](https://stephango.com/understand)
 - **Merge** notes that evolved into the same insight → keep one, mark others with `superseded_by`
 - **Strengthen** connections between notes that keep co-occurring in retrievals
 - **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 existing analogy or concept notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
@@ -1296,7 +1296,7 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 
 The system actively supports the human's growth, wellbeing, and fulfillment:
 
-- **Celebrate wins.** When daily notes or journal entries show progress, acknowledge it.
+- **Celebrate wins.** When journal entries or agent logs show progress, acknowledge it.
 - **Surface patterns.** When recurring signals appear (low energy, skipped habits, repeated struggles), gently name the pattern.
 - **Encourage reflection.** Nudge toward `personal/journal/` when the human is processing something emotional or making a big decision.
 - **Connect to values.** Reference the human's stated goals and preferences when suggesting next steps.
@@ -1349,7 +1349,7 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
+├── daily/                      # Date anchors — nothing written here, value is in backlinks
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
 ├── categories/                 # Category hub pages — each embeds its .base (ships with repo)
@@ -1417,7 +1417,7 @@ These are suggested destinations based on the default folder structure. If the h
 | A task the agent should work on | `apps/My tasks.md` | Kanban card — heartbeat picks it up |
 | A task execution log entry | inbox log folder | Granular record of what was done, when, and why |
 | Agent's daily anchor | `inbox/log/YYYY-MM-DD.md` | Agent activity rolls up here — keeps `daily/` clean |
-| Human's date anchor | `daily/` | Empty — value is in backlinks from the human's own fragments and life |
+| Human's date anchor | `daily/` | Nothing is written in daily notes — they exist solely to be linked *to*. Value is in backlinks. |
 
 Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, categories, and wiki-links handle the rest.
 
@@ -1444,7 +1444,13 @@ When a folder accumulates too many items (roughly >8–10), suggest clustering i
 
 **Never delete files** unless the human explicitly asks. Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
-**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Daily notes are empty date anchors by default — don't write into them; link *to* them from other notes instead. If the human prefers using daily notes as journals, adapt.
+**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Nothing is written in daily notes — they exist solely to be linked *to* from other entries.
+
+**Authorship provenance (`created-by`).** Every note carries `created-by: human`, `created-by: ai`, or `created-by: ai-assisted`. This is how the vault distinguishes human originals from AI-generated content. The property is non-negotiable — always set it accurately.
+
+**Human-written notes are read-only for agents.** Never directly modify the body of a `created-by: human` note — aside from adding or updating frontmatter properties (e.g. adding `categories`, fixing `type`, stamping `created-by`). The human's prose, structure, and voice are theirs. If an AI-generated note needs to reference, extend, or respond to a human note, create a **proxy connection doc** (`created-by: ai`) that links to the human note and adds the AI's synthesis, connections, or commentary. This keeps the human's originals pristine while still weaving them into the knowledge graph.
+
+**Connecting human notes.** When two human-written notes are related but unlinked, don't edit either one to add the link. Instead, create a lightweight AI proxy note (e.g. `Connection — Note A × Note B.md` with `created-by: ai`) that links to both and explains the relationship. The human's backlinks pane will surface the connection without the AI touching their words. The AI should actively look for these opportunities — connecting the human's ideas is one of the highest-value things the system does.
 
 ### Infrastructure vs content
 
@@ -1488,7 +1494,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 
 **Read the plugin's source code or existing `data.json` first** to confirm the exact config schema (e.g. `hideFilters` and `pinFilters` are objects with `active`, `paths`, `tags`, and `frontMatter` arrays — not flat arrays). Never guess the shape.
 
-*Hide filters* — keep infrastructure out of the file explorer:
+*Hide filters* — keep infrastructure and admin folders out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `_attachments` (wildcard, `FILES_AND_DIRECTORIES`) — media storage, not browsed.
 - Hide `AGENTS|CLAUDE` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` and `CLAUDE.md` files across the vault.

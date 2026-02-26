@@ -15,8 +15,9 @@
 | [[.agents/skills/heartbeat/SKILL\|heartbeat]] | Autonomous batch cycle — fills the pipeline, dispatches tasks, housekeeps | Scheduled (hourly) or "run a heartbeat" |
 | [[.agents/skills/hypothesize/SKILL\|hypothesize]] | Extract falsifiable hypotheses from a paper | "distill this paper" or similar |
 | [[.agents/skills/introspect/SKILL\|introspect]] | Audit the vault — connectivity, consistency, evolution potential | "audit the system", "introspect", after structural changes |
-| [[.agents/skills/process-journal-entry/SKILL\|process-journal-entry]] | Process a daily freewrite or journal entry — reflect back, route insights to living documents and atomic notes | "process my journal", "process today's writing", or when fed a freewrite/daily note |
+| [[.agents/skills/process-journal-entry/SKILL\|process-journal-entry]] | Process a freewrite or journal entry — reflect back, route insights to living documents and atomic notes | "process my journal", "process today's writing", or when fed a freewrite/journal fragment |
 | [[.agents/skills/process-meeting/SKILL\|process-meeting]] | Process a meeting transcript — extract decisions, action items, insights, and commitments | "process this meeting", or when fed a transcript from Granola/Otter/etc |
+| [[.agents/skills/fractal-review/SKILL\|fractal-review]] | Facilitate the human's fractal journaling — gather fragments, surface themes, prepare review surfaces at every cadence (daily, weekly, monthly, yearly, 5-year) | "review my week", "monthly review", "what happened today", heartbeat detects review is due |
 | [[.agents/skills/plan/SKILL\|plan]] | Decompose a goal into a phased implementation strategy | New project needs a roadmap, complex task needs breakdown, "plan this" |
 | [[.agents/skills/skill-creator/SKILL\|skill-creator]] | Create new skills from observed patterns or explicit requests | "make a skill for...", or when you notice repeated workflows |
 
