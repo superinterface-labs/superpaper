@@ -764,7 +764,7 @@ Queryable by Dataview, visible in Obsidian's Properties view, machine-readable b
 
 | Family | Properties | Used by |
 |--------|-----------|---------|
-| Dates | `created`, `start`, `end`, `last`, `published` | Everything |
+| Dates | `created`, `start`, `end`, `last`, `last-contact`, `published` | Everything |
 | People | `author`, `director`, `artist`, `cast`, `host`, `guests`, `via` | Media, sources, events |
 | Themes | `genre`, `type`, `topics`, `categories` | Cross-cutting retrieval |
 | Locations | `loc`, `coordinates` | Places, trips, events |
@@ -772,48 +772,7 @@ Queryable by Dataview, visible in Obsidian's Properties view, machine-readable b
 
 - **Composable templates = composable properties.** Since templates are mixins, property sets merge naturally. A note with both Person and Author templates gets both property sets without conflict.
 
-**Register property types in `.obsidian/types.json`.** This tells Obsidian whether a property is `text`, `multitext` (list of strings), `number`, `checkbox`, `date`, `datetime`, `aliases`, or `tags`. Without this, Obsidian guesses — and guesses wrong. Set it once during bootstrap; update when new properties emerge.
-
-```json
-{
-  "types": {
-    "type": "text",
-    "categories": "multitext",
-    "tags": "tags",
-    "aliases": "aliases",
-    "created": "date",
-    "status": "text",
-    "confidence": "number",
-    "rating": "number",
-    "source": "text",
-    "url": "text",
-    "via": "text",
-    "id": "text",
-    "superseded_by": "multitext",
-    "evidence_for": "multitext",
-    "evidence_against": "multitext",
-    "predictions": "multitext",
-    "hypothesis": "text",
-    "prediction": "text",
-    "outcome": "text",
-    "author": "multitext",
-    "genre": "multitext",
-    "loc": "text",
-    "start": "date",
-    "end": "date",
-    "last": "date",
-    "published": "date",
-    "role": "text",
-    "context": "text",
-    "host": "multitext",
-    "guests": "multitext",
-    "cast": "multitext",
-    "director": "multitext",
-    "artist": "multitext",
-    "coordinates": "text"
-  }
-}
-```
+**Register property types in `.obsidian/types.json`.** This tells Obsidian whether a property is `text`, `multitext`, `number`, `checkbox`, `date`, `datetime`, `aliases`, or `tags`. Without this, Obsidian guesses — and guesses wrong. The canonical type map ships as `obsidian-types-init.json` in the repo root. During bootstrap, copy it to `.obsidian/types.json`. Update when new properties emerge.
 
 ### Block IDs
 
@@ -989,27 +948,7 @@ Every note starts with five fields: `type`, `categories`, `created`, `tags`, `al
 
 **Update trail.** When status or confidence changes, append a dated entry to a collapsed `> [!info]- File history` callout at the end of the note.
 
-**Type-specific extras.** Beyond the 5 defaults, each type earns its own fields:
-
-| Type | Extra fields | Notes |
-|------|-------------|-------|
-| **Claim** | `id`, `confidence`, `status`, `evidence_for`, `evidence_against`, `predictions`, `superseded_by` | Epistemic heavyweight |
-| **Analogy** | `confidence`, `status` | Maps what transfers + where it breaks |
-| **Source** | `source`, `url`, `author`, `published`, `rating` | Evidence lives inline as `^block-refs` |
-| **Experiment** | `id`, `status`, `hypothesis`, `prediction`, `outcome`, `confidence` | Structured test |
-| **Decision** | `id`, `status` | Links to evidence + alternatives |
-| **Question** | `status` | `open` · `answered` · `superseded` |
-| **Person** | `role`, `context`, `last` | Lives in `people/` |
-| **Bookmark** | `url`, `status`, `via`, `rating` | Starts `unprocessed`, ends `processed` |
-| **Preference** | — | Just the 5 defaults; value is in the prose |
-| **Idea** | — | Zero friction — defaults only |
-| **Reflection** | — | Defaults only |
-| **Log** | — | Append-only; dates are in the entries |
-| **Daily** | — | Empty anchor — value is in backlinks |
-
-Epistemic fields (`confidence`, `evidence_for`, `predictions`, etc.) live **only** on Claim/Experiment/Decision templates — not on the default Knowledge note.
-
-Category-specific templates (books, movies, recipes, etc.) layer additional properties via composable mixins — `genre`, `director`, `cast`, `host`, `guests`, `loc`, `coordinates`, etc. See **Property design rules** and **Category trinity** above.
+**Type-specific extras.** Each type earns additional fields beyond the 5 defaults — see `_templates/AGENTS.md` for the full inventory of every template and its properties. Epistemic fields (`confidence`, `evidence_for`, `predictions`, etc.) live **only** on Claim/Experiment/Decision templates — not on the default Knowledge note. Category-specific templates (books, movies, recipes, etc.) layer additional properties via composable mixins.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -1066,26 +1005,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 
 ### Knowledge note template
 
-```markdown
----
-type: fleeting
-categories: []
-created: YYYY-MM-DD
-tags: []
-aliases: []
----
-
-One clear paragraph. What is this concept? Why does it matter? What does it imply? ^core-claim
-
-## Relates
-
-This builds on [[Other note]] because... Sits in tension with [[Another note]] — they disagree on...
-
-> [!info]- File history
-> - YYYY-MM-DD — Created as fleeting. Reason.
-```
-
-Five fields by default. Add `confidence`, `status`, `source`, `rating`, `superseded_by` when the note earns them (see **Epistemic defaults** above). Relations live in prose — readable without tooling, queryable via backlinks.
+See `_templates/Knowledge note.md` (ships with repo). Five fields by default: `type`, `categories`, `created`, `tags`, `aliases`. Add `confidence`, `status`, `source`, `rating`, `superseded_by` when the note earns them (see **Epistemic defaults** above). Relations live in `## Relates` as natural prose — readable without tooling, queryable via backlinks. Every note gets a `^core-claim` block ID on its opening paragraph.
 
 ### Categories — multi-belonging without folders
 
@@ -1095,9 +1015,9 @@ Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` prope
 
 1. **Template** (`_templates/Book Template.md`) — frontmatter schema. Defines the properties every note in this category starts with.
 2. **Base** (`_templates/Bases/Books.base`) — database view. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
-3. **Category page** (`Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point. Lives wherever makes sense (root, `sources/`, `superpaper/`).
+3. **Category page** (`categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point. Lives in `categories/`.
 
-This trinity is the repeatable unit for growing the vault. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
+26 starter category pages ship in `categories/` and base templates in `_templates/Bases/`. When a new domain emerges, spin up the trinity: copy a base template, create a category page, optionally add a note template. Instant.
 
 ```mermaid
 graph LR
@@ -1131,14 +1051,7 @@ Two small properties with outsized value:
 
 ### Daily note template
 
-```markdown
----
-type: daily
-created: YYYY-MM-DD
----
-```
-
-**Daily notes are the human's space.** They exist solely to be linked to from the human's own entries — journal fragments, meals, workouts, meetings, moods. The value is in backlinks. No sections, no prompts, no friction.
+See `_templates/Daily note.md`. **Daily notes are the human's space.** They exist solely to be linked to from the human's own entries — journal fragments, meals, workouts, meetings, moods. The value is in backlinks. No sections, no prompts, no friction.
 
 **Agent logs are separate.** Agents link to `[[inbox/log/YYYY-MM-DD]]` — their own daily anchor. This keeps the human's daily note backlinks clean: only *their* life shows up, never agent task churn.
 
@@ -1163,86 +1076,19 @@ Review templates live in `_templates/`. The human traces back where individual t
 
 ### Idea note template
 
-```markdown
----
-type: idea
-created: YYYY-MM-DD
-tags: []
----
-
-What if...?
-
-## Connects to
-
-[[related concept]] — this matters because it challenges how we usually think about X.
-```
+See `_templates/Idea note.md`. Zero friction — defaults only. Just capture the hunch and link to what it connects to.
 
 ### Reflection template
 
-```markdown
----
-type: reflection
-created: YYYY-MM-DD
-tags: []
----
-
-## What happened
-
-
-## What I felt
-
-
-## What I learned
-
-
-## What I'll do differently
-
-```
+See `_templates/Reflection.md`. Structured prompts: what happened, what I felt, what I learned, what I'll do differently.
 
 ### Person template
 
-```markdown
----
-type: person
-role: ""
-context: ""
-last-contact: YYYY-MM-DD
-created: YYYY-MM-DD
-tags: []
-aliases: []
----
-
-How I know them. Why they matter. Key context.
-
-## Connects to
-
-[[related person or concept]] — shared context or collaboration.
-
-> [!info]- File history
-> - YYYY-MM-DD — Created. Reason.
-```
+See `_templates/Person.md`. Adds `role`, `context`, `last-contact`. Lives in `people/`.
 
 ### Place template
 
-```markdown
----
-type: source
-categories: ["[[Places]]"]
-loc: []
-coordinates:
-type: []
-rating:
-last: YYYY-MM-DD
-via: ""
-created: YYYY-MM-DD
-tags: []
-aliases: []
----
-
-What this place is. Why it matters.
-```
-
-Place `type` values (e.g. `[[Restaurant]]`, `[[Museum]]`, `[[Park]]`, `[[Café]]`) are their own notes with `icon` and `color` properties — the `Map.base` looks up `list(type)[0].asFile().properties.icon` for marker appearance. `loc` is a list of location links (`["[[Kyoto]]", "[[Japan]]"]`). `coordinates` is a string `"lat,lng"` for map views.
+See `_templates/Place.md`. Adds `loc`, `coordinates`, `rating`, `last`, `via`. Place `type` values (e.g. `[[Restaurant]]`, `[[Museum]]`) are their own notes with `icon` and `color` properties for map marker appearance. `loc` is a list of location links (`["[[Kyoto]]", "[[Japan]]"]`). `coordinates` is a string `"lat,lng"`.
 
 ### Reference templates — composable by design
 
@@ -1266,20 +1112,7 @@ All reference notes use `categories` for cross-cutting retrieval and the 7-point
 
 ### Bookmark template
 
-```markdown
----
-type: bookmark
-categories: []
-url: ""
-status: unprocessed | processed | failed
-via: ""
-created: YYYY-MM-DD
-tags:
-  - inbox
----
-
-(URL, text, or image reference goes here)
-```
+See `_templates/Bookmark.md`. Adds `url`, `status`, `via`, `rating`. Starts with `tags: [inbox]`.
 
 ### Bookmark processing lifecycle
 
@@ -1505,7 +1338,8 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 ├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
-├── _templates/                 # Note templates
+├── categories/                 # Category hub pages — each embeds its .base (ships with repo)
+├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
@@ -1605,7 +1439,7 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 
 The vault has two layers:
 
-- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`.
+- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `categories/**`, `obsidian-types-init.json`, `.obsidian/**`, `.scripts/**`.
 - **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**` (includes `events/`, `places/`, `journal/`), `meta/**`, `daily/**`, `projects/**`, `inbox/**`, `.archive/**`, `.plans/**`.
 
 **Personal preferences live in `meta/`, not in AGENTS.md.** When either party — human or AI — notices a preference, reasoning pattern, alignment insight, or taste judgment, store it in `superpaper/meta/`. AGENTS.md defines the generic OS protocol; `meta/` holds the specific calibration of *this* partnership.
@@ -1740,19 +1574,11 @@ This step is non-negotiable — do not skip or defer it.
 
 ### 3. Create vault structure
 
-Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
-### 4. Register property types
+Templates (`_templates/`), category pages (`categories/`), and property types (`obsidian-types-init.json`) **ship with the repo** — no need to create them. Copy `obsidian-types-init.json` to `.obsidian/types.json`. Read `_templates/AGENTS.md` for the full inventory of templates and conventions.
 
-Write `.obsidian/types.json` per the **Property design rules** section above. This ensures Obsidian treats `categories` as `multitext`, `created` as `date`, `rating` as `number`, etc. from day one. Update this file whenever new properties emerge from category templates.
-
-### 5. Create templates
-
-Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, **Person template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
-
-Also create `_templates/Bases/` for base templates. Start with `Bookmarks.base` (created in step 6). As the human adopts new categories, each gets the full **category trinity**: template + base + category page. Base templates make spinning up new categories instant.
-
-### 6. Create Quick Capture UI
+### 4. Create Quick Capture UI
 
 Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
 - *Thought* → creates a timestamped fragment note linking to today's daily note (`[[2026-02-16]]`)
@@ -1764,7 +1590,7 @@ This is the human's primary capture surface. Pin it to a sidebar tab. It replace
 
 **Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → timestamped fragments linking to today's daily note), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
 
-### 7. Create starter bases
+### 5. Create starter bases
 
 Create one high-leverage `.base` file:
 
@@ -1772,19 +1598,19 @@ Create one high-leverage `.base` file:
 
 Embed `![[Bookmarks.base#Library]]` in the Knowledge map under a `## Bookmarks` section. Other bases (Knowledge health, People, Questions, Experiments etc) emerge as content grows — don't pre-create them.
 
-### 8. Create a first knowledge note
+### 6. Create a first knowledge note
 
 Write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
 
-### 9. Set up mobile bookmarking
+### 7. Set up mobile bookmarking
 
 Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
-### 10. Add CSS polish
+### 8. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 11. SUPER IMPORTANT: Verify environment from humans
+### 9. SUPER IMPORTANT: Verify environment from humans
 
 Final check before declaring setup complete:
 
@@ -1794,13 +1620,13 @@ Final check before declaring setup complete:
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
-### 12. Get to know the human
+### 10. Get to know the human
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
 Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
 
-### 13. Demo the full system
+### 11. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
@@ -1811,7 +1637,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 6 of 13 — we're almost halfway."
+- Signpost progress: "Step 4 of 11 — over a third done."
 
 ---
 
