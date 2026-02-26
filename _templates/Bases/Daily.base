@@ -1,0 +1,102 @@
+filters:
+  or:
+    - file.name.contains(this.file.name)
+    - created.toString().contains(this.file.name)
+    - start.toString().contains(this.file.name)
+    - end.toString().contains(this.file.name)
+    - file.links.contains(this.file)
+formulas:
+  Author: created-by
+properties:
+  file.name:
+    displayName: Entry
+  note.categories:
+    displayName: Categories
+  note.created:
+    displayName: Created
+  note.tags:
+    displayName: Tags
+  note.created-by:
+    displayName: By
+views:
+  - type: table
+    name: Human
+    filters:
+      and:
+        - file.name != this.file.name
+        - created-by == "human"
+    order:
+      - file.name
+      - categories
+      - created
+      - tags
+    sort:
+      - property: created
+        direction: DESC
+      - property: file.name
+        direction: DESC
+    columnSize:
+      file.name: 287
+      note.created: 128
+      note.categories: 119
+  - type: table
+    name: Fragments
+    filters:
+      and:
+        - file.name.contains(this.file.name)
+        - file.name != this.file.name
+        - '!file.tags.containsAny("review/weekly", "review/monthly", "review/yearly")'
+    order:
+      - file.name
+      - tags
+      - created-by
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Reviews
+    filters:
+      and:
+        - file.tags.containsAny("review/weekly", "review/monthly", "review/yearly")
+    order:
+      - file.name
+      - tags
+      - created-by
+    sort:
+      - property: tags
+        direction: ASC
+  - type: table
+    name: AI
+    filters:
+      and:
+        - file.name != this.file.name
+        - created-by.containsAny("ai", "ai-assisted")
+    order:
+      - file.name
+      - categories
+      - created
+      - tags
+    sort:
+      - property: created
+        direction: DESC
+  - type: table
+    name: Everything
+    filters:
+      and:
+        - file.name != this.file.name
+    order:
+      - file.name
+      - created-by
+      - created
+      - categories
+      - tags
+    sort:
+      - property: created
+        direction: DESC
+      - property: file.name
+        direction: DESC
+    columnSize:
+      file.name: 287
+      note.created-by: 80
+      note.created: 128
+      note.categories: 119

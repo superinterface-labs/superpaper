@@ -1,0 +1,40 @@
+filters:
+  and:
+    - categories.contains(link("Books"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All books
+    order:
+      - file.name
+      - author
+      - genre
+      - year
+      - rating
+      - last
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Top rated
+    order:
+      - file.name
+      - rating
+      - last
+    sort:
+      - property: rating
+        direction: DESC
+  - type: table
+    name: By author
+    filters: list(author).contains(this)
+    order:
+      - file.name
+      - year
+      - genre
+  - type: table
+    name: By genre
+    filters: list(genre).contains(this)
+    order:
+      - file.name
+      - year
+      - author

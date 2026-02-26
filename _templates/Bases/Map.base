@@ -1,0 +1,14 @@
+filters:
+  and:
+    - coordinates
+views:
+  - type: table
+    name: Places (table)
+    order:
+      - file.name
+      - coordinates
+      - loc
+      - type
+      - rating
+      - last
+    limit: 200

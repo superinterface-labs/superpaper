@@ -1,0 +1,36 @@
+filters:
+  and:
+    - categories.contains(link("Sequences"))
+    - '!file.name.contains("Template")'
+formulas:
+  Steps: file.links.length
+  Backlinks: file.backlinks.length
+  Domain: list(tags).filter(value.contains("domains/")).map(value.replace("domains/", ""))
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - formula.Domain
+      - formula.Steps
+      - formula.Backlinks
+      - created
+    sort:
+      - property: created
+        direction: DESC
+  - type: table
+    name: By domain
+    order:
+      - file.name
+      - formula.Domain
+      - formula.Steps
+    sort:
+      - property: formula.Domain
+        direction: ASC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - formula.Domain
+      - formula.Steps

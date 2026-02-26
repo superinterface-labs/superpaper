@@ -1,0 +1,51 @@
+filters:
+  and:
+    - type == "bookmark"
+formulas:
+  days_waiting: 'if(created, (now() - date(created)).days.round(0), "")'
+  insight_count: file.backlinks.length
+  has_tags: list(tags).length > 1
+  related: file.hasLink(this.file)
+properties:
+  formula.days_waiting:
+    displayName: ⏳ Days
+  formula.insight_count:
+    displayName: 💡 Insights
+  formula.has_tags:
+    displayName: 🏷 Tagged
+views:
+  - type: table
+    name: Library
+    order:
+      - file.name
+      - url
+      - tags
+      - formula.insight_count
+      - created
+    limit: 50
+  - type: table
+    name: Unprocessed
+    filters: status != "processed"
+    order:
+      - file.name
+      - url
+      - tags
+      - formula.days_waiting
+    sort:
+      - property: formula.days_waiting
+        direction: ASC
+    limit: 30
+  - type: table
+    name: Stale
+    filters: 'formula.days_waiting > 7 && status == "unprocessed"'
+    order:
+      - file.name
+      - url
+      - formula.days_waiting
+  - type: table
+    name: Connected
+    filters: formula.related
+    order:
+      - file.name
+      - tags
+      - formula.insight_count

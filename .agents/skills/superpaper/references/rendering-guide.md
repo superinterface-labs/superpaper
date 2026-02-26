@@ -389,7 +389,7 @@ For anything beyond vanilla TS (React, complex state, large dependencies):
 **Every tracker, log, and app must be backed by markdown files or [[#Frontmatter (YAML properties)|frontmatter]]** — never localStorage alone. The human must be able to read history without running code. Patterns:
 - **Frontmatter fields** — store state in the note's own YAML (`streak: 5`, `last_run: 2026-02-12`)
 - **Append to log files** — `personal/journal/*.log.md` for time-series data (mood, habits, workouts)
-- **One file per entry** — `inbox/log/mmm-yy/dd/<task>.md` for granular task tracking
+- **One file per entry** — task logs in the vault's log location for granular task tracking
 
 localStorage is acceptable only as a UI cache for the current session. The source of truth is always a file.
 
@@ -454,7 +454,7 @@ A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress
 - The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
 - Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
 
-**Every card MUST link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
+**Every card should link to its log.** When a task ships, append a link to the task's log entry so the human can trace what happened without leaving the board.
 
 **Task lifecycle:**
 
@@ -466,7 +466,7 @@ A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress
 5. BLOCKED   → Move to Blocked — comment explains why, escalate to human
 ```
 
-**Task execution logs** live in `inbox/log/mmm-yy/dd/<task-slug>.md`:
+**Task execution logs** live in the vault's log location (suggested: `inbox/log/`):
 
 ```markdown
 ---
@@ -618,13 +618,14 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 `#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders.
 
-**Three namespaces** — all lowercase, **always plural**, kebab-case:
+**Two namespaces** — all lowercase, **always plural**, kebab-case:
 
 | Namespace | Purpose | Examples |
 |-----------|---------|----------|
 | `#domains/` | Field or life area | `#domains/ai`, `#domains/health`, `#domains/finance` |
 | `#topics/` | Specific concept | `#topics/memory`, `#topics/feedback-loops`, `#topics/sleep` |
-| `#status/` | Lifecycle state | `#status/active`, `#status/paused`, `#status/review` |
+
+Status lives in frontmatter (`status` property), not tags.
 
 **Always pluralize tags and categories.** This eliminates decision fatigue — you never wonder "is it `#domains/book` or `#domains/books`?" The answer is always plural. One rule, hundreds of future decisions collapsed.
 
@@ -632,7 +633,7 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 - Frontmatter `tags:` for file-level tags. Inline `#tag` for block-level context.
 - Nest when hierarchy aids retrieval — `#domains/ai/nlp` is useful; four levels deep is not.
 - Searching `tag:#domains/ai` returns all subtags beneath it ([docs](https://help.obsidian.md/tags)).
-- Don't duplicate what `type`, `kind`, or folders already express — tags are for *retrieval*, not classification.
+- Don't duplicate what `type`, `categories`, or folders already express — tags are for *retrieval*, not classification.
 
 ---
 
@@ -714,7 +715,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 
 **Read the plugin's source code or existing `data.json` first** to confirm the exact config schema (e.g. `hideFilters` and `pinFilters` are objects with `active`, `paths`, `tags`, and `frontMatter` arrays — not flat arrays). Never guess the shape.
 
-*Hide filters* — keep infrastructure out of the file explorer:
+*Hide filters* — keep infrastructure and admin folders out of the file explorer:
 - Hide `_templates` (wildcard, `FILES_AND_DIRECTORIES`) — accessed via Templater, not browsed.
 - Hide `_attachments` (wildcard, `FILES_AND_DIRECTORIES`) — media storage, not browsed.
 - Hide `AGENTS|CLAUDE` (regex, `FILES_AND_DIRECTORIES`) — matches all `AGENTS.md` and `CLAUDE.md` files across the vault.

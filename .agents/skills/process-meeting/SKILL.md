@@ -42,36 +42,44 @@ Read the full transcript. Retrieve knowledge neighborhood for mentioned concepts
 4. **Open questions** — unresolved topics that need follow-up
 5. **Commitments** — promises made (by human or others)
 
-### STEP 3 — Route
+### STEP 3 — Route (atomic-first)
 
-- **Decisions** → append to [[Decisions log]] with date, participants, reasoning
-- **Insights worth keeping** → create atomic notes in `superpaper/concepts/`. Link to source transcript and related existing notes.
+Extract aggressively — every distinct concept, quote, decision, and finding deserves its own atomic note. A quote by a participant → its own note linked to that person's `people/` entry. A framework or mental model mentioned → its own concept note. The more atoms, the richer the connection network.
+
+- **Decisions** → append to [[Decisions log]] with date, participants, reasoning. If the decision reasoning is substantial, also create an atomic `type: decision` note.
+- **Insights worth keeping** → create atomic notes in `superpaper/concepts/`. One concept per note. Link to source transcript (`![[transcript#^passage]]`) and related existing notes. Preserve attribution — who said it, in what context.
+- **People context** → create or update `people/` notes for participants. Add new context, relationship info, or notable quotes (as their own linked notes).
 - **Learnings** → append to [[Learning log]]
-- **Action items** → add to today's daily note under `## Plan` as tasks
+- **Action items** → add to the task board (`apps/My tasks.md`) under **Todo**
 - **Project-relevant items** → update the relevant project note in `superpaper/projects/`
+- If the meeting produced 3+ atomic notes, create a lightweight hub note that embeds them with connective prose — this becomes the "processed meeting summary."
 
-### STEP 4 — Daily note summary
+### STEP 4 — Agent log summary
 
-Append to today's daily note under `## Notes`:
+Append to today's agent log (`inbox/log/YYYY-MM-DD`):
 
 ```markdown
 ### Meeting: [name] — HH:MM
 - **With:** [participants]
 - **Decisions:** [1-line each]
-- **Actions:** N items added to plan
+- **Actions:** N items added to board
 - **Insights:** [[note1]], [[note2]]
 - **Follow up:** [open questions]
 ```
+
+**Never write to the human's daily note** (`daily/YYYY-MM-DD`) — it's a pure date anchor.
 
 ## Outputs
 
 - Source transcript in `superpaper/sources/meetings/`
 - Updated living documents (Decisions log, Learning log)
 - 0+ new atomic notes in entity folders
-- Action items in daily note
-- Daily note meeting summary
+- Action items on task board
+- Agent log meeting summary (`inbox/log/YYYY-MM-DD`)
 
 ## Decision authority
 
 - **YOU DECIDE:** what to extract, severity/priority of action items, routing
 - **ESCALATE TO HUMAN:** anything involving commitments to others, sensitive content, ambiguous decisions
+
+All notes created by this skill must include `created-by: ai`. The meeting transcript itself is `created-by: human` — never modify its body, only update frontmatter properties. Source notes, atomic notes, log entries, and board cards are `created-by: ai`.

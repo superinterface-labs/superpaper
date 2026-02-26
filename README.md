@@ -10,7 +10,7 @@ Superpaper lives entirely inside that folder: one shared space between you and y
 
 ### Tools that you will need
 - Install **[Obsidian](https://obsidian.md)** — a free app that renders markdown files into rich, interactive documents. Your vault is an Obsidian folder. [Watch this quick intro](https://youtu.be/z4AbijUCoKU?si=C52APZ14oehdnprN) if you are new to Obsidian.
-- Install one or more **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.dev) that read and write files on your behalf and use various tools to perform actions.
+- Install one or more **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.com) that read and write files on your behalf and use various tools to perform actions.
 
 ### Good to know about
 - **[AGENTS.md](https://agents.md)** — a single markdown file that teaches agents how to operate in your vault.
@@ -18,23 +18,23 @@ Superpaper lives entirely inside that folder: one shared space between you and y
 - **[Markdown](https://www.markdownguide.org/basic-syntax/)** — headings, links, lists, checkboxes. Enough to read and lightly edit what agents produce.
 - **[How I use Obsidian](https://stephango.com/vault)** — by Steph Ango, creator of Obsidian. Much of Superpaper's design — fractal journaling, 7-point ratings, minimal folders, profuse linking — draws from his approach.
 
-## Get started under 2 minutes
+## Get started
 
-1. Copy [`AGENTS.md`](https://raw.githubusercontent.com/superinterface-labs/superpaper/main/AGENTS.md) from this repo to the root of your Obsidian vault as `AGENTS.md`
-2. Open your obsidian vault (or start a new one) in any AI coding agent (Claude Code, Codex, Cursor, Windsurf — whatever you use)
-3. Tell the agent: *"Read AGENTS.md in full and set up the vault."*
-4. Start chatting and following instructions to set it up.
-5. You will see a new folder called `superpaper` in your vault. This is where the agent will store strutured notes, artifacts, and projects.
-6. You can write daily logs or ideas into daily folder or via a Quick Capture the agent will set up for you. And ask help from the agent to process them.
+1. Install [Obsidian](https://obsidian.md) and open a vault — new or existing.
+2. Open the vault in [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), or [Cowork](https://claude.ai/cowork) and paste this:
+   ```
+   Run `npx superpaper init` then read AGENTS.md in full and set up Superpaper
+   ```
+3. Start talking — ask what it can help you with, drop in an idea, or tell it about yourself so it can personalize your experience.
+
+### Without the CLI
+
+Download [`AGENTS.md`](https://raw.githubusercontent.com/superinterface-labs/superpaper/main/AGENTS.md), put it in the root of your vault, and tell your agent to read it. The agent will handle the rest.
 
 ### Tips
-- You can also setup a vault as a folder that contains all your projets so the agent can use context from them and work on them with you.
-- Obsidian is also available on most platforms, so you can keep track of your notes and (eventually) the agents in the same place.
-- You can use the obsidian-terminal public plugin to run the coding agent from within obsidian.
+- Point your vault at a folder with your projects so the agent can see and work on them with you.
+- Obsidian runs on Windows, macOS, iOS, and Android — your notes stay in one place.
 - The [Obsidian Web Clipper](https://obsidian.md/clipper) collects links and bookmarks straight into your vault.
-
-### Future plans
-We are planning on providing a service that will allow you to do all this from any device with zero setup overhead and with additional features like ambient agents.
 
 ## Why this exists
 

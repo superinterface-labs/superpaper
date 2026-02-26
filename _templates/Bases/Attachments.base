@@ -1,0 +1,34 @@
+filters:
+  and:
+    - '!file.ext.containsAny("base", "md", "pdf", "canvas")'
+formulas:
+  Backlinks: file.backlinks.length
+properties:
+  formula.Backlinks:
+    displayName: Used by
+views:
+  - type: cards
+    name: Images
+    filters:
+      and:
+        - this.file.hasLink(file)
+    order: []
+    sort:
+      - property: file.name
+        direction: ASC
+    image: file.file
+    cardSize: 70
+  - type: cards
+    name: All images
+    image: file.file
+    imageFit: ""
+  - type: table
+    name: Unused attachments
+    filters:
+      and:
+        - formula.Backlinks == 0
+    order:
+      - file.name
+      - formula.Backlinks
+    columnSize:
+      file.name: 414

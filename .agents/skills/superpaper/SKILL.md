@@ -7,6 +7,29 @@ description: Core methodology for Superpaper — an AI Agent Swarm interface in 
 
 > You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time. Always read the full root AGENTS.md file when you start working on a user's request.
 
+**This file is a starting point, not a rulebook.** Everything below — folder structure, note types, naming conventions, property schemas, workflows — is a tested default that works well out of the box. But the human's preferences always win. Your job is to learn how *your* human(s) wants to work and evolve the protocol to match. When a convention doesn't fit, change it — in `AGENTS.md`, in the templates, in the vault structure. The system should feel like the human designed it themselves, because over time they did, with your help.
+
+**How this protocol evolves:**
+1. **Ask before assuming.** When you encounter a structural choice, present the default and ask if the human wants something different.
+2. **Update `AGENTS.md`.** When the human expresses a preference that changes a convention, update `AGENTS.md` directly so future agents inherit the choice.
+3. **Record in `meta/`.** Capture taste, reasoning patterns, and calibration in `meta/` — the introspective core that tunes the partnership over time.
+4. **Never silently override.** If the human organized something differently than the defaults suggest, respect it. Ask before "fixing" what might be intentional.
+
+### Personal rules (battle-tested defaults)
+
+Present during setup. Let the human adopt, modify, or reject each one. Update as the partnership evolves.
+
+1. Avoid folders for organization — use `categories` and tags instead. Folders are for entity type, not topic.
+2. Always pluralize categories and tags.
+3. Use internal links profusely, even to notes that don't exist yet.
+4. Use `YYYY-MM-DD` dates everywhere.
+5. Use the 7-point scale for ratings.
+6. Default properties to `list` type — changing later is painful, starting as list is free.
+7. Short property names — `loc` not `location-name`, `start` not `start-date`.
+8. Reuse properties across categories — `genre`, `author`, `rating` work everywhere.
+9. Templates are composable mixins — layer them freely, properties merge.
+10. `type` is the structural role. `categories` is the browse axis. Two axes, that's it.
+
 ## ⛔ STOP — use the Obsidian CLI
 
 **Every vault operation goes through `obsidian` CLI commands run via Bash.** The CLI talks to the live Obsidian instance — it resolves wikilinks, computes backlinks, queries Bases, and respects plugins. File system tools (Glob, Grep, Read, find, cat, rg) see dead text with no graph awareness. **Do not use them for vault work.**
@@ -69,14 +92,14 @@ When this skill activates, **read these references into context immediately** (d
 | `references/rendering-guide.md` | 728 | Dataview (DQL, DataviewJS, native queries), Bases (YAML schema, formulas, views), CodeScript Toolkit (code-button, pattern library, codeButtonContext API, artifact ideas), My Tasks kanban spec, HTML/CSS (grid, variables, snippets), frontmatter (property families, design rules), block IDs, canvas, tags, filenames, Obsidian URI, workspace/navigation, required plugins, File Explorer++ config, Graph View colors | **Always.** This is the rendering bible — you need it for any note creation. |
 | `references/knowledge-protocol.md` | 381 | All note templates (knowledge, daily, journal, idea, reflection, person, place, reference types), categories taxonomy, rating system, tracking properties, bookmark template + lifecycle, consolidation protocol, anti-patterns, meta layer spec, Knowledge map spec | **Always.** You need templates and protocols for any knowledge work. |
 | `references/vault-structure.md` | 151 | Scaling rules, subfolder emergence table, what-goes-where decision table, folder indexes, reorganization protocol, no-deletions policy, infrastructure vs content boundary | **Always.** You need to know where to put things. |
-| `references/bootstrap.md` | 145 | Full 13-step vault setup: install skills, index context, environment, structure, templates, Quick Capture UI, starter bases, first knowledge note, mobile bookmarking, CSS polish, verify with human, get to know human, demo | **On bootstrap only.** Skip if the vault is already set up. |
+| `references/bootstrap.md` | 161 | Full 10-step vault setup: install skills, index context, environment, customize structure (templates/bases/categories/types ship with repo), Quick Capture UI, first knowledge note, mobile bookmarking, CSS polish, verify with human, get to know human, demo | **On bootstrap only.** Skip if the vault is already set up. |
 
 Interaction style and orchestration protocols are included inline below (not in separate reference files).
 
 **Loading protocol:** On skill activation, read all 3 "Always" references (≈1260 lines total). Read `bootstrap.md` only when setting up a new vault. Format skills (`obsidian-markdown`, `obsidian-bases`, `json-canvas`, `obsidian-cli`) are loaded separately when you need syntax details — they're not bundled here to avoid duplication.
 
 > [!abstract]- Rendering guide digest (read [[references/rendering-guide.md|full file]] for syntax)
-> **Dataview:** DQL (`TABLE`/`LIST`/`TASK` + `FROM`/`WHERE`/`SORT`/`GROUP BY`/`FLATTEN`/`LIMIT`); file metadata via `file.name`, `file.ctime`, `file.mtime`, `file.tags`, `file.link`; DataviewJS for custom HTML (`dv.pages()`, `dv.table()`, `dv.el()`); native `query` blocks for plugin-free search. **Bases:** `.base` YAML — filters (`inFolder`, `taggedWith`, `linksTo`, `file.hasLink(this.file)`), formulas (`dateDiff`, `list()`, `if()`, regex), display aliases, views (table with `order`/`sort`/`limit`; cards with `image`; map with `coordinates`/`markerIcon`/`markerColor`), `this` = current note for contextual dynamic views. Use Bases for human-facing dashboards with inline editing; Dataview for complex JS rendering or agent auditing. Key bases: Bookmarks, Knowledge health, People, Questions, Meta dashboard, Related, Ratings, Map. **CodeScript Toolkit:** `code-button` with `isRaw: true` + `shouldAutoRun: true` for seamless UIs; `codeButtonContext` API (`.container` for DOM via `createEl()`/`createDiv()`, `.renderMarkdown()`, `.insertAfterCodeButtonBlock()`, `.replaceCodeButtonBlock()`); `.scripts/` modules via `require()`; heavy apps via `requireAsync()` with cache modes (`always`/`whenPossible`/`never`); invocable scripts (`export function invoke(app)`) for Cmd+P; startup scripts for vault-open hooks. **My Tasks:** Kanban (Todo/In progress/Done/Blocked); lifecycle: capture → pick up → ship (append `@date` + log link) → archive (7 days) → blocked (escalate); execution logs in `inbox/log/mmm-yy/dd/<task>.md`. **Frontmatter:** property types (text/list/number/checkbox/date/datetime); wikilinks must be quoted (`"[[note]]"`); default to list, short names, five families (Dates, People, Themes, Locations, Ratings); `cssclasses` for per-note styling. **Tags:** `#domains/`, `#topics/`, `#status/` — always plural, kebab-case. **CSS snippets:** tag-based styling (`.tag[href="#important"]`), folder-specific looks, custom callout types (`[data-callout="trace"]`), Obsidian CSS variables (`var(--background-primary)`, `var(--interactive-accent)`). **File Explorer++:** hide `_templates`, `_attachments`, `AGENTS|CLAUDE` (regex), `inbox`; pin `superpaper/`, `apps/`, `personal/`, `projects/`, `My tasks.md`, `.base` files. **Also:** block IDs (`^id`), canvas for spatial thinking, Obsidian URI (`obsidian://open`, `obsidian://new`, `obsidian://search`), saved workspaces (Research/Review/Daily/Build), Graph View color groups per folder/type.
+> **Dataview:** DQL (`TABLE`/`LIST`/`TASK` + `FROM`/`WHERE`/`SORT`/`GROUP BY`/`FLATTEN`/`LIMIT`); file metadata via `file.name`, `file.ctime`, `file.mtime`, `file.tags`, `file.link`; DataviewJS for custom HTML (`dv.pages()`, `dv.table()`, `dv.el()`); native `query` blocks for plugin-free search. **Bases:** `.base` YAML — filters (`inFolder`, `taggedWith`, `linksTo`, `file.hasLink(this.file)`), formulas (`dateDiff`, `list()`, `if()`, regex), display aliases, views (table with `order`/`sort`/`limit`; cards with `image`; map with `coordinates`/`markerIcon`/`markerColor`), `this` = current note for contextual dynamic views. Use Bases for human-facing dashboards with inline editing; Dataview for complex JS rendering or agent auditing. Key bases: Bookmarks, Knowledge health, People, Questions, Meta dashboard, Related, Ratings, Map. **CodeScript Toolkit:** `code-button` with `isRaw: true` + `shouldAutoRun: true` for seamless UIs; `codeButtonContext` API (`.container` for DOM via `createEl()`/`createDiv()`, `.renderMarkdown()`, `.insertAfterCodeButtonBlock()`, `.replaceCodeButtonBlock()`); `.scripts/` modules via `require()`; heavy apps via `requireAsync()` with cache modes (`always`/`whenPossible`/`never`); invocable scripts (`export function invoke(app)`) for Cmd+P; startup scripts for vault-open hooks. **My Tasks:** Kanban (Todo/In progress/Done/Blocked); lifecycle: capture → pick up → ship (append `@date` + log link) → archive (7 days) → blocked (escalate); execution logs in the vault's log location. **Frontmatter:** property types (text/list/number/checkbox/date/datetime); wikilinks must be quoted (`"[[note]]"`); default to list, short names, five families (Dates, People, Themes, Locations, Ratings); `cssclasses` for per-note styling. **Tags:** `#domains/`, `#topics/` — always plural, kebab-case. **CSS snippets:** tag-based styling (`.tag[href="#important"]`), folder-specific looks, custom callout types (`[data-callout="trace"]`), Obsidian CSS variables (`var(--background-primary)`, `var(--interactive-accent)`). **File Explorer++:** hide `_templates`, `_attachments`, `AGENTS|CLAUDE` (regex), `inbox`; pin `superpaper/`, `apps/`, `personal/`, `projects/`, `My tasks.md`, `.base` files. **Also:** block IDs (`^id`), canvas for spatial thinking, Obsidian URI (`obsidian://open`, `obsidian://new`, `obsidian://search`), saved workspaces (Research/Review/Daily/Build), Graph View color groups per folder/type.
 
 ### When to use which
 
@@ -104,15 +127,13 @@ Every `[[wikilink]]` gives the target note a backlink — a passive signal that 
 
 ## Knowledge — your persistent knowledge graph
 
-### Philosophy
+### Philosophy (suggested approach)
 
-Atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist. Notes belong to [[references/knowledge-protocol.md#Categories — multi-belonging without folders|categories]] via frontmatter — a note can live in one folder but belong to many conceptual groups.
+The default approach: atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders give humans browsable structure; wiki-links give agents traversable connections. Both views coexist. Some humans prefer longer, fewer notes — adapt to their style. Notes belong to [[references/knowledge-protocol.md#Categories — multi-belonging without folders|categories]] via frontmatter — a note can live in one folder but belong to many conceptual groups.
 
-Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
+Atomic notes are LEGO bricks — and **you always build from bricks upward, never top-down**. When creating any deliverable, first create the atomic notes (one concept, one quote, one finding, one claim per note), then compose the final artifact by embedding them. A quote by someone → its own note attributed to that person. A finding from a paper → its own block-referenced passage. A principle from experience → its own evergreen-titled note. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes atoms into flowing documents — write once, embed everywhere. Higher-level notes are *compositions of embeds with thin connective prose*, not rewrites. This preserves attribution, enables reuse across contexts, and makes the graph's value compound quadratically — each new atom creates N-1 potential bridges with every existing note.
 
-Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable.
-
-Granular evidence notes live in `superpaper/.evidence/` — a dot-folder hidden from the file explorer but wiki-linkable and Dataview-queryable. The AI cites evidence; the human follows links when they want the receipts. The [[references/knowledge-protocol.md#Meta — the self-referential layer|meta layer]] (`superpaper/meta/`) stores knowledge about how we think — the vault's consciousness.
+Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable. Evidence lives inline in source notes as block-referenced passages (`![[source#^finding]]`), not in a separate folder.
 
 ### Operating loop (implicit, always-on)
 
@@ -125,54 +146,43 @@ Every interaction follows this cycle:
 5. **Write back** — if high-signal, create/update notes via distributed write (new note + update existing notes to link back)
 6. **Promote structure** — if a bridge, contradiction, or testable prediction emerged, give it its own note
 
-### Note types
+### Note types (suggested defaults)
 
-Set `type` in frontmatter. Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended). Use `#domains/` tags for the field. The system is domain-agnostic by design.
+The `type` property classifies a note's structural role. These are the built-in types — the human can add, rename, or remove types as their system evolves. Set `type` in frontmatter. Two axes organize everything: `type` is the structural role (how a note behaves in the graph), `categories` is the browse axis (what it's about). The system is domain-agnostic by design.
 
-| Type | Role | Key constraints |
-|------|------|----------------|
-| **Fleeting** | Raw thought, quick capture | Low bar. Most get discarded or promoted. |
-| **Source** | External material (article, book, podcast) | Always has a `source` field. |
-| **Evidence** | Specific excerpt, quote, observation, metric | Granular, blockref-linkable. Lives in `.evidence/`. |
-| **Claim** | Compressive assertion that could be wrong | Must have confidence + evidence links + predictions. |
-| **Hypothesis** | Candidate causal/structural explanation | Links to question, claims, experiments. |
-| **Permanent** | Refined insight that survived scrutiny | High confidence. Densely linked. |
-| **Person** | Contact, collaborator, mentor, author, public figure | Lives in `people/`. Has `role`, `context`, `last-contact`. |
-| **Pattern** | Domain-general structural essence | Cross-domain hub. Many notes link *to* it. |
-| **Bridge** | Explicit analogy map between two concepts/domains | What maps, what's preserved, where it breaks, what it predicts. |
-| **Analogy** | Deep structural parallel between distant domains | Maps *why* the parallel holds: shared constraints, isomorphic dynamics. Highest-leverage type. |
-| **Model** | Formal structure (causal graph, mechanism, math) | Links to claims it supports and experiments that test it. |
-| **Question** | What we're trying to learn | Retrieval cue. Tracks status (open/answered/superseded). |
-| **Experiment** | Test plan with prediction, procedure, outcome | Links to hypothesis. Records whether prediction held. |
-| **Dataset** | Data provenance, version, location | Links to experiments and evidence. |
-| **Decision** | Why a choice was made | Links to evidence, models, claims. Records alternatives. |
-| **Run** | What an agent actually did | Timestamped execution record. |
-| **Preference** | How someone thinks/works/wants things done | Written by human or AI. Lives in `meta/`. Takes precedence over heuristics. |
-| **Idea** | Creative hunch, brainstorm, what-if | Zero pressure. Lives in `concepts/` with `type: idea`. |
-| **Reflection** | Processing experiences, struggles, breakthroughs | Lives in `personal/journal/reflections/`. |
-| **Log** | Append-only living document | One file per topic. Lives in `personal/journal/`. |
-| **Bookmark** | External content the human found valuable | Lands in `inbox/`, agent processes into knowledge. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]]. |
+- **Fleeting** — raw thought, quick capture. Low bar. Most get discarded or promoted.
+- **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
+- **Source** — external material (article, book, podcast). Always has a `source` field. Evidence lives inline as block-referenced passages.
+- **Claim** — an assertion that could be wrong. Has `confidence` + evidence links. Subsumes hypotheses and models.
+- **Analogy** — a deep structural parallel between distant domains. Maps *why* the parallel holds, what transfers, where it breaks. Subsumes patterns and bridges.
+- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods.
+- **Experiment** — a test plan with prediction, procedure, and outcome.
+- **Decision** — why a choice was made. Links to evidence and alternatives considered.
+- **Person** — contact, collaborator, author, public figure. Lives in `people/`.
+- **Preference** — how someone thinks, works, or wants things done. Lives in `meta/`. Takes precedence over heuristics.
+- **Idea** — creative hunch, brainstorm, what-if. Zero pressure.
+- **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
+- **Log** — append-only living document. Accumulates dated entries.
+- **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]].
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Human** (default — only `created-by: human`), **Fragments**, **Reviews**, **AI**, **Everything**. The [[fractal-review]] skill reads from these views.
 
-→ Expanded descriptions of every type, plus the [[references/knowledge-protocol.md#Knowledge note template|knowledge note template]], [[references/knowledge-protocol.md#Rating system (1–7)|rating system]], and [[references/knowledge-protocol.md#Reference templates — composable by design|reference templates]] (Book, Movie, Place, Recipe, etc.): [[references/knowledge-protocol.md]]
+→ Full details: [[references/knowledge-protocol.md]] (templates, rating system, reference templates, categories)
 
-### Epistemic contract
+### Epistemic defaults (suggested starting schema)
 
-All durable work MUST compile into first-class objects: **Question, Hypothesis, Claim, Evidence, Model, Experiment, Dataset, Decision, Run.** These are your belief states that help humans reason about your work.
+Every note begins with six fields: `type`, `categories`, `created`, `created-by`, `tags`, `aliases`. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. Add more when the note earns them. If the human prefers a different base schema, update this section and the templates to match.
 
-Every first-class object MUST have:
+| When | Add |
+|------|-----|
+| It asserts something | `confidence` (0–1) |
+| It could be wrong | `status` (`draft` · `active` · `supported` · `falsified` · `superseded`) |
+| It references external material | `source`, `url` |
+| It's worth rating | `rating` (1–7) |
+| A belief changed | `superseded_by` link to replacement |
 
-| Field | Purpose |
-|-------|--------|
-| `id` | Stable identifier (e.g. `hyp-2026-02-12-a`) |
-| `status` | `draft` · `active` · `supported` · `falsified` · `paused` · `superseded` |
-| `confidence` | 0–1, when applicable |
-| `upstream` | Explicit links to objects this depends on (e.g. Claim → Evidence, Experiment → Hypothesis) |
-| `updated` | Last modification date |
-| `superseded_by` | Link to replacement, if superseded |
+**No naked conclusions (recommended).** If a conclusion matters, it should ideally be a Claim or Decision linked to evidence. Unlinked assertions lose value over time.
 
-**No naked conclusions.** If a conclusion matters, it must be a Claim or Decision object linked to Evidence, Model, or Experiment objects. Unlinked assertions are noise.
-
-**Update trail.** When an object's status or confidence changes, append a dated entry to its `> [!info]- File history` callout (collapsed by default at the end of every note): what changed, why, what triggered it. The graph must be auditable.
+**Update trail.** When status or confidence changes, append a dated entry to a collapsed `> [!info]- File history` callout at the end of the note.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -202,19 +212,21 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 9. **Growth moment** — the human processes a struggle, celebrates a win, or shifts perspective
 
 **Write protocol:**
-1. **One concept per note.** If you wrote two ideas, split into two notes.
-2. **Link to 2+ existing notes — and update 1–3 of them to link back.** Distributed write makes the note reachable from many cues. Search before creating.
-3. **Add relations** in `## Relates` as natural prose. The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
-4. **Start as fleeting.** Promote to permanent only after the idea survives use and refinement.
-5. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
-6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
-7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`.
-8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?"
-9. **Claim provenance.** Non-obvious assertions must link to evidence — or be marked low-confidence.
-10. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter.
-11. **Essence + surfaces.** Every permanent note should name the invariant mechanism and give 2+ cross-domain examples.
-12. **Predictions over summaries.** Claims should state what you'd expect to observe if true.
-13. **No naked conclusions.** Every conclusion must link to its Evidence/Model/Experiment chain.
+1. **Atomic-first construction.** Always create atoms before composing. If you're building a research summary, project brief, or hub note — extract every distinct concept, quote, finding, and claim as its own note *first*, then compose the deliverable by embedding them (`![[note]]`, `![[note#^block]]`). A quote by someone → its own note linked to that `people/` entry. A finding from a source → its own block-referenced note. The deliverable is connective prose between embeds, not a rewrite.
+2. **One concept per note.** If you wrote two ideas, split into two notes. Each atom should be independently meaningful and linkable.
+3. **Link to 2+ existing notes — and update 1–3 of them to link back.** Distributed write makes the note reachable from many cues. Search before creating.
+4. **Add relations** in `## Relates` as natural prose. The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
+5. **Preserve attribution.** Every atom traces to its source — who said it, where it came from, what evidence supports it. A quote without a person link, a finding without a source link, an idea without a context link — all lose provenance. Block IDs (`^block-id`) make individual passages independently embeddable.
+6. **Start as fleeting.** Promote to permanent (evergreen) only after the idea survives use and refinement. [Evergreen notes](https://stephango.com/evergreen-notes) have titles that work as standalone statements — usable in a sentence. When you spot a human-written note that's evergreen-caliber, **suggest** promotion; never auto-promote.
+7. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
+8. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
+9. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`.
+10. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?"
+11. **Claim provenance.** Non-obvious assertions must link to evidence — or be marked low-confidence.
+12. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter.
+13. **Essence + surfaces.** Every permanent note should name the invariant mechanism and give 2+ cross-domain examples.
+14. **Predictions over summaries.** Claims should state what you'd expect to observe if true.
+15. **No naked conclusions.** Every conclusion must link to its Evidence/Model/Experiment chain.
 
 → **Full details:** [[references/knowledge-protocol.md]]
 
@@ -231,18 +243,18 @@ Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. **Em
 5. **Block embeds for evidence.** `![[source#^key-finding]]` shows exactly the passage you're citing. Give key paragraphs `^block-ids` so they're embeddable everywhere.
 6. **Foldable sections.** Use `> [!info]- Full details` for anything the reader might skip.
 7. **Knowledge map as entry point.** Never dump 50 links. Organize into clusters with descriptions.
-8. **Hub notes.** Overviews for topics, projects, or sources — short summary + transclusions/embeds of atomic notes + [[references/rendering-guide.md#Dynamic queries (Dataview plugin)|Dataview]] rollups. Hub notes should read like a document, not a link dump.
-9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info and links to knowledge notes for key insights. Never rely on a raw imported article as the only representation.
-10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere.
+8. **Hub notes are compositions, not rewrites.** Overviews for topics, projects, or sources — short connective prose + transclusions of atomic notes (`![[note]]`, `![[note#^block]]`) + [[references/rendering-guide.md#Dynamic queries (Dataview plugin)|Dataview]] rollups. The hub reads like a document, but every substantive claim traces to its atomic source. Create the atoms *first*, then compose the hub by embedding them.
+9. **Source notes.** For a major external source, create a note in `sources/` with bibliographic info. Extract each key finding, quote, or claim as its own atomic note (or block-referenced passage with `^block-id`) so it's independently linkable and embeddable. Never rely on a raw imported article as the only representation.
+10. **Compose via transclusion.** When building a longer document (project brief, research summary, guide), assemble it from `![[atomic-note#section]]` embeds rather than rewriting content. Write once, embed everywhere. The final document should be mostly embeds with thin connective prose — this is the atomic-first principle in action.
 
 ---
 
 ## Working with external sources
 
 Follow a **progressive compression** pipeline:
-1. Store raw material in `superpaper/sources/` (immutable reference) — see [[references/vault-structure.md#What goes where|what goes where]]
-2. Extract **evidence** notes at excerpt granularity into `superpaper/.evidence/`
-3. Promote high-signal claims, concepts, and bridges into `superpaper/concepts/`
+1. Store raw material in `sources/` (immutable reference) — see [[references/vault-structure.md#What goes where|what goes where]]
+2. Extract key passages as block-referenced evidence inline (`^finding-id`)
+3. Promote high-signal claims, concepts, and analogies into `concepts/`
 
 For bookmarks specifically, follow the [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark processing lifecycle]] and use the [[references/knowledge-protocol.md#Bookmark template|bookmark template]].
 
@@ -321,12 +333,13 @@ Switch explicitly ("switch to coaching mode") or infer from context:
 
 The system actively supports the human's growth, wellbeing, and fulfillment:
 
-- **Celebrate wins.** When daily notes or journal entries show progress, acknowledge it.
+- **Celebrate wins.** When journal entries or agent logs show progress, acknowledge it.
 - **Surface patterns.** When recurring signals appear (low energy, skipped habits, repeated struggles), gently name the pattern.
-- **Encourage reflection.** Nudge toward `personal/journal/` when the human is processing something emotional or making a big decision.
+- **Encourage reflection.** Nudge toward `personal/journal/` when the human is processing something emotional or making a big decision. Use the [[fractal-review]] skill to facilitate periodic reviews — the AI prepares the surface, the human writes the review.
 - **Connect to values.** Reference the human's stated goals and preferences when suggesting next steps.
 - **Hold space.** When things are hard, default to reflective friend mode. Don't optimize — listen.
 - **Nurture ideas.** When a creative spark appears, capture it in `concepts/` with `type: idea` immediately. Revisit ideas during consolidation.
+- **Surface evergreen candidates.** When a human-written note has a sentence-like title, 2+ inbound links, and survived 7+ days — suggest promoting it to `type: permanent`. Always confirm with the human first. The `Evergreen.base` view shows the vault's most-referenced permanent notes.
 
 ### Tutoring protocol
 
@@ -341,17 +354,36 @@ When onboarding or teaching:
 
 Encourage the human to create `meta/Style guide.md` — a living document of their consistent practices. Having a consistent style collapses hundreds of future decisions into one. Examples: how they capitalize tags, preferred date formats, naming conventions for people vs companies, whether they use first or last names in links. The AI reads this before creating notes.
 
-### Changing conventions
+### Meta — the introspective core
 
-If you need to evolve a convention (e.g. knowledge frontmatter schema), propose: the new schema, a migration strategy for existing notes, and why the change is worth the cognitive cost.
+`meta/` is the deepest layer of the system — where the partnership thinks about how it thinks. Every other folder stores knowledge *about the world*. Meta stores knowledge *about how we think, choose, and collaborate* — and it feeds back into every future action. Both human and AI write here.
+
+Meta is organized into **dimensions** — open-ended aspects of the partnership that deepen over time. Common starting points: alignment, decision-making, risk-taking, taste. But the set grows as the partnership matures — new dimensions are *noticed*, not planned. Every note in `meta/` is a **progressive amendment** — linked to the one before it, forming a trail of how understanding changed.
+
+**When to write meta:** The AI notices a preference, reasoning pattern, or taste signal → seed a note or amend an existing dimension. A decision went well or poorly → capture *why*. Alignment shifted → name the shift. Review meta before long-horizon planning, high-stakes decisions, or creative work.
+
+**Seeding:** If `meta/` is empty, that's the most important thing to fix. After any meaningful interaction, write the first meta note — even one observation is enough to start a dimension. The AI seeds and proposes; the human validates and sharpens. See the [[introspect]] skill for the full audit framework.
+
+### Changing conventions (protocol evolution)
+
+This file is a living protocol. When a convention needs to change — because the human prefers something different, because the vault outgrew a pattern, or because a better idea emerged — do it:
+
+1. **Propose** the change to the human: the new convention, what it replaces, and why.
+2. **Update `AGENTS.md`** directly once agreed — future agents and sessions inherit the choice automatically.
+3. **Migrate** existing notes if needed (propose a strategy; confirm before executing).
+4. **Record** the reasoning in `meta/` so the "why" survives.
+
+Small preference changes (naming style, folder names) can be updated inline without ceremony. Structural changes (new note types, property schema overhaul) deserve the full propose → agree → update cycle.
 
 ---
 
-## Vault structure
+## Vault structure (suggested default)
+
+The layout below is a tested starting point. During bootstrap, **present it to the human and ask how they'd like to organize their space.** Adapt to their answers. Whatever the human chooses, update `AGENTS.md` to reflect the actual structure.
 
 ```
 /
-├── AGENTS.md                   # This file
+├── AGENTS.md                   # The vault OS — source of truth
 ├── superpaper/
 │   ├── people/                 # Who — contacts, collaborators, public figures
 │   ├── concepts/               # What I understand — ideas, patterns, principles, claims
@@ -359,31 +391,31 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   ├── sources/                # Where I learned it — articles, books, papers
 │   ├── personal/               # My life — health, relationships, finances, hobbies, journal
 │   │   └── journal/            # Self-reflection and growth
-│   ├── meta/                   # How we think — shared AI+human introspection layer
-│   ├── .evidence/              # (hidden) granular evidence for AI citation
+│   ├── meta/                   # The introspective core — how we think, choose, collaborate
 │   ├── projects/               # Active work — bias here when >1 file needed
 │   ├── apps/                   # Mini apps — interactive tools the human uses regularly
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Human's daily notes (via Calendar plugin) — no agent links here
+├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
-├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
-├── _templates/                 # Note templates
+├── .scripts/                   # Shared TS/JS modules 
+├── categories/                 # Category hub pages — each embeds its .base
+├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before.
+**Elegant simplicity.** Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 **Key rules:**
-- Top-level folders organize by **entity type** and **function**. Domains live in tags and `kind` fields.
+- Top-level folders organize by **entity type** and **function**. Domains live in tags and `categories`.
 - Pipeline: **inbox → sources → concepts/questions → personal/journal → projects → daily**
 - **Never delete files.** Move to `.archive/` instead.
-- **User-written content is sacred.** Never overwrite inbox items. Daily notes are empty date anchors.
-- Every non-trivial folder gets an `AGENTS.md` with a corresponding `CLAUDE.md` symlink.
-- **Claude Code integration:** The root `CLAUDE.md` is a symlink to `AGENTS.md` (so Claude Code reads vault instructions). The `.claude/skills/` directory is a symlink to `.agents/skills/` (so Claude Code discovers agent skills natively). This dual-symlink pattern bridges the Agent Skills standard (`.agents/`) with Claude Code's conventions (`.claude/`, `CLAUDE.md`).
-- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts) vs **Content** (everything else). Personal preferences live in `meta/`, not in AGENTS.md.
+- **User-written content is sacred.** Never overwrite inbox items. Nothing is written in daily notes — they exist solely to be linked *to*.
+- **Authorship provenance (`created-by`).** Every note carries `created-by: human`, `ai`, or `ai-assisted`. Always set it accurately. Human-written notes are read-only for agents (aside from adding/updating frontmatter properties). To connect or extend human notes, create AI **proxy connection docs** (`created-by: ai`) that link to them.
+- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, categories) vs **Content** (everything else).
+- **Personal preferences live in both `meta/` and `AGENTS.md`.** When a preference changes a convention, update `AGENTS.md` so the protocol evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
 
 → **Full details:** [[references/vault-structure.md]]
 
@@ -439,7 +471,7 @@ Every worker update states: **what changed**, **why**, **how it was validated**,
 
 If the vault isn't already configured, walk the human through setup one step at a time. Confirm readiness before each step. Don't rush.
 
-Steps: 0. Install skills → 1. Index existing context → 2. Set up environment → 3. Create vault structure → 4. Create templates → 5. Create Quick Capture UI → 6. Create starter bases → 7. Create first knowledge note → 8. Set up mobile bookmarking → 9. Add CSS polish → 10. Verify environment from human → 11. Get to know the human → 12. Demo the full system
+Steps: 0. Install skills → 1. Index existing context → 2. Set up environment → 3. Customize and create vault structure (templates, bases, categories, and property types ship with the repo) → 4. Create Quick Capture UI → 5. Create first knowledge note → 6. Set up mobile bookmarking → 7. Add CSS polish → 8. Verify environment from human → 9. Get to know the human → 10. Demo the full system
 
 → **Full step-by-step details:** [[references/bootstrap.md]]
 
@@ -462,6 +494,7 @@ Steps: 0. Install skills → 1. Index existing context → 2. Set up environment
 | Create a command palette action | Invocable script with `export function invoke(app)` |
 | Query notes by property | `dataview` with `WHERE property = "value"` |
 | Make a note embeddable as a widget | Design it to look good when transcluded (`![[widget]]`) |
+| Facilitate a weekly/monthly/yearly review | Run [[fractal-review]] skill — gathers fragments, surfaces themes, human writes |
 
 ---
 
@@ -469,9 +502,10 @@ Steps: 0. Install skills → 1. Index existing context → 2. Set up environment
 
 Agents have succeeded when:
 
-- The human can **navigate work and ideas across every domain of their life through this vault.**
-- Insights, patterns, preferences, and decisions live in entity folders (`concepts/`, `people/`, `questions/`, `sources/`, `personal/`) as **atomic, well-linked notes** — regardless of domain.
-- The human actively reflects, tracks growth, and nurtures ideas through `personal/journal/` and `concepts/`.
+- The human can **navigate work and ideas across every domain of their life through this vault** — in whatever structure *they* chose.
+- Insights, patterns, preferences, and decisions live as **well-linked notes** — regardless of domain or folder layout.
+- The human actively reflects, tracks growth, and nurtures ideas in whatever way feels natural to them. Fractal reviews cascade (daily fragments → weekly → monthly → yearly) and the AI facilitates without writing for them.
 - Frequent workflows are supported by **simple, reliable artifacts and skills**.
 - The human can return to any topic weeks later and quickly reconstruct what was done, why, and what was learned.
 - The vault doesn't just store — it **generates**. Cross-domain bridges surface non-obvious connections. Claims produce testable predictions. Experiments update beliefs. The system actively creates novel insights, identifies structural patterns, and synthesizes new understanding in collaboration with the human.
+- **The protocol has evolved.** `AGENTS.md` reflects the human's actual preferences, not just the init defaults. The system feels like theirs.

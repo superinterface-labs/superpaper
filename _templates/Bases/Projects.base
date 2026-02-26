@@ -1,0 +1,22 @@
+filters:
+  and:
+    - categories.contains(link("Projects"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All projects
+    order:
+      - file.name
+      - status
+      - tags
+      - created
+    sort:
+      - property: status
+        direction: ASC
+  - type: table
+    name: Active
+    filters: status == "active"
+    order:
+      - file.name
+      - tags
+      - created

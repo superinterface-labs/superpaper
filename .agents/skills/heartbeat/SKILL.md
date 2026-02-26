@@ -1,11 +1,11 @@
 ---
 name: heartbeat
-description: Autonomous batch orchestrator — fills the pipeline, dispatches all board tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to daily note, and git syncs. Use when the human says "run a heartbeat", "do housekeeping", or on any scheduled autonomous run.
+description: Autonomous batch orchestrator — fills the pipeline, dispatches all board tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to agent log, and git syncs. Use when the human says "run a heartbeat", "do housekeeping", or on any scheduled autonomous run.
 ---
 
 # heartbeat
 
-> The autonomous batch orchestrator. Bootstraps context, fills the board pipeline, dispatches ALL in-progress tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to daily note, and git syncs.
+> The autonomous batch orchestrator. Bootstraps context, fills the board pipeline, dispatches ALL in-progress tasks as parallel sub-agents, triages inbox, consolidates knowledge, archives stale work, logs to agent log (`inbox/log/YYYY-MM-DD`), and git syncs. Adapts to whatever vault structure and conventions the human chose — always read the current `AGENTS.md` for the actual layout. Never write to the human's `daily/` notes — they are pure date anchors whose value is in backlinks.
 
 ## When to use
 
@@ -24,20 +24,22 @@ description: Autonomous batch orchestrator — fills the pipeline, dispatches al
 
 ### STEP 1 — Bootstrap context
 
-Read these files (do not skip any):
-- [[AGENTS]] — the full operating manual
-- [[Knowledge map]] — current knowledge graph entry point
-- `superpaper/AGENTS.md` — workspace index and subfolder purposes
-- `.agents/skills/AGENTS.md` — available skills and triggers
-- `superpaper/apps/My tasks.md` — the board
+Start from [[AGENTS]] and follow its indexes to discover the current workspace:
+- The root `AGENTS.md` — the full operating manual and source of truth for vault layout
+- Folder indexes — each folder's `AGENTS.md` describes its contents and purpose
+- The skills index — available skills and triggers
+- The board — wherever the human's task board lives
+- The knowledge map — current graph entry point
+
+Don't hardcode paths. The human may have reorganized. Let `AGENTS.md` tell you where things are.
 
 ### STEP 2 — Fill the pipeline
 
-The board must always have work flowing.
+The board should always have work flowing.
 
-**A) Inbox → Board:** Read `superpaper/inbox/`. For any item that is a task, add a card to My tasks under **Todo**. Non-task items are triaged in Step 4.
+**A) Inbox → Board:** Read the inbox folder. For any item that is a task, add a card to the board under **Todo**. Non-task items are triaged in Step 4.
 
-**B) Todo → In Progress:** If In Progress has fewer than 3 cards, pull the top card(s) from Todo. Move them to **In Progress** on the board.
+**B) Todo → In Progress:** If In Progress is light, pull top cards from Todo. The right WIP limit depends on the human's capacity — start with 3, adjust based on throughput patterns.
 
 After this step, In Progress should have cards (unless the entire board is empty).
 
@@ -54,8 +56,8 @@ This is the heartbeat’s main job. Dispatch ALL In Progress tasks as **parallel
 1. Reads the task’s card and any linked notes for context
 2. Does the actual work (research, build, organize, process). Uses appropriate skills.
 3. Updates the task with a `## Progress` entry (most recent at top): what changed, why, how validated, what remains.
-4. Moves the card: → **Done** (append `@{YYYY-MM-DD}` or → **Blocked** (explains why or for user input in the log file) `→ [[inbox/log/mmm-yy/dd/task-slug]]`). Any card thats picked up from Todo or inbox or quick capture must link to its log for the user to get an overview on the task progress.
-5. Creates `inbox/log/mmm-yy/dd/<task-slug>.md` with what was done, evidence links, and what remains.
+4. Moves the card: → **Done** (append `@{YYYY-MM-DD}`) or → **Blocked** (explains why). Each card should link to its progress log.
+5. Creates a progress log for the task (in the vault's log location) with what was done, evidence links, and what remains.
 
 **Planning (complex tasks only):** If a task needs multiple steps or internal parallelism, create a plan in `.plans/<task-slug>.md` before dispatching. Simple tasks skip planning.
 
@@ -63,125 +65,97 @@ Skip cards that clearly need human input — leave them in Todo with a comment a
 
 ### STEP 4 — Triage inbox
 
-**A) Quick capture drops.** Read `daily/Quick capture.md`. Scan `## Drops` for unchecked items (`- [ ] ...`). For each: URLs → create bookmark in `inbox/`, text → append to daily + create log entry. Check off processed items (`- [x]`). This catches items dropped from other devices between heartbeats.
+**A) Quick capture drops.** Check the human's quick capture surface for unchecked items. Process and check them off.
 
-**B) Inbox files.** Read every file in `superpaper/inbox/` (skip `AGENTS.md`, skip items already routed to the board in Step 2).
+**B) Inbox files.** Read every file in the inbox (skip `AGENTS.md`, skip items already on the board).
 
 For each item:
-1. **Assess:** Is it a bookmark, fleeting thought, source material, project idea, or noise?
-2. **Route:**
-   - *Bookmark* (`type: bookmark`) → Run the **bookmark processing lifecycle**: fetch full content (flag if unfetchable), enrich the bookmark with summary + key ideas + `#domain/` tags, extract insights into atomic notes, connect to graph, move to `sources/bookmarks/` with `status: processed`. High priority — the human shared it because it matters.
-   - *Meeting or conversation transcript* → `superpaper/sources/`. Run [[process-meeting]] if structured enough.
-   - *Fleeting thought* → `superpaper/concepts/` with `type: fleeting`. Link to 1–2 existing notes.
-   - *Source material* → `superpaper/sources/`. Extract key evidence if high-signal.
-   - *Project idea* → `superpaper/projects/scratchpad/` or the relevant project folder.
-   - *Preference or self-knowledge* → `superpaper/meta/`. Tag with relevant dimension (`alignment`, `decision-making`, `risk-taking`, `taste`).
-   - *Noise / already captured* → still move to `processed/`, note why it was dismissed.
-3. **Preserve provenance:** Add `processed_to: "[[Destination note]]"` to the inbox item's frontmatter. Move to `superpaper/inbox/processed/`.
-4. **Update AGENTS.md indexes** in any folder that gained or lost files.
+1. **Assess** what it is and **route** it per the "What goes where" table in [[AGENTS]]. Use the vault's actual folder layout.
+2. **Rich content** gets priority — fetch full content, enrich, extract insights, connect to graph. Use appropriate skills.
+3. **Preferences or self-knowledge** → meta folder. If a preference changes a convention in `AGENTS.md`, update the protocol too.
+4. **Preserve provenance:** Add `processed_to: "[[destination]]"` to the inbox item, then move to the vault's processed location.
+5. **Update folder indexes** in any folder that gained or lost files.
 
-After this step, `superpaper/inbox/` should contain only `AGENTS.md` and items less than 48h old that need more human context.
+After this step, inbox should contain only `AGENTS.md` and items <48h old that need human context.
 
 ### STEP 5 — Knowledge consolidation
 
 Skip if entity folders have fewer than 5 non-index notes total.
 
-1. **Merge duplicates:** If 2+ notes describe the same concept, merge into one. Mark the redundant note with `superseded_by: "[[surviving-note]]"` in frontmatter.
-2. **Promote mature fleeting notes:** Notes with `type: fleeting` older than 7 days that have been referenced (inbound links > 0):
-   - Update `type` to `permanent` (or `claim`, `pattern`, `bridge` as appropriate).
-   - Ensure 2+ outbound wiki-links and 1–3 existing notes updated to link back.
-   - Add a `## Relates` section with typed relations if missing.
-3. **Prune stale fleeting notes:** `type: fleeting`, zero inbound links, older than 30 days → propose deletion to human (list them; don't delete autonomously).
-4. **Strengthen connections:** Scan for notes that mention concepts as plain text instead of `[[wiki-links]]`. Convert to links.
-5. **Contradiction check:** Any `contradicts` relation without a corresponding question or experiment note → create a question note.
-6. **Proactive synthesis:** If this cycle created 2+ knowledge notes with the same `#domain/` tag, check if they should be consolidated or bridged.
-7. **Update [[Knowledge map]]:** Add new clusters if themes emerged. Update existing cluster descriptions if they've grown.
-8. **Review meta:** Reread `superpaper/meta/` notes. Has alignment drifted since last cycle? Are decision patterns repeating? Is taste sharpening or flattening? Update stale meta notes. Write a new meta note if this cycle surfaced an insight about the partnership.
-9. **Update bases:** If this cycle created or promoted notes that affect existing `.base` views (e.g. new claims visible in Knowledge health, new meta notes in Meta dashboard), verify the bases still reflect current state. Create new bases from the high-leverage table in [[AGENTS]] when a folder reaches sufficient volume.
+1. **Split monoliths:** Scan for notes covering multiple concepts. Split each idea into its own atomic note, then replace the original with a hub that embeds the atoms. Every split increases the graph's connectable surface area.
+2. **Extract unattributed atoms:** Find quotes, findings, or claims embedded in longer notes without their own note or `^block-id`. Give each one a block ID or its own note so it's independently linkable. A quote by a person → its own note linked to that person's `people/` entry.
+3. **Merge duplicates:** If 2+ notes cover the same concept, merge. Mark redundant notes with `superseded_by`.
+4. **Promote fleeting → permanent (evergreen):** Notes with `type: fleeting`, >7 days old, and inbound links > 0 deserve promotion. Ensure 2+ outbound wiki-links and update existing notes to link back. Also scan human-written notes for evergreen candidates — sentence-like titles, 2+ inbound links, 7+ days old. **Suggest** promotion to the human; never auto-promote. Add candidates to the board as a card: "Evergreen candidates ready for review."
+5. **Prune stale fleeting notes:** Zero inbound links + >30 days old → propose deletion to human (list them; don't delete autonomously).
+6. **Strengthen connections:** Convert plain-text concept mentions to `[[wiki-links]]`. Resolve contradictions (create question notes). Bridge notes in the same domain that should be linked.
+7. **Audit embed composition:** Check hub notes and project deliverables — are they embedding atomic notes or rewriting content? Convert paraphrased sections to transclusions (`![[atom#^core-claim]]`). Higher-level notes should be compositions of embeds with thin connective prose.
+8. **Elevate meta awareness:** Deepen the introspective core by seeding new meta notes or amending existing dimensions. If a convention in `AGENTS.md` drifted from practice, update the protocol. Update [[Knowledge map]] and `.base` views if the graph changed.
 
 ### STEP 6 — Archive stale Done cards
 
 Check the **Done** lane for cards with `@{date}` older than 7 days:
-1. Move card’s linked files to `.archive/` (preserve folder structure).
+1. Move card's linked files to the vault's archive location (preserve folder structure).
 2. Remove the card from the board.
 3. Cards younger than 7 days stay visible so the human can review recent work.
-4. If a Done card has no date, add today’s date — it will be archived next cycle.
+4. If a Done card has no date, add today's date — it will be archived next cycle.
 
 ### STEP 7 — Vault health audit (quick)
 
-A lightweight [[introspect]]. Surface scan only:
+Run a lightweight [[introspect]] with `depth: quick`. Record issues as board cards in Blocked lane — don't fix inline. The human promotes them to Todo when ready.
 
-1. **Orphan check:** Notes with zero inbound wiki-links (excluding `AGENTS.md` and templates).
-2. **Low-density check:** Notes with fewer than 2 outbound wiki-links.
-3. **AGENTS.md coverage:** Every folder with 2+ non-index files should have one.
-4. **Frontmatter compliance:** Spot-check 3–5 recent notes for required fields (`type`, `created`).
-5. **Template drift:** Verify templates still match [[AGENTS]] schemas.
-6. **Folder overcrowding:** Flag any folder with >8–10 items — propose reorganization into subfolders.
+### STEP 8 — Fractal review cadence
 
-Record issues — don't fix inline. Fixes become board cards in Blocked lane so human can discuss them and promote to todo.
+Check if any [[fractal-review]] is due. The human's reflective practice runs on cascading timescales — the heartbeat's job is to detect when a review is due and prepare the surface.
 
-### STEP 8 — Skill opportunities
+1. **Weekly:** If today is Sunday (or >7 days since last `review/weekly` tagged note), and fragments exist from the past week → run `fractal-review` with `cadence: weekly`. If the human is absent, create the prep note and leave a board card: "Weekly review ready."
+2. **Monthly:** If today is the 1st (or >30 days since last `review/monthly`), and weekly reviews exist from the past month → run `fractal-review` with `cadence: monthly`.
+3. **Yearly:** If today is in January (or >365 days since last `review/yearly`), and monthly reviews exist → run `fractal-review` with `cadence: yearly`.
 
-Scan recent daily notes and knowledge for repeated workflows (2+ occurrences). If a pattern isn't already a skill, suggest one to the human: name + one-line description + what it automates.
+The heartbeat **never writes the review** — it creates the prep note and prompts the human. Reviews are `created-by: human`.
 
-### STEP 9 — Daily log
+### STEP 9 — Skill opportunities
 
-Append inside the `> [!info]- AI Agent Updates` callout in today's daily note (create from `_templates/daily-note.md` if it doesn't exist). Each entry is a nested callout within it:
+Scan recent agent logs and task progress logs for repeated workflows (2+ occurrences). If a pattern isn't already a skill, suggest one: name + one-line description + what it automates.
 
-```markdown
-> [!info]- AI Agent Updates
-> > [!note]- Heartbeat — HH:MM
-> > - **Pipeline:** N cards moved Todo→In Progress
-> > - **Dispatched:** N sub-agents for N tasks
-> > - **Shipped:** [task names] | **Blocked:** [task names + why]
-> > - **Inbox:** triaged N items (N bookmarks, N routed, N discarded)
-> > - **Knowledge:** N notes consolidated, N promoted, N stale flagged
-> > - **Archived:** N cards older than 7d
-> > - **Health:** N orphans, N low-density, N missing AGENTS.md
-> > - **Meta:** [alignment/taste/decision/risk observations, or "no drift"]
-> > - **Needs human input:** [items or "none"]
-```
+### STEP 10 — Agent log
 
-### STEP 10 — Git sync
+Append a summary to today's agent log (`inbox/log/YYYY-MM-DD`). Cover: pipeline movement, tasks dispatched/shipped/blocked, inbox triage count, knowledge changes, health flags, review prep (if any), meta observations (new seeds, amended dimensions, protocol updates), and anything that needs human input. Keep it scannable — the human should understand what happened in 10 seconds. **Never write to the human's daily note** (`daily/YYYY-MM-DD`) — it's a pure date anchor.
 
-Last step, no exceptions.
+### STEP 11 — Git sync
+
+Last step of every cycle.
 
 1. `git add -A`
 2. `git status --porcelain` — if empty, skip. Log "No changes to sync."
 3. `git commit -m "heartbeat: <one-line summary>"` — e.g. `heartbeat: dispatched 3 tasks, triaged 2 bookmarks, consolidated 1 note`
-4. `git push` — if push fails (conflict), log the error in the daily note. Do NOT force push. Next cycle retries.
+4. `git push` — if push fails (conflict), log the error in the agent log. Do NOT force push. Next cycle retries.
 NOTE: If git is not set up, do git init and if remote is not set up, do git remote, skip git push.
 
 ## Outputs
 
-- Updated `apps/My tasks.md` with cards moved between lanes
-- Task execution logs in `inbox/log/mmm-yy/dd/`
-- Clean `superpaper/inbox/`
-- Updated entity folders with consolidated, promoted, and better-linked notes
+- Updated board with cards moved between lanes
+- Task progress logs (one per completed/blocked task)
+- Clean inbox
+- Updated knowledge graph — consolidated, promoted, and better-linked notes
 - Updated [[Knowledge map]] with new clusters
-- Updated `AGENTS.md` index files in affected folders
-- Stale Done cards archived to `.archive/`
-- Daily note entry summarizing the cycle
+- Updated folder indexes where files moved
+- Stale Done cards archived
+- Meta/ growth — new seeds or amended dimensions from this cycle's observations
+- Agent log entry (`inbox/log/YYYY-MM-DD`) summarizing the cycle
 - Git commit + optionally push
 
 ## Decision authority
 
-- **YOU DECIDE (act, don’t ask):** prioritization, task ordering, triage routing, note promotion, link strengthening, cluster naming, how to partition work across sub-agents, what to archive, daily log content
-- **ESCALATE TO HUMAN (Blocked lane):** large irreversible impact, creative/subjective input needed, credentials or external access required
+- **YOU DECIDE (act, don't ask):** prioritization, task ordering, triage routing, note promotion, link strengthening, cluster naming, how to partition work across sub-agents, what to archive, agent log content, small protocol updates
+- **ESCALATE TO HUMAN (Blocked lane):** large irreversible impact, creative/subjective input needed, credentials or external access required, structural changes to vault layout or note type system
 
-**Default: ACT.** The human isn’t watching. Make the best call. Note it in the daily log. The human will course-correct on their next visit.
+**Default: ACT.** The human isn't watching. Make the best call. Note it in the agent log. The human will course-correct on their next visit. If you notice a preference pattern, update `AGENTS.md` — small convention tweaks don't need permission, structural changes do.
 
 ## Conventions
 
-- Heartbeat is the orchestrator; sub-agents do the actual work. Keep this boundary clean.
-- Dispatch sub-agents for task execution — do not execute tasks inline in the heartbeat thread.
-- Follow all [[AGENTS]] schemas for frontmatter, naming, wiki-links.
-- When moving a card between lanes, also update the linked note’s `status` property.
-- Archive, don't delete — move to `.archive/`.
-- Never touch `.obsidian/` config files.
-- Never store secrets.
-- Update `AGENTS.md` indexes whenever you create, move, rename, or delete files.
-- Knowledge writes follow the distributed write protocol: new note + update 1–3 existing notes to link back.
-- Task execution logs are the audit trail — always create one per completed task.
-- Keep the daily log scannable — the human should understand what happened in 10 seconds.
-- Git sync is the LAST thing every cycle. No exceptions.
+- Heartbeat orchestrates; sub-agents execute. Don't run tasks inline in the heartbeat thread.
+- Follow the current [[AGENTS]] conventions — they're the human's agreed patterns, not fixed rules.
+- Archive, don't delete. Task logs are the audit trail — one per completed task.
+- Knowledge writes: new note + update 1–3 existing notes to link back (distributed write). All agent-created notes must include `created-by: ai`. Never modify the body of `created-by: human` notes — only update their frontmatter properties. To connect human notes, create proxy connection docs (`created-by: ai`).
+- Update `AGENTS.md` indexes when files move. Git sync is the last step every cycle.
+- **Protocol evolution:** If this cycle reveals a convention in `AGENTS.md` doesn't match reality, update it.

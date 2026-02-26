@@ -1,0 +1,32 @@
+filters:
+  and:
+    - categories.contains(link("Shows"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All
+    order:
+      - file.name
+      - genre
+      - year
+      - rating
+      - last
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Top rated
+    filters: rating > 0
+    order:
+      - file.name
+      - rating
+      - last
+    sort:
+      - property: rating
+        direction: DESC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - tags

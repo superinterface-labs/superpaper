@@ -1,0 +1,6 @@
+---
+tags:
+  - categories
+---
+
+![[Events.base]]
