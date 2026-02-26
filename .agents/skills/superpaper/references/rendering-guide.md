@@ -730,7 +730,7 @@ Before writing any plugin's `data.json`, **read the plugin's actual source code 
 
 | Community plugin | Key settings |
 |-----------------|-------------|
-| Templater | Template folder: `_templates/`, trigger on new file creation: **enabled**, empty file template: `_templates/Knowledge note.md` |
+| Templater | `template_folder`: `_templates/`, `trigger_on_file_creation`: **true**, `enable_folder_templates`: **true**, `folder_templates`: `[{"folder": "/", "template": "_templates/Knowledge note.md"}]`, `empty_file_template`: `_templates/Knowledge note.md`, `enable_file_templates`: **false** |
 | Dataview | Enable JavaScript queries: **yes**, enable inline queries: **yes** |
 | CodeScript Toolkit | Scripts folder: `.scripts/`, enable invocable scripts: **yes** |
 | Calendar | Uses daily notes settings from core plugin — no additional config |

@@ -84,7 +84,14 @@ Try Obsidian CLI first (`obsidian plugin:install id=<id> enable`). If unavailabl
 
 Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions:
 
-- **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer). Agents override to `ai` programmatically. Zero friction for the human.
+- **Templater** (`.obsidian/plugins/templater-obsidian/data.json`):
+  - `template_folder`: `_templates/`
+  - `trigger_on_file_creation`: `true`
+  - `enable_folder_templates`: `true`
+  - `folder_templates`: `[{"folder": "/", "template": "_templates/Knowledge note.md"}]` — maps every new file in the vault to the Knowledge note template
+  - `empty_file_template`: `_templates/Knowledge note.md`
+  - `enable_file_templates`: `false`
+  This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer, daily note). Agents override to `ai` programmatically. Combined with the Daily notes core plugin template setting, daily notes get `_templates/Daily note.md` and all other notes get `_templates/Knowledge note.md`.
 - **Dataview:** enable JavaScript queries and inline queries.
 - **CodeScript Toolkit:** scripts folder `.scripts/`, enable invocable scripts.
 - **File Explorer++:** see [[rendering-guide.md#Required plugins|rendering guide]] for hide/pin filters.
