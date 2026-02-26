@@ -418,11 +418,11 @@ Type notes (e.g. `[[Restaurant]]`, `[[Museum]]`) carry `icon` and `color` proper
 | Simple live query embedded in a note | **Dataview DQL** or **Bases embed** |
 | Agent-only auditing in scripts | **Dataview** — easier to query programmatically |
 
-**Example of High-leverage bases for this vault:**
+**High-leverage bases (templates ship in `_templates/Bases/` — copy to destination when deploying):**
 
-| Base | Location | Purpose |
-|------|----------|---------|
-| `Meta dashboard.base` | `superpaper/meta/` | Views per dimension (alignment, decision-making, risk-taking, taste). Formula: `dateDiff(now(), date(updated), 'days')` flags stale notes. Filter by author (human vs AI). |
+| Base | Deploy to | Purpose |
+|------|-----------|---------|
+| `Meta dashboard.base` | `superpaper/meta/` | One view per dimension the partnership has built. Formula: `dateDiff(now(), date(updated), 'days')` flags stale notes. Filter by author (human vs AI). |
 | `Knowledge health.base` | `superpaper/` | Views: orphan notes (backlinks = 0), low-confidence claims, stale fleeting notes (>14 days), unrequited outlinks. The introspect skill in base form. |
 | `People.base` | `superpaper/people/` | CRM view — last-contact, role, context. Sortable, inline-editable. Filter by staleness. |
 | `Questions.base` | `superpaper/questions/` | Views: open, answered, superseded. Link count shows which questions are pulling the most knowledge. |
@@ -433,7 +433,7 @@ Type notes (e.g. `[[Restaurant]]`, `[[Museum]]`) carry `icon` and `color` proper
 | `Ratings.base` | `superpaper/` | Everything you've ever rated, cross-category. Views: all ratings by recency, recent (last 60 days). "Show me all 7s" returns best books, movies, restaurants, trips in one view. |
 | `Map.base` | `superpaper/sources/` | Geo-spatial view of all notes with `coordinates`. Type notes carry `icon` + `color` for marker appearance. Views: global map, location-filtered, type-filtered. |
 
-Don't create all of these at once. Start with **Bookmarks** and **Related** during bootstrap — it's the first base the human will use daily. Others emerge as content grows.
+Don't deploy all bases at once. Start with **Bookmarks** and **Related** during bootstrap. Others get deployed as content grows and the human needs them.
 
 ---
 
@@ -597,7 +597,7 @@ For anything beyond vanilla TS (React, complex state, large dependencies):
 **Every tracker, log, and app must be backed by markdown files or frontmatter** — never localStorage alone. The human must be able to read history without running code. Patterns:
 - **Frontmatter fields** — store state in the note's own YAML (`streak: 5`, `last_run: 2026-02-12`)
 - **Append to log files** — `personal/journal/*.log.md` for time-series data (mood, habits, workouts)
-- **One file per entry** — `inbox/log/mmm-yy/dd/<task>.md` for granular task tracking
+- **One file per entry** — task logs in the vault's log location for granular task tracking
 
 localStorage is acceptable only as a UI cache for the current session. The source of truth is always a file.
 
@@ -660,7 +660,7 @@ A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress
 - The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
 - Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
 
-**Every card should link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
+**Every card should link to its log.** When a task ships, append a link to the task's log entry so the human can trace what happened without leaving the board.
 
 **Task lifecycle:**
 
@@ -672,7 +672,7 @@ A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress
 5. BLOCKED   → Move to Blocked — comment explains why, escalate to human
 ```
 
-**Task execution logs** live in `inbox/log/mmm-yy/dd/<task-slug>.md`:
+**Task execution logs** live in the vault's log location (suggested: `inbox/log/`):
 
 ```markdown
 ---
@@ -1104,7 +1104,7 @@ See `_templates/Place.md`. Adds `loc`, `coordinates`, `rating`, `last`, `via`. P
 
 Templates are **composable mixins**, not rigid forms. A contact who wrote a book gets both Person template and Author template applied. A restaurant that's also a recipe source gets Place + Recipe. Layer templates freely — properties merge.
 
-Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page wherever it belongs. Create the trinity when the human first needs the category, not before.
+Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page in `categories/`. The most common trinities ship with the repo (see `_templates/AGENTS.md` for the full inventory). When a new category emerges, spin up all three — the base templates make this instant.
 
 | Template | Key properties | Base views |
 |----------|---------------|-----------|
@@ -1157,26 +1157,21 @@ When a bookmark arrives in `inbox/`:
 - **Promote ideas** — revisit `type: idea` notes in `concepts/`; mature hunches get promoted to permanent or become project seeds
 - **Review meta** — reread `meta/` before planning. Has alignment drifted? Are decision patterns repeating? Is taste sharpening or flattening? Update stale meta notes. This is the self-referential loop.
 
-### Meta — the self-referential layer (`superpaper/meta/`)
+### Meta — the introspective core (`superpaper/meta/`)
 
-`meta/` is the vault's consciousness. The only folder where **both human and AI write about themselves, each other, and the system itself**. Every other folder stores knowledge *about the world*. Meta stores knowledge *about how we think, choose, and collaborate* — and it feeds back into every future action.
+`meta/` is the deepest layer of the system — where the partnership thinks about how it thinks. Every other folder stores knowledge *about the world*. Meta stores knowledge *about how we think, choose, and collaborate* — and it feeds back into every future action. Both human and AI write here.
 
-Both writers introspect here. The human captures how they reason, what they value, where they struggle. The AI captures what it's learned about the human, where alignment breaks down, what calibration drifts it notices. Over time, meta becomes the long-horizon memory that makes execution compound.
+Meta is organized into **dimensions** — open-ended aspects of the partnership that deepen over time. Common starting points: alignment, decision-making, risk-taking, taste. But the set grows as the partnership matures — new dimensions are *noticed*, not planned. When you see a pattern across 2–3 interactions that doesn't fit an existing dimension, name it and propose a new one.
 
-**Four dimensions:**
+Every note in `meta/` is a **progressive amendment** — linked to the one before it, forming a trail of how understanding changed. This makes every decision auditable, every taste judgment traceable, every shift in alignment explainable. Early notes will be rough. Precision comes from revision.
 
-1. **Alignment** — mutual understanding between human and AI. Trust calibration. Where communication works, where it breaks. What the human *actually* means vs. what they say. What the AI misreads. Notes here are the tuning weights of the partnership.
-2. **Decision-making** — how choices get made. Frameworks, heuristics, biases, failure modes. Both parties log reasoning patterns — the human's tendencies under pressure, the AI's default assumptions. Review these before high-stakes moves.
-3. **Risk-taking** — appetite for uncertainty. Comfort zones and growth edges. When to push, when to hold. The human's relationship with failure. The AI's tendency toward safety vs. boldness. Calibrate together.
-4. **Taste** — the subtle, high bar for ideas. What "good" looks like across domains. Aesthetic sensibility, quality thresholds, intellectual standards. Taste is the hardest thing to transfer — these notes are how it happens.
+**When to write meta:**
+- The AI notices a preference, reasoning pattern, or taste signal → seed a note or amend an existing dimension.
+- A decision went well or poorly → capture *why* the reasoning worked or didn't.
+- Alignment shifted → name the shift.
+- Review meta before long-horizon planning, high-stakes decisions, or creative work.
 
-**Write protocol for meta:**
-- After any significant interaction where alignment shifted, either party writes a brief meta note.
-- After a decision that went well or poorly, capture *why* the reasoning worked or didn't.
-- When the AI notices a pattern in the human's behavior (or vice versa), name it here.
-- Review meta before long-horizon planning, high-stakes decisions, or creative work — it's the calibration surface.
-
-Meta notes are living documents. Update them as understanding deepens. A preference note from month one should look different by month six — not because the preference changed, but because the understanding of *why* sharpened.
+**Seeding:** If `meta/` is empty, that's the most important thing to fix. After any meaningful interaction, write the first meta note — even one observation is enough to start a dimension. The AI seeds and proposes; the human validates and sharpens. See the [[introspect]] skill for the full audit framework.
 
 ### Knowledge map (`superpaper/Knowledge map.md`)
 
@@ -1388,8 +1383,7 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 | `journal/`, `reflections/`, `weekly-reviews/`, `retrospectives/`, `gratitude/` | First long-form reflection or review | `personal/` |
 | `experiments/` | First designed personal trial (sleep, habits, routines) | `personal/` |
 | `decisions/` | Accumulating life decisions worth tracking | `personal/` |
-| `alignment/`, `decision-making/`, `risk-taking/`, `taste/` | Core dimension develops depth | `meta/` |
-| `values/`, `beliefs/`, `preferences/`, `cognitive-patterns/`, `blindspots/` | Self-knowledge deepens | `meta/` |
+| `<dimension>/` (e.g. `alignment/`, `taste/`, `decision-making/`) | Any meta dimension develops depth | `meta/` |
 | `<name>/` | Any active project with multiple files | `projects/` |
 | `experiments/` | First designed trial within a project | `projects/<name>/` |
 | `scratchpad/` | First throwaway experiment or deliverable (auto-archive after 14 days) | `projects/` |
@@ -1414,18 +1408,14 @@ These are suggested destinations based on the default folder structure. If the h
 | Processing an experience or struggle | `personal/journal/` | Self-reflection, growth |
 | A running log (decisions, goals, learnings) | `personal/journal/*.log.md` | Append-only living document |
 | A designed trial (sleep protocol, habit test) | `personal/experiments/` | Structured test with hypothesis + outcome |
-| A preference, value, or self-knowledge note | `meta/` | How we think — human or AI writes |
-| Alignment observation (trust, communication, calibration) | `meta/alignment/` | Tuning weights of the partnership |
-| A decision-making framework or reasoning pattern | `meta/decision-making/` | How choices get made |
-| Risk appetite, comfort zones, growth edges | `meta/risk-taking/` | When to push, when to hold |
-| Quality bar, aesthetic sense, intellectual standards | `meta/taste/` | What "good" looks like |
+| A preference, value, self-knowledge, or introspective observation | `meta/` | The introspective core — how we think, choose, and collaborate. Subdimensions emerge as depth grows. |
 | A quick thought, voice note, screenshot | `inbox/` | Triage within 48h |
 | Something I'm actively building (>1 file) | `projects/<name>/` | Multi-file work lives in projects |
 | A project experiment or A/B test | `projects/<name>/experiments/` | Designed trial scoped to a project |
 | An interactive tool the human will reuse | `apps/<name>/` | Mini apps — trackers, dashboards, utilities |
 | A blog, tweet, video, podcast, or link I liked | `inbox/` → `sources/bookmarks/` | Captured in inbox, enriched and moved to library after processing |
 | A task the agent should work on | `apps/My tasks.md` | Kanban card — heartbeat picks it up |
-| A task execution log entry | `inbox/log/mmm-yy/dd/<task>.md` | Granular record of what was done, when, and why |
+| A task execution log entry | inbox log folder | Granular record of what was done, when, and why |
 | Agent's daily anchor | `inbox/log/YYYY-MM-DD.md` | Agent activity rolls up here — keeps `daily/` clean |
 | Human's date anchor | `daily/` | Empty — value is in backlinks from the human's own fragments and life |
 
@@ -1511,7 +1501,7 @@ Install all community plugins: `obsidian plugin:install id=<id> enable` for each
 **After any plugin install, config change, or `.obsidian/` edit:** reload Obsidian with `obsidian reload` so changes take effect. Never assume a config change is live without reloading.
 
 **Graph View color groups** (configure in `.obsidian/graph.json`):
-- `path:superpaper/concepts` green, `path:superpaper/people` teal, `path:superpaper/questions` cyan, `path:superpaper/personal` purple, `path:superpaper/sources` amber, `path:superpaper/meta` gold, `path:superpaper/projects` blue, `path:daily` gray, `[type:claim]` orange, `[status:blocked]` red.
+- Assign a distinct color to each entity folder and key note types. Example: concepts green, people teal, questions cyan, personal purple, sources amber, meta gold, projects blue, daily gray. Adapt to the human's actual folder layout.
 
 ---
 
@@ -1602,7 +1592,13 @@ This step is critical — the vault needs plugins to function well.
 
 Adapt the structure to their answers. Create whatever they agree to. The defaults (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`, `projects/`, `apps/`, `inbox/` under `superpaper/`, plus `daily/`, `.archive/`, `.scripts/` at root) work well — but they're suggestions, not requirements. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
-Templates (`_templates/`), category pages (`categories/`), and property types (`obsidian-types-init.json`) **ship with the repo** — no need to create them. Copy `obsidian-types-init.json` to `.obsidian/types.json`. Read `_templates/AGENTS.md` for the full inventory of templates and conventions.
+**What ships with the repo (no need to create):**
+- **Templates** (`_templates/`) — 12 note templates + 31 base templates. Read `_templates/AGENTS.md` for the full inventory.
+- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
+- **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
+- **Base templates** (`_templates/Bases/`) — copy relevant `.base` files to their destination folders (e.g. `Bookmarks.base` → `superpaper/sources/`, `People.base` → `superpaper/people/`). Don't deploy all bases at once — start with Bookmarks in the Knowledge map and add others as content grows.
+
+Walk the human through what shipped so they understand the category system: each category is a **trinity** of template + base + category page. When they want a new category, spin up all three. The templates make this instant.
 
 **Update this file** with whatever structure the human chose so future agents know the actual layout.
 
@@ -1618,27 +1614,19 @@ This is the human's primary capture surface. Pin it to a sidebar tab. It replace
 
 **Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → timestamped fragments linking to today's daily note), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
 
-### 5. Create starter bases
-
-Create one high-leverage `.base` file:
-
-1. **`superpaper/sources/Bookmarks.base`** — use the exact YAML from the **Bases syntax** section above. This is the human's browsable library and the showcase for what Bases can do: computed columns (`⏳ Days`, `💡 Insights`, `🏷 Tagged`), contextual filtering via `this`, multiple views (Unprocessed, Library, Stale, Connected), and inline-editable properties.
-
-Embed `![[Bookmarks.base#Library]]` in the Knowledge map under a `## Bookmarks` section. Other bases (Knowledge health, People, Questions, Experiments etc) emerge as content grows — don't pre-create them.
-
-### 6. Create a first knowledge note
+### 5. Create a first knowledge note
 
 Write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
 
-### 7. Set up mobile bookmarking
+### 6. Set up mobile bookmarking
 
 Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
-### 8. Add CSS polish
+### 7. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 9. SUPER IMPORTANT: Verify environment from humans
+### 8. SUPER IMPORTANT: Verify environment from humans
 
 Final check before declaring setup complete:
 
@@ -1648,13 +1636,13 @@ Final check before declaring setup complete:
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
-### 10. Get to know the human
+### 9. Get to know the human
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
-Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
+Capture what you learn as notes in `meta/` — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve. See [[introspect]] for how meta dimensions grow.
 
-### 11. Demo the full system
+### 10. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
@@ -1665,7 +1653,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 4 of 11 — over a third done."
+- Signpost progress: "Step 4 of 10 — almost halfway."
 
 ---
 

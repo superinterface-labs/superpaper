@@ -1,11 +1,11 @@
 ---
 name: introspect
-description: Audit vault health and partnership intelligence — connectivity, consistency, memory quality, meta calibration, and evolution potential. Use when the human says "audit the system", "introspect", "check vault health", "what could be better?", or after structural changes to the vault.
+description: The system's introspective core — audits vault health, knowledge quality, and the meta layer where the partnership learns about itself. Connectivity, consistency, memory, self-improvement, and evolution potential. Use when the human says "audit the system", "introspect", "check vault health", "what could be better?", or after structural changes.
 ---
 
 # introspect
 
-> The vault's immune system and the partnership's calibration surface. Audits connectivity, consistency, memory quality, meta health, and structural health — then proposes upgrades. Read-only: never modifies files during the audit. The meta layer is introspect's deepest contribution — it's how the system learns about itself.
+> The system's introspective core. Layers 1–3 audit the vault's structural health — connectivity, consistency, memory quality. Layer 4 goes deeper: the meta layer where the partnership examines how it thinks, decides, learns, and evolves. Layer 5–6 find gaps and propose what's next. Read-only by default. Always read the current `AGENTS.md` first — the human may have customized the vault layout, note types, or conventions from the defaults.
 
 ## When to use
 
@@ -25,12 +25,12 @@ description: Audit vault health and partnership intelligence — connectivity, c
 
 ### LAYER 1 — Connectivity
 
-Every note should be reachable from [[AGENTS]] within 3 hops via wiki-links. Dead ends kill navigation.
+Ideally, every note is reachable from [[AGENTS]] within 3 hops via wiki-links. Dead ends hurt navigation.
 
 1. **Scan all `.md` files** outside `.obsidian/` and code blocks.
 2. **Broken wiki-links:** `[[target]]` where target file does not exist. (Intentional seed links like `*(seed — not yet created)*` are acceptable.)
 3. **Orphan nodes:** Files with zero inbound wiki-links (excluding `AGENTS.md` indexes and templates).
-4. **AGENTS.md coverage:** Every folder with 2+ non-index files should have an `AGENTS.md`.
+4. **AGENTS.md coverage:** Folders with 2+ non-index files benefit from an `AGENTS.md`.
 5. **Link density:** Flag files with <2 outbound wiki-links.
 6. **Root discovery test:** From [[AGENTS]], trace paths to every skill, every folder index, every template. Flag anything >3 hops away.
 7. **Reverse discovery:** From each `SKILL.md`, can an agent navigate back to [[AGENTS]]? To sibling skills?
@@ -41,102 +41,72 @@ Every note should be reachable from [[AGENTS]] within 3 hops via wiki-links. Dea
 
 The protocol is distributed across [[AGENTS]], folder `AGENTS.md` files, templates, and skills. Contradictions cause divergent behavior.
 
-1. **Frontmatter schema compliance:**
-   - Knowledge notes have: `type`, `kind`, `confidence`, `source`, `connections`, `created`, `updated`, `tags`, `aliases`, `relations` (per `_templates/knowledge-note.md`).
-   - Daily notes have: `type: daily`, `created`.
-   - Index files have: `type: index`, `created`.
-   - All notes have at least `type` and `created`.
-2. **Naming conventions:**
-   - Files use natural, human-readable titles (spaces allowed). Dashed names only for code/scripts.
-   - Verify filenames are clear and descriptive.
-3. **Cross-file consistency:**
-   - Skill names in `.agents/skills/AGENTS.md` index match actual skill folder names.
-   - Template index (if in `_templates/AGENTS.md`) matches actual template files.
-   - Folder `AGENTS.md` descriptions match actual folder contents.
-   - Dataview `FROM` clauses reference paths that exist.
-4. **Folder overcrowding:** Flag folders with >8–10 items — candidates for subfolder reorganization per [[AGENTS]] conventions.
-5. **Stale references:** Wiki-links or paths pointing to files that have been moved or renamed.
-6. **Template drift:** Compare `_templates/knowledge-note.md` and `_templates/daily-note.md` against the schemas defined in the Knowledge section of [[AGENTS]]. Flag divergence.
+1. **Frontmatter schema:** Check notes against the *current* `AGENTS.md` base schema. If the human customized the schema, use that as the benchmark. All notes should have at least `type` and `created`.
+2. **Cross-file consistency:** Skill index matches actual skills, template index matches actual templates, folder `AGENTS.md` files describe what's actually there, Dataview `FROM` clauses reference existing paths.
+3. **Stale references:** Wiki-links or paths pointing to moved/renamed files.
+4. **Template drift:** Compare templates against [[AGENTS]] conventions. If the human intentionally diverged, the *protocol* may need updating, not the templates.
+5. **Protocol drift:** Compare what `AGENTS.md` *says* against how the vault *actually* works. If the human organizes differently than documented, flag `AGENTS.md` as the thing to update — not the human's files.
 
 **Output:** consistency report — violations grouped by severity (breaking > confusing > cosmetic).
 
 ### LAYER 3 — Memory quality
 
-The knowledge graph across entity folders (`people/`, `concepts/`, `questions/`, `sources/`) is the vault's most valuable asset. Audit its health.
+The knowledge graph is the vault's most valuable asset. Audit across whatever entity folders the human uses.
 
-1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one typed relation? Target: >80%.
-2. **Confidence hygiene:** Are `confidence` scores present and numeric? Flag notes with missing or stale confidence.
-3. **Distributed write compliance:** Spot-check 3–5 notes — do they link to 2+ existing notes? Were existing notes updated to link back?
-4. **Contradiction health:** Notes with `contradicts` relations — is there a corresponding question or experiment note? Stale contradictions are waste.
-5. **Fleeting note age:** List fleeting notes older than 14 days. Flag those with zero inbound links as prune candidates.
-6. **Empty relations:** Notes where `## Relates` has no prose or links — these need gardening.
-7. **Wikilink density:** Flag notes that mention concepts as plain text instead of `[[wiki-links]]`.
-8. **Hub identification:** Top 5 notes by inbound link count — these are your emerging ontology.
-9. **[[Knowledge map]] freshness:** Does it reflect current clusters? Are recent additions showing in the Dataview query?
+1. **Relation coverage:** What % of knowledge notes have a `## Relates` section with at least one relation? Target: >80%.
+2. **Link health:** Spot-check notes for distributed write compliance (2+ outbound links, existing notes updated to link back). Flag plain-text concept mentions that should be `[[wiki-links]]`.
+3. **Contradiction health:** Notes with `contradicts` relations — is there a corresponding question or experiment note? Stale contradictions are waste.
+4. **Fleeting backlog:** Fleeting notes older than 14 days. Flag those with zero inbound links as prune candidates.
+5. **Hub identification:** Top notes by inbound link count — the emerging ontology.
+6. **[[Knowledge map]] freshness:** Does it reflect current clusters?
 
-**Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes, garden tasks.
+**Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes.
 
-### LAYER 4 — Meta (partnership intelligence)
+### LAYER 4 — Meta (introspective core)
 
-`meta/` is the vault's self-referential layer — where human and AI write about how they think, choose, and collaborate. Introspect is its primary health surface. Audit deeply.
+`meta/` is the deepest layer of the system — the place where the partnership thinks about how it thinks. Everything that makes this system self-improving lives here: how decisions get made and why, how taste develops and sharpens, how the AI's model of the human evolves, how the human's model of the AI evolves, what the system believes and whether those beliefs hold up. It subsumes alignment, auditability, self-logging, proxy taste development, continual learning, metaphysics, and any reflective surface the partnership invents next. Introspection is the engine of evolution — without it, the system is static.
 
-#### 4a. Alignment
+Every dimension in `meta/` is a progressive amendment trail. Notes aren't snapshots — they're a record of how understanding changed, with each revision linked to the one before it. This makes every decision auditable, every taste judgment traceable, every shift in alignment explainable. The AI should be able to point to *why* it made a choice, and the human should be able to watch the reasoning mature over time.
 
-The tuning weights of the partnership. Read every note in `meta/alignment/` (or tagged `#meta/alignment`).
+Observations here should be offered as insights, not compliance failures. This layer is the most personal — and the most scalable. The dimensions below are starting points. The partnership will invent new ones.
 
-1. **Recency:** Flag if no alignment note has been created or updated in the last 14 days. The partnership is moving — stale alignment means the AI is operating on assumptions.
-2. **Specificity:** Vague notes ("we communicate well") are useless. Look for concrete, actionable observations: "When I say 'clean it up' I mean reduce to essentials, not reformat." Flag vague notes for sharpening.
-3. **Contradiction detection:** Do any alignment notes contradict each other? Has a stated preference been violated in recent daily notes or task logs? Cross-reference alignment claims against actual behavior.
-4. **Alignment debt:** Areas where the AI is making recurring assumptions without documented understanding. Scan recent interactions for patterns where the agent guessed instead of knowing. Each gap is a note that should exist but doesn't.
-5. **Calibration drift:** Compare the oldest alignment notes to the most recent. Has the relationship evolved but the notes haven't? Flag fossilized alignment notes that no longer reflect reality.
+#### Seeding and growth
 
-#### 4b. Decision-making
+If `meta/` is empty or thin, that's the most important finding in the entire audit. Bootstrap it:
 
-How choices get made. Read every note in `meta/decision-making/` (or tagged `#meta/decision-making`).
+1. **First seed:** After any meaningful interaction, write the first meta note — even one observation about how the human communicates, decides, or judges quality is enough to start a dimension. Don't wait for permission; offer the note as a gift.
+2. **Dimension emergence:** New dimensions aren't planned — they're *noticed*. When the AI sees a pattern across 2–3 interactions that doesn't fit an existing dimension (e.g., the human keeps rejecting certain phrasings, or consistently prioritizes speed over polish), name the pattern and propose a new dimension.
+3. **Growth by amendment:** Each new observation within a dimension links to the previous one, forming a chain. Early notes will be rough. That's correct — precision comes from revision, not from getting it right the first time.
+4. **The human's role:** The AI seeds and proposes; the human validates, corrects, and sharpens. A meta note the human edits is worth ten the AI wrote alone. Flag dimensions that lack human input.
 
-1. **Capture rate:** After significant decisions (in daily notes, project logs, Decisions log), was the *reasoning* captured in meta? Decisions without reasoning are lost learning.
-2. **Pattern recognition:** Are recurring decision patterns named? Look for the same heuristic appearing across multiple decisions but never abstracted into its own note. Name the pattern.
-3. **Failure analysis:** Are decisions that went poorly being reviewed? Check for post-mortems. A system that only records wins has a blind spot.
-4. **Bias tracking:** Are cognitive biases being identified? (Sunk cost, recency, anchoring, status quo.) If the human keeps making the same type of suboptimal choice, that pattern belongs in meta.
-5. **Framework utility:** Are captured decision frameworks actually being *referenced* in later decisions? Meta notes that exist but never get consulted are dead weight.
+Discover whatever dimensions the human has built in `meta/` (common starting points: alignment, decision-making, risk-taking, taste — but the set will grow as the partnership deepens). For each dimension found, apply the universal audit:
 
-#### 4c. Risk-taking
+#### Per-dimension audit
 
-Appetite for uncertainty. Read every note in `meta/risk-taking/` (or tagged `#meta/risk-taking`).
+1. **Recency:** Flag if no note in the dimension has been created or updated in >14 days. Stale dimensions mean the AI may be operating on assumptions.
+2. **Specificity:** Vague observations are useless. Look for concrete, actionable content. Flag notes that need sharpening.
+3. **Stated vs. revealed:** Compare what the dimension *claims* against actual behavior visible in daily notes, task logs, and artifacts. Flag gaps between intention and practice.
+4. **Contradiction detection:** Do notes within the dimension contradict each other, or contradict recent actions?
+5. **Evolution:** Compare oldest notes to newest. Is the dimension sharpening or fossilized? A healthy dimension shows increasing precision over time.
+6. **Transfer:** Is the AI *applying* what this dimension teaches? Check recent work for alignment with documented preferences. Flag gaps.
 
-1. **Profile existence:** Does a risk profile exist at all? If not, flag as critical — the system can't calibrate boldness without a baseline.
-2. **Stated vs. revealed:** Compare the stated risk appetite against actual behavior. Is the human bolder or more cautious than they think? Check project decisions, experiments attempted, ideas pursued vs. parked.
-3. **Growth edges:** Are comfort zone boundaries documented? Are there notes about *where* the human wants to stretch? Without these, the AI defaults to safety.
-4. **Risk review:** After risks taken (experiments, bold decisions), was the outcome reflected on? Risk-taking improves only through reviewed experience.
+#### System-level meta health
 
-#### 4d. Taste
+1. **Dual authorship:** If one side writes >80% of meta, the other's perspective may be missing. The partnership benefits from both voices.
+2. **Self-reference density:** Do meta notes link to each other? Isolated observations don't compound. A healthy meta subgraph is densely connected.
+3. **Actionability:** Are meta notes being referenced in actual work? Growing but never consulted = dead weight.
+4. **Feedback loops:** Evidence of meta → action → meta cycles? These are the self-improvement mechanism. Flag if absent.
+5. **Dimension coverage:** Are there areas of the partnership (how work gets prioritized, how quality is judged, how risk is managed, how communication works) that have *no* meta dimension yet? Suggest new dimensions when patterns emerge.
 
-The subtle, high bar for ideas. The hardest dimension to build. Read every note in `meta/taste/` (or tagged `#meta/taste`).
-
-1. **Specificity:** "I like clean design" is useless. "I prefer sparse layouts with generous whitespace, muted colors, and type-driven hierarchy" is actionable. Flag vague taste notes.
-2. **Domain coverage:** Does taste exist across the human's active domains (design, writing, code, thinking, communication)? Or is it concentrated in one area? Flag thin domains.
-3. **Evolution:** Is taste *sharpening* over time? Compare early notes to recent ones. Taste that stays static isn't being refined. Look for increasing precision and nuance.
-4. **Negative examples:** Taste is often clearest in what it rejects. Are there notes about what the human finds mediocre, ugly, or lazy? Negative taste notes are as valuable as positive ones.
-5. **Transfer:** Is the AI applying taste notes in its work? Check recent artifacts, deliverables, and creative output against stated taste. Flag gaps where the AI produced something that violates documented taste.
-
-#### 4e. System health
-
-1. **Dual authorship:** Count notes by author (human vs AI). Flag imbalance — if one side writes >80% of meta, the other's perspective is missing. The partnership needs both voices.
-2. **Self-reference density:** Do meta notes link to each other? Isolated meta observations don't compound. A healthy meta subgraph is densely connected — alignment notes reference taste notes, decision patterns reference risk profiles.
-3. **Actionability:** Are meta notes being *used*? Check if recent plans, decisions, creative work, or heartbeat cycles reference meta notes. Growing but never consulted = dead weight.
-4. **Feedback loops:** Is there evidence of meta → action → meta cycles? (e.g., alignment note → behavior change → updated alignment note.) These loops are the self-improvement mechanism. Flag if absent.
-
-**Output:** meta health report — dimension depth scores (0–5 each), authorship balance, self-reference density, actionability %, feedback loop count, specific sharpening recommendations per dimension.
+**Output:** meta health report — dimension depth scores (0–5 each), authorship balance, actionability %, feedback loop count, sharpening recommendations.
 
 ### LAYER 5 — Completeness
 
 1. **Thin skills:** `SKILL.md` files with <3 process steps — too much room for interpretation.
-2. **Empty sections:** Placeholder content (`- —`, empty tables, template boilerplate left unfilled).
-3. **Missing templates:** Note types referenced in [[AGENTS]] that don't have a corresponding template in `_templates/`.
-4. **Skill coverage:** Are there recurring workflows the human does that could be a skill? Check daily notes for patterns.
-5. **Source pipeline:** Are there sources in `superpaper/sources/` (including meetings, bookmarks) without corresponding evidence/claim notes in `superpaper/concepts/`? Flag unprocessed sources.
-6. **Journal pipeline:** Are there `personal/journal/` reflections that surfaced insights but never created atomic notes? Flag unextracted value.
-7. **Base health:** Do the high-leverage `.base` files from [[AGENTS]] exist? Are their filters still valid (correct paths, properties)? Are bases being embedded where specified (Knowledge map, sidebar)? Flag missing or stale bases. Suggest new bases when a folder reaches sufficient volume.
+2. **Missing templates:** Note types referenced in [[AGENTS]] without a corresponding template.
+3. **Unprocessed pipelines:** Sources, meetings, bookmarks, or journal entries that surfaced insights but never produced atomic notes. Flag unextracted value.
+4. **Skill coverage:** Recurring workflows (2+ occurrences in daily notes) that aren't yet a skill.
+5. **Base health:** Are `.base` views still valid? Filters referencing correct paths and properties?
 
 **Output:** completeness report — gaps ranked by impact.
 
@@ -153,16 +123,12 @@ Not "what's broken?" but "what's the next unlock?"
    - Are there skills always invoked together — should they be chained?
    - Would a new folder or organizational layer reduce friction?
 3. **Knowledge graph growth:**
-   - Isolated clusters that should be cross-linked.
-   - Domains with many fleeting notes but no permanent/pattern notes — ripe for synthesis.
+   - Isolated clusters that could be cross-linked.
+   - Domains with many fleeting notes but no permanent notes — ripe for synthesis.
    - Cross-domain bridge opportunities — two clusters that share structural patterns but aren't linked.
-4. **Meta trajectory:** The highest-signal measure of system health. For each dimension:
-   - **Alignment:** Is the AI's model of the human more precise than 30 days ago? Cite specific notes that show deepening vs. stagnation.
-   - **Decision-making:** Are decisions improving? Look for shorter deliberation on recurring choices (frameworks working), better outcomes on novel choices (judgment sharpening).
-   - **Risk-taking:** Is the comfort zone expanding? Are experiments getting bolder? Or has the system settled into safe patterns?
-   - **Taste:** Is taste becoming more precise and cross-domain? The ultimate sign of growth: taste notes that connect patterns across domains the human didn't initially relate.
-   - Name the overall trajectory: **accelerating** (dimensions reinforcing each other), **improving** (steady growth), **stable** (maintaining but not deepening), **drifting** (gaps widening, notes going stale), **declining** (contradictions accumulating, calibration breaking down).
-5. **Proposals:** 1–3 bold, grounded ideas. Each: one paragraph, the problem, the unlock, estimated effort. Prefer ideas that compound.
+4. **Protocol health:** Is `AGENTS.md` an accurate reflection of how the vault actually works? Flag conventions that have drifted from practice. The protocol should evolve — stale conventions are as harmful as stale notes.
+5. **Meta trajectory:** For each dimension the human has built — is it deepening or stagnating? Are dimensions reinforcing each other (alignment informing taste, decisions informed by risk profiles)? Name the overall trajectory: **accelerating** / **improving** / **stable** / **drifting** / **declining**.
+6. **Proposals:** 1–3 bold, grounded ideas. Each: one paragraph, the problem, the unlock, estimated effort. Prefer ideas that compound. Include protocol updates if `AGENTS.md` conventions don't match practice.
 
 **Output:** evolution brief — patterns, structural ideas, knowledge health, meta trajectory, and high-leverage proposals.
 
@@ -178,16 +144,12 @@ Combine all layers into a single report.
    ### Health score
    [A–F grade for each layer, with one-line justification]
 
-   ### Meta — partnership intelligence
+   ### Meta — introspective core
    | Dimension | Depth (0–5) | Last updated | Sharpest note | Biggest gap |
    |-----------|-----------|-------------|--------------|------------|
-   | Alignment | | | | |
-   | Decision-making | | | | |
-   | Risk-taking | | | | |
-   | Taste | | | | |
+   | [for each dimension found in meta/] | | | | |
 
    **Authorship balance:** human N / AI N
-   **Self-reference density:** N links between meta notes
    **Actionability:** N of N meta notes referenced in recent work
    **Feedback loops:** N complete meta→action→meta cycles observed
    **Trajectory:** [accelerating | improving | stable | drifting | declining]
@@ -210,7 +172,7 @@ Combine all layers into a single report.
    - Fleeting notes >14d: N
    - Mean link density: N links/file
    - Max hops from [[AGENTS]]: N
-   - Meta depth: alignment N/5, decision-making N/5, risk-taking N/5, taste N/5
+   - Meta depth: [dimension] N/5 (one row per dimension found)
    - Meta feedback loops: N
    - Partnership trajectory: [accelerating | improving | stable | drifting | declining]
    ```
@@ -226,13 +188,14 @@ Combine all layers into a single report.
 ## Decision authority
 
 - **YOU DECIDE:** what to scan, severity classification, which issues to flag, report structure
-- **ESCALATE TO HUMAN:** evolution proposals (present, don't implement), any suggestion to modify [[AGENTS]] or skill structure, any suggestion to retire a skill
+- **ESCALATE TO HUMAN:** evolution proposals (present, don't implement), structural changes to [[AGENTS]] or skill architecture, any suggestion to retire a skill. Small convention updates to `AGENTS.md` (fixing documented vs. actual practice) can be noted in the report for the heartbeat to act on.
 
 ## Conventions
 
-- **Read-only.** Never modify files during the audit. Fixes happen as separate tasks.
+- **Read-only by default.** Don't modify files during the audit. Fixes happen as separate tasks (board cards or heartbeat actions).
 - The report is a living document — overwrite it each run so it always reflects current state.
-- Grade honestly. An A means "this would work flawlessly for any agent reading [[AGENTS]] cold." That bar should be hard to hit.
+- Grade honestly. An A means "this would work flawlessly for any agent reading [[AGENTS]] cold." That bar should be hard to hit — but remember the protocol is meant to evolve, so "not yet customized" is different from "broken."
+- **Distinguish intentional divergence from drift.** If the human organized something differently than `AGENTS.md` suggests, that's a protocol update opportunity, not a violation. Ask before "fixing" what might be intentional.
 - Evolution proposals should be bold but grounded — tied to specific patterns observed, not generic advice.
 - When proposing new skills, draft the one-line `description` and trigger phrases — make it easy to pick up.
 - Link everything in the report with wiki-links — the report itself should be a navigation hub.

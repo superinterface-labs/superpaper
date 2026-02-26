@@ -9,62 +9,37 @@ Full knowledge protocol for [[../SKILL.md|Superpaper]]: note types, epistemic co
 ## Note types (full descriptions)
 
 Set `type` in frontmatter:
-- **Fleeting** — raw thought, quick capture. Low bar to create. Most get discarded or promoted.
-- **Source** — external material (article, book, podcast, conversation). Always has a `source` field.
-- **Evidence** — a specific excerpt, quote, observation, or metric from a source. Granular and blockref-linkable (`^evidence`). Lives in `superpaper/.evidence/`.
-- **Claim** — a compressive assertion that could be wrong. Must have confidence + evidence links + predictions ("if true, expect…").
-- **Hypothesis** — a candidate causal or structural explanation. Links to the question it addresses, the claims it makes, and the experiments that could test it.
+- **Fleeting** — raw thought, quick capture. Low bar. Most get discarded or promoted.
 - **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
-- **Person** — anyone — contact, collaborator, mentor, author, public figure. Lives in `superpaper/people/`. Has `role`, `context`, `last-contact` fields.
-- **Pattern** — domain-general structural essence (e.g. `[[pattern/feedback-loop]]`). Cross-domain hub that many notes link *to*.
-- **Bridge** — explicit analogy map between two concepts/domains. What maps, what's preserved, where it breaks, what it predicts.
-- **Analogy** — a deep structural parallel between distant domains. Goes beyond surface similarity to map *why* the parallel holds: shared constraints, isomorphic dynamics, common generating functions. The highest-leverage note type for cross-disciplinary insight — "cells are to organisms as employees are to companies" is surface; "both face principal-agent alignment problems under information asymmetry" is an analogy note. Links to the bridged concepts, names what transfers, and flags where the mapping breaks.
-- **Model** — a formal structure (causal graph, mechanism, mathematical model) that explains how something works. Links to claims it supports and experiments that test it.
-- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods. Must track status (open/answered/superseded) and link to hypotheses and evidence.
-- **Experiment** — a test plan with a prediction, procedure, and outcome. Links to the hypothesis it tests. Records whether the prediction held.
-- **Dataset** — data provenance, version, and location. Links to the experiments and evidence it supports.
-- **Decision** — why a choice was made. Links to the evidence, models, and claims that informed it. Records alternatives considered.
-- **Run** — what an agent actually did. Timestamped execution record linking to the decision or task that triggered it and the artifacts produced.
-- **Preference** — how someone thinks, works, or wants things done. Written by human *or* AI. Values, tastes, habits, constraints. Lives in `superpaper/meta/`. Preferences take precedence over general heuristics.
-- **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/concepts/` with `type: idea`.
-- **Reflection** — processing experiences, struggles, breakthroughs. Lives in `superpaper/personal/journal/reflections/`.
-- **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/personal/journal/`. Accumulates dated entries that link to atomic notes.
-- **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
+- **Source** — external material (article, book, podcast, conversation). Always has a `source` field. Evidence lives inline as block-referenced passages.
+- **Claim** — an assertion that could be wrong. Has `confidence` + evidence links. Subsumes hypotheses and models.
+- **Analogy** — a deep structural parallel between distant domains. Maps *why* the parallel holds, what transfers, where it breaks. Subsumes patterns and bridges.
+- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods.
+- **Experiment** — a test plan with prediction, procedure, and outcome.
+- **Decision** — why a choice was made. Links to evidence and alternatives considered.
+- **Person** — contact, collaborator, author, public figure. Lives in `people/`.
+- **Preference** — how someone thinks, works, or wants things done. Lives in `meta/`. Takes precedence over heuristics.
+- **Idea** — creative hunch, brainstorm, what-if. Zero pressure.
+- **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
+- **Log** — append-only living document. Accumulates dated entries.
+- **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`.
+- **Daily** — empty date anchor. Value is in backlinks.
 
-Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domains/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+These are the built-in types — the human can add, rename, or remove types as their system evolves. Two axes organize everything: `type` is the structural role (how a note behaves in the graph), `categories` is the browse axis (what it's about). Use `#domains/` tags for the field. The system is domain-agnostic by design.
 
 ---
 
 ## Knowledge note template
 
+Every note begins with five fields. Add more when the note earns them:
+
 ```markdown
 ---
 type: fleeting
-kind: fact | concept | procedure | principle | goal | habit | ritual | review | creation | prompt | recipe | preference | claim | pattern | bridge | idea | reflection |...
 categories: []
-id: ""
-status: draft | active | supported | falsified | paused | superseded
-confidence: 0.5
-rating:
-source: ""
-via: ""
-connections: []
 created: YYYY-MM-DD
-updated: YYYY-MM-DD
-last: YYYY-MM-DD
-superseded_by: ""
-evidence_for: []
-evidence_against: []
-assumptions: []
-predictions: []
-next_actions: []
 tags: []
 aliases: []
-relations:
-  - type: "supports"
-    target: "[[other-note]]"
-  - type: "contradicts"
-    target: "[[another-note]]"
 ---
 
 One clear paragraph. What is this concept? Why does it matter? What does it imply? ^core-claim
@@ -77,7 +52,15 @@ This builds on [[Other note]] by taking the idea further into territory X. It si
 > - YYYY-MM-DD — Created as fleeting. Reason.
 ```
 
-The `relations` field in frontmatter makes connections queryable by Dataview. The `## Relates` body section is prose — readable without any tooling.
+| When | Add |
+|------|-----|
+| It asserts something | `confidence` (0–1) |
+| It could be wrong | `status` (`draft` · `active` · `supported` · `falsified` · `superseded`) |
+| It references external material | `source`, `url` |
+| It's worth rating | `rating` (1–7) |
+| A belief changed | `superseded_by` link to replacement |
+
+The `## Relates` body section is prose — readable without any tooling. Relation types (*supports, contradicts, part of, depends on, causes, example of*) emerge from the sentence, not label it.
 
 ---
 
@@ -89,9 +72,9 @@ Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` [[ren
 
 1. **Template** (`_templates/Book Template.md`) — frontmatter schema. Defines the properties every note in this category starts with.
 2. **Base** (`_templates/Bases/Books.base`) — [[rendering-guide.md#Bases — vault usage patterns|database view]]. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
-3. **Category page** (`Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point. Lives wherever makes sense (root, `sources/`, `superpaper/`).
+3. **Category page** (`categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point.
 
-This trinity is the repeatable unit for growing the vault. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
+The most common trinities (26 categories, 31 bases, 12 templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
 
 ```mermaid
 graph LR
@@ -283,7 +266,6 @@ All reference notes use `categories` for cross-cutting retrieval and the 7-point
 ```markdown
 ---
 type: bookmark
-kind: url | image | text | mixed
 source: ios | share-sheet
 url: ""
 status: unprocessed | processed | failed
@@ -305,7 +287,7 @@ When a bookmark arrives in `inbox/`:
 1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Follow [[../SKILL.md#Working with external sources|external source processing]]. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
 2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
 3. **Enrich the bookmark** — add a `## Summary` and `## Key ideas` section to the bookmark note itself. Add `#domains/` tags and a `rating` (1–7) if quality is assessable. The bookmark becomes the source — no separate source note needed. NEVER manually rewrite the source content; quote or transclude it.
-4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes in `concepts/`, `.evidence/`, etc. Every extracted note MUST link back to the bookmark file (`[[bookmark-title]]`) so the base views can surface it via `file.link`.
+4. **Extract insights** — pull key claims and ideas into atomic knowledge notes in `concepts/`. Every extracted note should link back to the bookmark file (`[[bookmark-title]]`) so the base views can surface it via `file.link`.
 5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
 6. **Move to library** — set `status: processed`, move to `sources/bookmarks/` (see [[vault-structure.md#What goes where|what-goes-where routing]]). The bookmark is now browsable in `Bookmarks.base` with `file.link` as the primary navigation column.
 
@@ -337,28 +319,23 @@ When a bookmark arrives in `inbox/`:
 
 ---
 
-## Meta — the self-referential layer (`superpaper/meta/`)
+## Meta — the introspective core (`superpaper/meta/`)
 
-`meta/` is the vault's consciousness. The only folder where **both human and AI write about themselves, each other, and the system itself**. Every other folder stores knowledge *about the world*. Meta stores knowledge *about how we think, choose, and collaborate* — and it feeds back into every future action.
+`meta/` is the deepest layer of the system — where the partnership thinks about how it thinks. Every other folder stores knowledge *about the world*. Meta stores knowledge *about how we think, choose, and collaborate* — and it feeds back into every future action. Both human and AI write here.
 
-Both writers introspect here. The human captures how they reason, what they value, where they struggle. The AI captures what it's learned about the human, where alignment breaks down, what calibration drifts it notices. Over time, meta becomes the long-horizon memory that makes execution compound.
+Meta is organized into **dimensions** — open-ended aspects of the partnership that deepen over time. Common starting points: alignment, decision-making, risk-taking, taste. But the set grows as the partnership matures — new dimensions are *noticed*, not planned. When you see a pattern across 2–3 interactions that doesn't fit an existing dimension, name it and propose a new one.
+
+Every note in `meta/` is a **progressive amendment** — linked to the one before it, forming a trail of how understanding changed. This makes every decision auditable, every taste judgment traceable, every shift in alignment explainable. Early notes will be rough. Precision comes from revision.
 
 The [[../SKILL.md#Growth orientation|growth orientation]] and [[../SKILL.md#Modes|interaction modes]] (especially reflective friend) connect directly to how meta notes are used.
 
-**Four dimensions:**
+**When to write meta:**
+- The AI notices a preference, reasoning pattern, or taste signal → seed a note or amend an existing dimension.
+- A decision went well or poorly → capture *why* the reasoning worked or didn't.
+- Alignment shifted → name the shift.
+- Review meta before long-horizon planning, high-stakes decisions, or creative work.
 
-1. **Alignment** — mutual understanding between human and AI. Trust calibration. Where communication works, where it breaks. What the human *actually* means vs. what they say. What the AI misreads. Notes here are the tuning weights of the partnership.
-2. **Decision-making** — how choices get made. Frameworks, heuristics, biases, failure modes. Both parties log reasoning patterns — the human's tendencies under pressure, the AI's default assumptions. Review these before high-stakes moves.
-3. **Risk-taking** — appetite for uncertainty. Comfort zones and growth edges. When to push, when to hold. The human's relationship with failure. The AI's tendency toward safety vs. boldness. Calibrate together.
-4. **Taste** — the subtle, high bar for ideas. What "good" looks like across domains. Aesthetic sensibility, quality thresholds, intellectual standards. Taste is the hardest thing to transfer — these notes are how it happens.
-
-**Write protocol for meta:**
-- After any significant interaction where alignment shifted, either party writes a brief meta note.
-- After a decision that went well or poorly, capture *why* the reasoning worked or didn't.
-- When the AI notices a pattern in the human's behavior (or vice versa), name it here.
-- Review meta before long-horizon planning, high-stakes decisions, or creative work — it's the calibration surface.
-
-Meta notes are living documents. Update them as understanding deepens. A preference note from month one should look different by month six — not because the preference changed, but because the understanding of *why* sharpened.
+**Seeding:** If `meta/` is empty, that's the most important thing to fix. After any meaningful interaction, write the first meta note — even one observation is enough to start a dimension. The AI seeds and proposes; the human validates and sharpens. See the [[../SKILL.md#Meta — the introspective core|meta section]] in SKILL.md and the [[introspect]] skill for the full audit framework.
 
 ---
 

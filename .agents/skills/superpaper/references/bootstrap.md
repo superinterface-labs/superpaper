@@ -4,13 +4,13 @@ Full bootstrap guide for [[../SKILL.md|Superpaper]]. If the vault isn't already 
 
 > [!danger] Before starting bootstrap, you MUST read ALL sibling reference files into context.
 > Bootstrap touches every part of the system — rendering, knowledge, vault structure, interaction — so you need the full picture loaded before you begin. Read these now:
-> 1. [[rendering-guide.md]] — you'll need this for plugins (step 2), CodeScript Toolkit (step 5), Bases syntax (step 6), and the full rendering toolkit
-> 2. [[knowledge-protocol.md]] — you'll need this for note templates (step 4), the category trinity (step 6), bookmark lifecycle, and the Knowledge map spec
+> 1. [[rendering-guide.md]] — you'll need this for plugins (step 2), CodeScript Toolkit (step 4), and the full rendering toolkit
+> 2. [[knowledge-protocol.md]] — you'll need this for the category trinity (step 3), bookmark lifecycle, and the Knowledge map spec
 > 3. [[vault-structure.md]] — you'll need this for the folder tree (step 3), what-goes-where routing, and subfolder emergence rules
 >
 > Also ensure you've read [[../SKILL.md|SKILL.md]] in full — especially the [[../SKILL.md#Knowledge — your persistent knowledge graph|knowledge protocol]], [[../SKILL.md#Interaction style|interaction style]], and [[../SKILL.md#Tutoring protocol|tutoring protocol]].
 
-**Step-by-reference map:** Step 2 → [[rendering-guide.md#Required plugins|plugin list]]. Step 3 → [[vault-structure.md#Folder tree (minimal)|folder tree]]. Step 4 → [[knowledge-protocol.md#Knowledge note template|note templates]]. Step 5 → [[rendering-guide.md#TypeScript artifacts (CodeScript Toolkit)|CodeScript Toolkit]]. Step 6 → [[rendering-guide.md#Bases — vault usage patterns|Bases syntax]] + [[knowledge-protocol.md#Categories — multi-belonging without folders|category trinity]]. Step 7 → [[../SKILL.md#How to write knowledge (trigger-based)|write protocol]].
+**Step-by-reference map:** Step 2 → [[rendering-guide.md#Required plugins|plugin list]]. Step 3 → [[vault-structure.md#Folder tree (minimal)|folder tree]] + `_templates/AGENTS.md`. Step 4 → [[rendering-guide.md#TypeScript artifacts (CodeScript Toolkit)|CodeScript Toolkit]]. Step 5 → [[../SKILL.md#How to write knowledge (trigger-based)|write protocol]].
 
 ---
 
@@ -63,7 +63,7 @@ Scan the vault for existing folders, projects, notes, and files outside `superpa
 
 ## 2. Set up environment
 
-This step is non-negotiable — do not skip or defer it.
+This step is critical — the vault needs plugins to function well.
 
 0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to a folder (e.g. `_attachments/`).
 1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
@@ -74,21 +74,25 @@ This step is non-negotiable — do not skip or defer it.
 
 ---
 
-## 3. Create vault structure
+## 3. Customize and create vault structure
 
-Create the entity and function folders per [[vault-structure.md#Folder tree (minimal)|the folder tree]] under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+**This is a conversation, not a script.** Present the default folder layout per [[vault-structure.md#Folder tree (minimal)|the folder tree]] and walk through it with the human. Ask how they'd like to organize their space. Adapt to their answers.
+
+Create whatever folders the human agrees to under `superpaper/` (defaults: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`) plus `daily/`, `.archive/`, `.scripts/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+
+**What ships with the repo (no need to create):**
+- **Templates** (`_templates/`) — 12 note templates + 31 base templates. Read `_templates/AGENTS.md` for the full inventory and conventions.
+- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
+- **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
+- **Base templates** (`_templates/Bases/`) — copy relevant `.base` files to their destination folders (e.g. `Bookmarks.base` → `superpaper/sources/`, `People.base` → `superpaper/people/`). Don't deploy all bases at once — start with Bookmarks in the Knowledge map and add others as content grows.
+
+Walk the human through the category system: each category is a [[knowledge-protocol.md#Categories — multi-belonging without folders|trinity]] of template + base + category page. When they want a new category, spin up all three.
+
+**Update `AGENTS.md`** with whatever structure the human chose so future agents know the actual layout.
 
 ---
 
-## 4. Create templates
-
-Create the [[knowledge-protocol.md#Knowledge note template|Knowledge note template]], [[knowledge-protocol.md#Daily note template|Daily note template]], [[knowledge-protocol.md#Idea note template|Idea note template]], [[knowledge-protocol.md#Reflection template|Reflection template]], [[knowledge-protocol.md#Person template|Person template]], and [[knowledge-protocol.md#Bookmark template|Bookmark template]] in `_templates/`. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
-
-Also create `_templates/Bases/` for base templates. Start with `Bookmarks.base` (created in step 6). As the human adopts new categories, each gets the full [[knowledge-protocol.md#Categories — multi-belonging without folders|category trinity]]: template + base + category page. Base templates make spinning up new categories instant.
-
----
-
-## 5. Create Quick Capture UI
+## 4. Create Quick Capture UI
 
 Create `daily/Quick capture.md` — a [[rendering-guide.md#The code-button block|code-button]] with `isRaw: true` and `shouldAutoRun: true` (see [[rendering-guide.md#Seamless auto-rendering UI|seamless UI pattern]]) that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
 - *Thought* → creates a timestamped fragment note linking to today's daily note (`[[2026-02-16]]`)
@@ -102,35 +106,25 @@ This is the human's primary capture surface. Pin it to a sidebar tab. It replace
 
 ---
 
-## 6. Create starter bases
-
-Create one high-leverage `.base` file:
-
-1. **`superpaper/sources/Bookmarks.base`** — use the exact YAML from [[rendering-guide.md#Bases — vault usage patterns|the Bases section]]. This is the human's browsable library and the showcase for what Bases can do: computed columns (`⏳ Days`, `💡 Insights`, `🏷 Tagged`), contextual filtering via `this`, multiple views (Unprocessed, Library, Stale, Connected), and inline-editable properties.
-
-Embed `![[Bookmarks.base#Library]]` in the Knowledge map under a `## Bookmarks` section. Other bases (Knowledge health, People, Questions, Experiments etc) emerge as content grows — don't pre-create them.
-
----
-
-## 7. Create a first knowledge note
+## 5. Create a first knowledge note
 
 Write an atomic concept note together using the [[knowledge-protocol.md#Knowledge note template|knowledge note template]] — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the [[../SKILL.md#How to write knowledge (trigger-based)|write protocol]] and why fewer, denser, better-linked notes win.
 
 ---
 
-## 8. Set up mobile bookmarking
+## 6. Set up mobile bookmarking
 
 Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
 ---
 
-## 9. Add CSS polish
+## 7. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
 ---
 
-## 10. SUPER IMPORTANT: Verify environment from humans
+## 8. SUPER IMPORTANT: Verify environment from humans
 
 Final check before declaring setup complete:
 
@@ -142,15 +136,15 @@ Final check before declaring setup complete:
 
 ---
 
-## 11. Get to know the human
+## 9. Get to know the human
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
-Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. Follow the [[knowledge-protocol.md#Meta — the self-referential layer|meta layer]] protocol and the [[../SKILL.md#Growth orientation|growth orientation]] principles. This seeds the self-referential layer that makes everything else improve.
+Capture what you learn as notes in `meta/` — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve. See [[../SKILL.md#Meta — the introspective core|meta section]] and [[introspect]] for how meta dimensions grow.
 
 ---
 
-## 12. Demo the full system
+## 10. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for [[../SKILL.md#Progressive disclosure — reducing cognitive overhead|progressive disclosure]], knowledge links, a Mermaid diagram or [[rendering-guide.md#Dynamic queries (Dataview plugin)|Dataview query]], and a small [[rendering-guide.md#TypeScript artifacts (CodeScript Toolkit)|TypeScript artifact]]. Walk through the result, pointing out how each primitive works.
 
@@ -163,4 +157,4 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 5 of 10 — we're halfway."
+- Signpost progress: "Step 4 of 10 — almost halfway."
