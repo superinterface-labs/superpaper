@@ -69,7 +69,11 @@ This step is critical — the vault needs plugins to function well.
 1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
 2. **Try CLI first.** If not available, ask the human to enable it in Obsidian: Settings → General → Advanced and turn on **Command-line interface**.
 3. **If CLI is unavailable, even after the user tries it**, walk the human through installing each plugin manually: open Settings → Community plugins → Browse → search → install → enable. Do this one plugin at a time, confirming each is active before moving on.
-4. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
+4. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions. Key configs:
+   - **Daily notes (core plugin):** date format `YYYY-MM-DD`, new file location `daily/`, template `_templates/Daily note.md`, **open daily note on startup** enabled. This auto-creates today's daily note when Obsidian launches — fragments always have a backlink target.
+   - **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer). Agents override to `ai` programmatically. Zero friction for the human.
+   - **Dataview:** enable JavaScript queries and inline queries.
+   - **File Explorer++:** see [[../../../AGENTS.md#Environment & tools|AGENTS.md]] for hide/pin filters.
 5. **Verify.** Confirm each plugin is installed, enabled, and configured before proceeding.
 
 ---
@@ -81,10 +85,11 @@ This step is critical — the vault needs plugins to function well.
 Create whatever folders the human agrees to under `superpaper/` (defaults: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`) plus `daily/`, `.archive/`, `.scripts/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 **What ships with the repo (no need to create):**
-- **Templates** (`_templates/`) — 12 note templates + 31 base templates. Read `_templates/AGENTS.md` for the full inventory and conventions.
+- **Templates** (`_templates/`) — 15 note templates + 37 base templates. Read `_templates/AGENTS.md` for the full inventory and conventions.
 - **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
 - **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
 - **Base templates** (`_templates/Bases/`) — copy relevant `.base` files to their destination folders (e.g. `Bookmarks.base` → `superpaper/sources/`, `People.base` → `superpaper/people/`). Don't deploy all bases at once — start with Bookmarks in the Knowledge map and add others as content grows.
+- **Utility bases** — always deploy these during bootstrap (they're vault-wide, not category-specific): `Evergreen.base` (permanent notes hub), `Everything.base` (all files + image gallery), `Attachments.base` (image management), `Backlinks.base` (contextual backlinks), `Templates.base` (template inventory), `Daily.base` (daily note context), `Genre.base` (contextual genre view). Place in the Knowledge map or a convenient sidebar location.
 
 Walk the human through the category system: each category is a [[knowledge-protocol.md#Categories — multi-belonging without folders|trinity]] of template + base + category page. When they want a new category, spin up all three.
 

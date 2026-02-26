@@ -24,12 +24,28 @@ Vault templates used by Templater and other workflows.
 | `Bases/` | Reusable `.base` templates — see below |
 
 ### Bases/ contents
+
+**Utility bases** — vault-wide views, not tied to a single category:
+
+| File | Purpose |
+|---|---|
+| `Evergreen.base` | All permanent (evergreen) notes — by backlink count, recent, high confidence |
+| `Everything.base` | Every file in the vault — all files, image gallery, images in notes |
+| `Attachments.base` | Image management — contextual, all images, unused attachment detection |
+| `Backlinks.base` | Contextual — shows all notes that link to the current note |
+| `Related.base` | Contextual — related notes for the currently focused note |
+| `Daily.base` | Contextual — everything/fragments/reviews/human/AI linked to a daily note's date |
+| `Templates.base` | Lists all templates in `_templates/` |
+| `Ratings.base` | Cross-category view of all rated notes |
+| `Genre.base` | Contextual — shows all items sharing a genre with the current note |
+| `Map.base` | Places view for notes with `coordinates` |
+| `Journal.base` | Journal entries tagged `journal` |
+
+**Category bases** — one per content type:
+
 | File | Purpose |
 |---|---|
 | `Bookmarks.base` | Bookmarks library (unprocessed/library/stale/connected) |
-| `Related.base` | Contextual related-notes for the currently focused note |
-| `Ratings.base` | Cross-category view of all rated notes |
-| `Map.base` | Places view for notes with `coordinates` |
 | `Concepts.base` | All/permanent/claims/ideas/connected |
 | `People.base` | All people/connected |
 | `Papers.base` | Academic papers/connected |
@@ -43,7 +59,17 @@ Vault templates used by Templater and other workflows.
 | `Places.base` | Locations with map view |
 | `Experiments.base` | Personal trials, A/B tests |
 | `Sequences.base` | All sequence notes — by domain, connected |
-| + future bases | Albums, Movies, Shows, Games, Companies, Events, Meetings, Products, Recipes, Trips, Posts, Journal |
+| `Albums.base` | Music albums |
+| `Movies.base` | Films |
+| `Shows.base` | TV series |
+| `Games.base` | Video/board games |
+| `Companies.base` | Organizations |
+| `Events.base` | Conferences, meetups, life events |
+| `Meetings.base` | Meeting notes |
+| `Products.base` | Product reviews |
+| `Recipes.base` | Cooking/food |
+| `Trips.base` | Travel |
+| `Posts.base` | Blog posts, social media |
 
 ## Conventions
 

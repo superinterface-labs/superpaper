@@ -83,7 +83,7 @@ After this step, inbox should contain only `AGENTS.md` and items <48h old that n
 Skip if entity folders have fewer than 5 non-index notes total.
 
 1. **Merge duplicates:** If 2+ notes cover the same concept, merge. Mark redundant notes with `superseded_by`.
-2. **Promote fleeting → permanent:** Notes with `type: fleeting`, >7 days old, and inbound links > 0 deserve promotion. Ensure 2+ outbound wiki-links and update existing notes to link back.
+2. **Promote fleeting → permanent (evergreen):** Notes with `type: fleeting`, >7 days old, and inbound links > 0 deserve promotion. Ensure 2+ outbound wiki-links and update existing notes to link back. Also scan human-written notes for evergreen candidates — sentence-like titles, 2+ inbound links, 7+ days old. **Suggest** promotion to the human; never auto-promote. Add candidates to the board as a card: "Evergreen candidates ready for review."
 3. **Prune stale fleeting notes:** Zero inbound links + >30 days old → propose deletion to human (list them; don't delete autonomously).
 4. **Strengthen connections:** Convert plain-text concept mentions to `[[wiki-links]]`. Resolve contradictions (create question notes). Bridge notes in the same domain that should be linked.
 5. **Elevate meta awareness:** Deepen the introspective core by seeding new meta notes or amending existing dimensions. If a convention in `AGENTS.md` drifted from practice, update the protocol. Update [[Knowledge map]] and `.base` views if the graph changed.

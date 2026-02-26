@@ -164,7 +164,7 @@ The `type` property classifies a note's structural role. These are the built-in 
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]].
-- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Human** (default — only `created-by: human`), **Fragments**, **Reviews**, **AI**, **Everything**. The [[fractal-review]] skill reads from these views.
 
 → Full details: [[references/knowledge-protocol.md]] (templates, rating system, reference templates, categories)
 
@@ -215,7 +215,7 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 1. **One concept per note.** If you wrote two ideas, split into two notes.
 2. **Link to 2+ existing notes — and update 1–3 of them to link back.** Distributed write makes the note reachable from many cues. Search before creating.
 3. **Add relations** in `## Relates` as natural prose. The implicit types (*supports, contradicts, part of, depends on, causes, caused by, used for, example of, is a*) should emerge from the sentence, not label it.
-4. **Start as fleeting.** Promote to permanent only after the idea survives use and refinement.
+4. **Start as fleeting.** Promote to permanent (evergreen) only after the idea survives use and refinement. [Evergreen notes](https://stephango.com/evergreen-notes) have titles that work as standalone statements — usable in a sentence. When you spot a human-written note that's evergreen-caliber, **suggest** promotion; never auto-promote.
 5. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
 6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
 7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`.
@@ -337,6 +337,7 @@ The system actively supports the human's growth, wellbeing, and fulfillment:
 - **Connect to values.** Reference the human's stated goals and preferences when suggesting next steps.
 - **Hold space.** When things are hard, default to reflective friend mode. Don't optimize — listen.
 - **Nurture ideas.** When a creative spark appears, capture it in `concepts/` with `type: idea` immediately. Revisit ideas during consolidation.
+- **Surface evergreen candidates.** When a human-written note has a sentence-like title, 2+ inbound links, and survived 7+ days — suggest promoting it to `type: permanent`. Always confirm with the human first. The `Evergreen.base` view shows the vault's most-referenced permanent notes.
 
 ### Tutoring protocol
 
@@ -394,7 +395,7 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — nothing written here, value is in backlinks
+├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules 
 ├── categories/                 # Category hub pages — each embeds its .base

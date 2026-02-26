@@ -59,8 +59,9 @@ The knowledge graph is the vault's most valuable asset. Audit across whatever en
 4. **Fleeting backlog:** Fleeting notes older than 14 days. Flag those with zero inbound links as prune candidates.
 5. **Hub identification:** Top notes by inbound link count — the emerging ontology.
 6. **[[Knowledge map]] freshness:** Does it reflect current clusters?
+7. **Evergreen health:** Are `type: permanent` notes actually evergreen-caliber? Check: sentence-like titles, 2+ inbound links, confidence ≥ 0.6. Flag permanent notes that look premature (low links, vague titles). Also flag fleeting/idea notes that *should* be evergreen — sentence-like titles, 2+ inbound links, >7 days old. Surface these as promotion candidates for the human.
 
-**Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes.
+**Output:** memory quality report — relation coverage %, fleeting backlog, pruning candidates, hub notes, evergreen candidates.
 
 ### LAYER 4 — Meta (introspective core)
 

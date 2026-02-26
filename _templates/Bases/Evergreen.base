@@ -1,0 +1,44 @@
+filters:
+  and:
+    - type == "permanent"
+    - '!file.name.contains("Template")'
+formulas:
+  Backlinks: file.backlinks.length
+properties:
+  file.name:
+    displayName: Name
+  note.created:
+    displayName: Created
+  note.confidence:
+    displayName: Confidence
+views:
+  - type: table
+    name: Evergreen
+    order:
+      - file.name
+      - confidence
+      - created
+      - formula.Backlinks
+    sort:
+      - property: formula.Backlinks
+        direction: DESC
+  - type: table
+    name: Recent
+    order:
+      - file.name
+      - confidence
+      - created
+    sort:
+      - property: created
+        direction: DESC
+    limit: 30
+  - type: table
+    name: High confidence
+    filters: confidence >= 0.8
+    order:
+      - file.name
+      - confidence
+      - formula.Backlinks
+    sort:
+      - property: confidence
+        direction: DESC

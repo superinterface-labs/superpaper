@@ -1,0 +1,37 @@
+formulas:
+  Embeds: if(file.embeds[0].containsAny("jpg","gif","webp","jpeg","avif","png"), file.embeds[0])
+  Date: if(created,created,if(start,start))
+views:
+  - type: table
+    name: All files
+    order:
+      - file.name
+      - file.mtime
+      - file.path
+      - file.ext
+    sort:
+      - property: file.mtime
+        direction: DESC
+  - type: cards
+    name: Images
+    filters:
+      and:
+        - '!file.ext.containsAny("base", "canvas", "pdf", "md")'
+    order:
+      - file.name
+    sort:
+      - property: file.name
+        direction: ASC
+    image: file.file
+  - type: cards
+    name: Images in notes
+    filters:
+      and:
+        - "!formula.Embeds.isEmpty()"
+    order:
+      - file.name
+      - formula.Date
+    sort:
+      - property: formula.Date
+        direction: DESC
+    image: formula.Embeds

@@ -31,7 +31,7 @@ These are the built-in types — the human can add, rename, or remove types as t
 
 ## Knowledge note template
 
-Every note begins with six fields. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. Add more fields when the note earns them:
+Every note begins with six fields. The `created-by` field tracks authorship provenance — `human`, `ai`, or `ai-assisted`. Templates default to `human`; agents override to `ai` when they create a note. **How this works automatically:** Templater's "trigger on new file creation" is set to apply `Knowledge note.md` as the empty file template — so every note the human creates (hotkey, unique note, file explorer) gets `created-by: human` without thinking about it. Add more fields when the note earns them:
 
 ```markdown
 ---
@@ -75,7 +75,7 @@ Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` [[ren
 2. **Base** (`_templates/Bases/Books.base`) — [[rendering-guide.md#Bases — vault usage patterns|database view]]. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
 3. **Category page** (`categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point.
 
-The most common trinities (26 categories, 31 bases, 12 templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
+The most common trinities (26 categories, 37 bases — including 11 utility bases — and 15 note templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
 
 ```mermaid
 graph LR
@@ -113,6 +113,18 @@ Two small properties with outsized value:
 
 ---
 
+## Evergreen notes
+
+[Evergreen notes](https://stephango.com/evergreen-notes) turn ideas into objects you can manipulate. They have titles that distill each idea in a succinct, memorable way — usable in a sentence. Examples: *"A company is a superorganism"*, *"Everything is a remix"*, *"You have no obligation to your former self"*. You don't need to agree with the idea for it to become an evergreen note. They can be very short.
+
+In the Superpaper system, evergreen notes are knowledge notes with `type: permanent`. They've earned promotion from fleeting through use, refinement, and linking. The `Evergreen.base` view surfaces all permanent notes sorted by backlink count — the most-referenced ideas float to the top.
+
+**Proactive AI marking.** When the AI recognizes a human-written note as evergreen-caliber — a standalone insight with a sentence-like title that could compose into larger thinking — the AI should **suggest** promoting it to `type: permanent`. Never auto-promote; always confirm with the human first.
+
+**Recognition signals:** The title works as a standalone statement. Referenced by 2+ notes. Survived 7+ days without being superseded. Captures a principle, pattern, or belief — not just information.
+
+---
+
 ## Daily note template
 
 ```markdown
@@ -129,6 +141,8 @@ This is counterintuitive but powerful: an empty note with rich backlinks is more
 **Agent logs are separate.** Agents link to `[[inbox/log/YYYY-MM-DD]]` — their own daily anchor. This keeps the human's daily note backlinks clean: only *their* life shows up, never agent task churn.
 
 **Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it.
+
+**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Human** — only `created-by: human` notes, so the daily note foregrounds the human's life, not agent churn. Four more views are a tab away: **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), **AI** (only `created-by: ai` or `ai-assisted` notes), and **Everything** (all notes regardless of authorship, with a `By` column). This is the primary surface for fractal review gathering — the [[fractal-review]] skill reads from these views.
 
 ---
 

@@ -1069,6 +1069,8 @@ This is counterintuitive but powerful: an empty note with rich backlinks is more
 
 **Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it. (See Kepano's [vault approach](https://stephango.com/vault) for the inspiration behind this pattern.)
 
+**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Human** — only `created-by: human` notes, so the daily note foregrounds the human's life, not agent churn. Four more views are a tab away: **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), **AI** (only `created-by: ai` or `ai-assisted` notes), and **Everything** (all notes regardless of authorship, with a `By` column). This is the primary surface the [[fractal-review]] skill reads from when gathering material for a review.
+
 ### Fractal journaling
 
 Throughout the day, capture individual thoughts using Obsidian's unique note hotkey — each named `YYYY-MM-DD HHmm Title.md`. These fragments live in the vault root (or wherever the human writes), not in `daily/`. No structure required. Just capture and link each fragment to today's daily note (`[[2026-02-16]]`).
@@ -1104,7 +1106,7 @@ See `_templates/Place.md`. Adds `loc`, `coordinates`, `rating`, `last`, `via`. P
 
 Templates are **composable mixins**, not rigid forms. A contact who wrote a book gets both Person template and Author template applied. A restaurant that's also a recipe source gets Place + Recipe. Layer templates freely — properties merge.
 
-Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page in `categories/`. The most common trinities ship with the repo (see `_templates/AGENTS.md` for the full inventory). When a new category emerges, spin up all three — the base templates make this instant.
+Each template below implies the full **category trinity** — a template in `_templates/`, a base in `_templates/Bases/`, and a category page in `categories/`. The most common trinities ship with the repo (26 categories, 37 bases — including 11 utility bases — and 15 note templates; see `_templates/AGENTS.md` for the full inventory). When a new category emerges, spin up all three — the base templates make this instant.
 
 | Template | Key properties | Base views |
 |----------|---------------|-----------|
@@ -1142,6 +1144,16 @@ When a bookmark arrives in `inbox/`:
 - **Duplicates** — search first. Strengthen an existing note rather than creating a parallel one.
 - **Vagueness** — "interesting idea about X" is worthless. Be precise: "X works because Y, which implies Z for context W."
 - **Premature permanence** — don't mark notes permanent until they've proven useful. Let fleeting notes earn promotion.
+
+### Evergreen notes
+
+[Evergreen notes](https://stephango.com/evergreen-notes) turn ideas into objects you can manipulate. They have titles that distill each idea in a succinct, memorable way — usable in a sentence. Examples: *"A company is a superorganism"*, *"Creativity is combinatory uniqueness"*, *"You have no obligation to your former self"*. You don't need to agree with the idea for it to become an evergreen note. They can be very short.
+
+In the Superpaper system, evergreen notes are knowledge notes with `type: permanent`. They've earned promotion from fleeting through use, refinement, and linking. The `Evergreen.base` view surfaces all permanent notes sorted by backlink count — the most-referenced ideas float to the top, revealing the vault's emerging ontology.
+
+**Proactive AI marking.** When a human-written note arrives in the vault (journal fragment, inbox capture, freewrite) and the AI recognizes it as an evergreen-caliber idea — a standalone insight with a sentence-like title that could compose into larger thinking — the AI should **suggest** promoting it to `type: permanent`. Never auto-promote; always confirm with the human first. The human's judgment of what's durable is the signal. The AI's role is to *notice* candidates and surface them.
+
+**Recognition signals:** The note has a title that works as a standalone statement. It's been referenced by 2+ other notes. It survived 7+ days without being superseded. It captures a principle, pattern, or belief — not just information.
 
 ### Consolidation (periodic)
 
@@ -1349,7 +1361,7 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — nothing written here, value is in backlinks
+├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
 ├── categories/                 # Category hub pages — each embeds its .base (ships with repo)
@@ -1488,7 +1500,20 @@ The vault is scriptable from the terminal. **Use the CLI as your primary interfa
 | File Explorer++ | `file-explorer-plus` |
 | Bases | *(core plugin — enable in Settings → Core plugins)* |
 
-Install all community plugins: `obsidian plugin:install id=<id> enable` for each row above. Enable Bases and Properties in Settings → Core plugins. Then configure to match vault conventions (template folder → `_templates/`, scripts → `.scripts/`, daily notes → `daily/`, Dataview JS queries → enabled, etc.). Look up each plugin's latest docs online for its settings schema.
+Install all community plugins: `obsidian plugin:install id=<id> enable` for each row above. Enable Bases and Properties in Settings → Core plugins. Then configure to match vault conventions. Look up each plugin's latest docs online for its settings schema.
+
+**Daily notes (core plugin):** Enable in Settings → Core plugins. Configure:
+- **Date format:** `YYYY-MM-DD`
+- **New file location:** `daily/`
+- **Template file location:** `_templates/Daily note.md`
+- **Open daily note on startup:** enabled — this auto-creates today's daily note when Obsidian launches, so backlinks always have a target.
+
+**Templater:** Configure:
+- **Template folder location:** `_templates/`
+- **Trigger Templater on new file creation:** enabled
+- **Empty file template:** `_templates/Knowledge note.md` — this means every new file the human creates (via hotkey, unique note, file explorer, etc.) automatically gets `created-by: human` and the base frontmatter schema. Agents override `created-by` to `ai` when they create notes programmatically. This is how `created-by: human` gets stamped without the human thinking about it.
+
+**Dataview:** Enable JavaScript queries, inline queries.
 
 **File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with:
 
@@ -1599,7 +1624,7 @@ This step is critical — the vault needs plugins to function well.
 Adapt the structure to their answers. Create whatever they agree to. The defaults (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`, `projects/`, `apps/`, `inbox/` under `superpaper/`, plus `daily/`, `.archive/`, `.scripts/` at root) work well — but they're suggestions, not requirements. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 **What ships with the repo (no need to create):**
-- **Templates** (`_templates/`) — 12 note templates + 31 base templates. Read `_templates/AGENTS.md` for the full inventory.
+- **Templates** (`_templates/`) — 15 note templates + 37 base templates (including 11 utility bases). Read `_templates/AGENTS.md` for the full inventory.
 - **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
 - **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
 - **Base templates** (`_templates/Bases/`) — copy relevant `.base` files to their destination folders (e.g. `Bookmarks.base` → `superpaper/sources/`, `People.base` → `superpaper/people/`). Don't deploy all bases at once — start with Bookmarks in the Knowledge map and add others as content grows.

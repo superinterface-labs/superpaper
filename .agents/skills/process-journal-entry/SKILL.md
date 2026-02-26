@@ -54,7 +54,11 @@ For any genuine insight worth its own note (not just a log entry):
 2. Link to 2+ existing notes. Update 1–3 existing notes to link back.
 3. Link from the log entry to the new atomic note.
 
-### STEP 5 — Agent log update
+### STEP 5 — Evergreen candidate detection
+
+Scan the journal entry and any new atomic notes for evergreen potential. A note is an evergreen candidate if its title works as a standalone statement (e.g. *"Pain is information"*, *"You have no obligation to your former self"*). If the human wrote something with that quality, **suggest** promoting it to `type: permanent`. Never auto-promote — always confirm with the human. This is how the vault's best ideas get surfaced proactively.
+
+### STEP 6 — Agent log update
 
 Append to today's agent log (`inbox/log/YYYY-MM-DD`):
 
@@ -80,3 +84,5 @@ Append to today's agent log (`inbox/log/YYYY-MM-DD`):
 
 - **YOU DECIDE:** what to reflect, which insights to route, log entry content
 - **ESCALATE TO HUMAN:** creating notes about sensitive/personal topics, anything that feels like advice rather than reflection
+
+All notes created by this skill must include `created-by: ai`. The journal entry itself is `created-by: human` — never modify its body, only update frontmatter properties. New atomic notes, log entries, and connection docs are `created-by: ai`.

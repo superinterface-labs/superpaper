@@ -24,7 +24,7 @@ Full vault structure for [[../SKILL.md|Superpaper]]: folder tree, scaling princi
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — nothing written here, value is in backlinks
+├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
 ├── categories/                 # Category hub pages — each embeds its .base
@@ -77,7 +77,7 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | I have... | It goes in | Because |
 |-----------|-----------|--------|
 | A person — contact, mentor, author, public figure | `people/` | First-class entity with its own note |
-| An insight, pattern, principle, claim, mental model | `concepts/` | The "what I understand" bucket |
+| An insight, pattern, principle, claim, mental model | `concepts/` | The "what I understand" bucket. Permanent (evergreen) notes live here — sentence-like titles, well-linked, durable ideas |
 | An open question I'm exploring | `questions/` | Retrieval magnet — pulls neighborhoods |
 | A link, article, paper, book | `sources/` | Raw material — immutable reference. See [[knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]] |
 | A meeting, conversation, or time-bound event | `sources/` | Transcript is source material — insights extracted to entity folders |
