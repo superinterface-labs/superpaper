@@ -139,7 +139,7 @@ async function init() {
   console.log(`
   ╔═══════════════════════════════════════════════╗
   ║           superpaper init                     ║
-  ║   AI Agent Swarm interface in Obsidian        ║
+  ║   Obsidian-native AI workspace                ║
   ╚═══════════════════════════════════════════════╝
   `);
 
@@ -164,12 +164,10 @@ async function init() {
   }
 
   if (!isObsidianVault) {
-    log("No .obsidian/ folder found — this doesn't appear to be an Obsidian vault.");
-    const proceed = await ask("Continue anyway? (y/N)");
-    if (proceed.toLowerCase() !== "y") {
-      log("Create a vault in Obsidian first, then run this command inside it.");
-      process.exit(0);
-    }
+    log("This folder isn't an Obsidian vault. Open Obsidian,");
+    log("create a new vault pointing to this folder, then re-run: npx superpaper init here");
+    log("or run the command inside an existing Obsidian vault folder you have");
+    process.exit(0);
   }
 
   log(`Vault: ${vaultDir}`);
@@ -196,8 +194,12 @@ async function init() {
     for (const dir of infraDirs) {
       const srcPath = join(tmpDir, dir);
       const destPath = join(vaultDir, dir);
-      copyDirRecursive(srcPath, destPath, vaultDir);
-      success(dir);
+      if (existsSync(srcPath)) {
+        copyDirRecursive(srcPath, destPath, vaultDir);
+        success(dir);
+      } else {
+        warn(`${dir} not found in repo — skipping`);
+      }
     }
 
     // AGENTS.md
@@ -405,7 +407,7 @@ if (command === "init") {
   });
 } else {
   console.log(`
-  superpaper — AI Agent Swarm interface in Obsidian
+  superpaper — Obsidian-native AI workspace
 
   Usage:
     npx superpaper init [path]    Set up Superpaper in an Obsidian vault

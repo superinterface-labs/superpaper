@@ -1,7 +1,7 @@
 {
   "name": "superpaper",
-  "version": "0.1.2",
-  "description": "Set up a Superpaper vault — AI Agent Swarm interface in Obsidian",
+  "version": "0.1.3",
+  "description": "Set up Superpaper — an Obsidian-native AI workspace",
   "license": "MIT",
   "author": "Darshil Dhameliya (@dvrshil)",
   "repository": {
