@@ -1,0 +1,23 @@
+filters:
+  and:
+    - categories.contains(link("Experiments"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All experiments
+    order:
+      - file.name
+      - status
+      - hypothesis
+      - outcome
+      - created
+    sort:
+      - property: created
+        direction: DESC
+  - type: table
+    name: Active
+    filters: status == "active"
+    order:
+      - file.name
+      - hypothesis
+      - created

@@ -1,0 +1,18 @@
+filters:
+  and:
+    - rating
+views:
+  - type: table
+    name: All ratings
+    order:
+      - file.name
+      - rating
+      - last
+      - type
+      - categories
+    sort:
+      - property: rating
+        direction: DESC
+      - property: last
+        direction: DESC
+    limit: 200

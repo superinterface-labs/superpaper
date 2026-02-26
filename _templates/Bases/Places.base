@@ -1,0 +1,27 @@
+filters:
+  and:
+    - categories.contains(link("Places"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All places
+    order:
+      - file.name
+      - type
+      - loc
+      - rating
+      - last
+    sort:
+      - property: last
+        direction: DESC
+  - type: map
+    name: Map
+    coordinates: note.coordinates
+    defaultZoom: 2
+  - type: table
+    name: By location
+    filters: list(loc).contains(this)
+    order:
+      - file.name
+      - type
+      - rating

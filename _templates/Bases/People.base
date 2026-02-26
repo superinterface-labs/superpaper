@@ -1,0 +1,32 @@
+filters:
+  and:
+    - categories.contains(link("People"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All people
+    order:
+      - file.name
+      - role
+      - tags
+      - last-contact
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Researchers
+    filters: 'list(tags).containsAny("domains/ai")'
+    order:
+      - file.name
+      - role
+      - context
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - role
+      - context

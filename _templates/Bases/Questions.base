@@ -1,0 +1,28 @@
+filters:
+  and:
+    - categories.contains(link("Questions"))
+    - '!file.name.contains("Template")'
+formulas:
+  link_count: file.backlinks.length
+views:
+  - type: table
+    name: All questions
+    order:
+      - file.name
+      - status
+      - tags
+      - formula.link_count
+      - created
+    sort:
+      - property: created
+        direction: DESC
+  - type: table
+    name: Open
+    filters: status != "answered"
+    order:
+      - file.name
+      - tags
+      - formula.link_count
+    sort:
+      - property: formula.link_count
+        direction: DESC

@@ -1,0 +1,22 @@
+filters:
+  and:
+    - categories.contains(link("Reports"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All reports
+    order:
+      - file.name
+      - author
+      - published
+      - tags
+    sort:
+      - property: published
+        direction: DESC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - author
+      - tags

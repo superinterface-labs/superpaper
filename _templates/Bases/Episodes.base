@@ -1,0 +1,38 @@
+filters:
+  and:
+    - categories.contains(link("Episodes"))
+    - '!file.name.contains("Template")'
+formulas:
+  connection_count: file.backlinks.length
+views:
+  - type: table
+    name: All episodes
+    order:
+      - file.name
+      - podcast
+      - published
+      - topics
+      - formula.connection_count
+      - status
+    sort:
+      - property: published
+        direction: DESC
+    limit: 100
+  - type: table
+    name: Unprocessed
+    filters: status != "processed"
+    order:
+      - file.name
+      - podcast
+      - published
+      - status
+    sort:
+      - property: published
+        direction: DESC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - podcast
+      - topics

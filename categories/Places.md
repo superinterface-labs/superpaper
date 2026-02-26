@@ -1,0 +1,6 @@
+---
+tags:
+  - categories
+---
+
+![[Places.base]]

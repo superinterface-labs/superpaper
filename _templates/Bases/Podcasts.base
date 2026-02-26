@@ -1,0 +1,18 @@
+filters:
+  and:
+    - categories.contains(link("Podcasts"))
+    - '!file.name.contains("Template")'
+formulas:
+  episode_count: file.links.length
+views:
+  - type: table
+    name: All podcasts
+    order:
+      - file.name
+      - frequency
+      - status
+      - formula.episode_count
+      - tags
+    sort:
+      - property: file.name
+        direction: ASC

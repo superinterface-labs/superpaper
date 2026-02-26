@@ -1,0 +1,33 @@
+filters:
+  and:
+    - categories.contains(link("Essays"))
+    - '!file.name.contains("Template")'
+views:
+  - type: table
+    name: All essays
+    order:
+      - file.name
+      - author
+      - published
+      - tags
+      - rating
+    sort:
+      - property: published
+        direction: DESC
+  - type: table
+    name: Top rated
+    filters: rating > 0
+    order:
+      - file.name
+      - rating
+      - author
+    sort:
+      - property: rating
+        direction: DESC
+  - type: table
+    name: Connected
+    filters: file.hasLink(this.file)
+    order:
+      - file.name
+      - author
+      - tags

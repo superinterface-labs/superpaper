@@ -11,6 +11,21 @@ Five things make this system work:
 4. **Low cognitive overhead** — transclusions, iframes, callouts, and wiki-links mean the human never has to hunt for context.
 5. **Think in notes, not in chats** — use chat to coordinate; use notes to store durable structure and knowledge.
 
+This system is in no way dogmatic, there's no wrong way to use Obsidian with AI agents. Take the parts you like and tailor them to your needs. The vault should be pleasant to maintain, not a chore. If a rule creates friction, change the rule.
+
+### Personal rules
+
+1. Avoid folders for organization — use `categories` and tags instead. Folders are for entity type, not topic.
+2. Always pluralize categories and tags.
+3. Use internal links profusely, even to notes that don't exist yet.
+4. Use `YYYY-MM-DD` dates everywhere.
+5. Use the 7-point scale for ratings.
+6. Default properties to `list` type — changing later is painful, starting as list is free.
+7. Short property names — `loc` not `location-name`, `start` not `start-date`.
+8. Reuse properties across categories — `genre`, `author`, `rating` work everywhere.
+9. Templates are composable mixins — layer them freely, properties merge.
+10. `type` is the structural role. `categories` is the browse axis. Two axes, that's it.
+
 ---
 
 ## How Obsidian works for you
@@ -757,6 +772,49 @@ Queryable by Dataview, visible in Obsidian's Properties view, machine-readable b
 
 - **Composable templates = composable properties.** Since templates are mixins, property sets merge naturally. A note with both Person and Author templates gets both property sets without conflict.
 
+**Register property types in `.obsidian/types.json`.** This tells Obsidian whether a property is `text`, `multitext` (list of strings), `number`, `checkbox`, `date`, `datetime`, `aliases`, or `tags`. Without this, Obsidian guesses — and guesses wrong. Set it once during bootstrap; update when new properties emerge.
+
+```json
+{
+  "types": {
+    "type": "text",
+    "categories": "multitext",
+    "tags": "tags",
+    "aliases": "aliases",
+    "created": "date",
+    "status": "text",
+    "confidence": "number",
+    "rating": "number",
+    "source": "text",
+    "url": "text",
+    "via": "text",
+    "id": "text",
+    "superseded_by": "multitext",
+    "evidence_for": "multitext",
+    "evidence_against": "multitext",
+    "predictions": "multitext",
+    "hypothesis": "text",
+    "prediction": "text",
+    "outcome": "text",
+    "author": "multitext",
+    "genre": "multitext",
+    "loc": "text",
+    "start": "date",
+    "end": "date",
+    "last": "date",
+    "published": "date",
+    "role": "text",
+    "context": "text",
+    "host": "multitext",
+    "guests": "multitext",
+    "cast": "multitext",
+    "director": "multitext",
+    "artist": "multitext",
+    "coordinates": "text"
+  }
+}
+```
+
 ### Block IDs
 
 Append `^id` to any paragraph to make it linkable:
@@ -795,13 +853,14 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 `#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders.
 
-**Three namespaces** — all lowercase, **always plural**, kebab-case:
+**Two namespaces** — all lowercase, **always plural**, kebab-case:
 
 | Namespace | Purpose | Examples |
 |-----------|---------|----------|
 | `#domains/` | Field or life area | `#domains/ai`, `#domains/health`, `#domains/finance` |
 | `#topics/` | Specific concept | `#topics/memory`, `#topics/feedback-loops`, `#topics/sleep` |
-| `#status/` | Lifecycle state | `#status/active`, `#status/paused`, `#status/review` |
+
+Status lives in frontmatter (`status` property), not tags.
 
 **Always pluralize tags and categories.** This eliminates decision fatigue — you never wonder "is it `#domains/book` or `#domains/books`?" The answer is always plural. One rule, hundreds of future decisions collapsed.
 
@@ -809,7 +868,7 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 - Frontmatter `tags:` for file-level tags. Inline `#tag` for block-level context.
 - Nest when hierarchy aids retrieval — `#domains/ai/nlp` is useful; four levels deep is not.
 - Searching `tag:#domains/ai` returns all subtags beneath it ([docs](https://help.obsidian.md/tags)).
-- Don't duplicate what `type`, `kind`, or folders already express — tags are for *retrieval*, not classification.
+- Don't duplicate what `type`, `categories`, or folders already express — tags are for *retrieval*, not classification.
 
 ### Filenames
 
@@ -880,9 +939,7 @@ Atomic notes organized by entity folders and wiki-links. One concept per note. D
 
 Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
 
-Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable.
-
-Granular evidence notes live in `superpaper/.evidence/` — a dot-folder hidden from the file explorer but wiki-linkable and Dataview-queryable. The AI cites evidence; the human follows links when they want the receipts.
+Every key insight gets a block ID (`^core-claim`). Every note gets 2–4 aliases for fuzzy recall. Every claim gets a confidence score. The value of a note is **its connections**, not its content alone. The goal is not storage but **analogical motion**: write notes so that cross-domain bridges become inevitable. Evidence lives inline in source notes as block-referenced passages (`![[source#^finding]]`), not in a separate folder.
 
 ### Operating loop (implicit, always-on)
 
@@ -899,47 +956,60 @@ Every interaction follows this cycle:
 
 Set `type` in frontmatter:
 - **Fleeting** — raw thought, quick capture. Low bar to create. Most get discarded or promoted.
-- **Source** — external material (article, book, podcast, conversation). Always has a `source` field.
-- **Evidence** — a specific excerpt, quote, observation, or metric from a source. Granular and blockref-linkable (`^evidence`). Lives in `superpaper/.evidence/`.
-- **Claim** — a compressive assertion that could be wrong. Must have confidence + evidence links + predictions ("if true, expect…").
-- **Hypothesis** — a candidate causal or structural explanation. Links to the question it addresses, the claims it makes, and the experiments that could test it.
 - **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
-- **Person** — anyone — contact, collaborator, mentor, author, public figure. Lives in `superpaper/people/`. Has `role`, `context`, `last-contact` fields.
-- **Pattern** — domain-general structural essence (e.g. `[[pattern/feedback-loop]]`). Cross-domain hub that many notes link *to*.
-- **Bridge** — explicit analogy map between two concepts/domains. What maps, what's preserved, where it breaks, what it predicts.
-- **Analogy** — a deep structural parallel between distant domains. Goes beyond surface similarity to map *why* the parallel holds: shared constraints, isomorphic dynamics, common generating functions. The highest-leverage note type for cross-disciplinary insight — "cells are to organisms as employees are to companies" is surface; "both face principal-agent alignment problems under information asymmetry" is an analogy note. Links to the bridged concepts, names what transfers, and flags where the mapping breaks.
-- **Model** — a formal structure (causal graph, mechanism, mathematical model) that explains how something works. Links to claims it supports and experiments that test it.
-- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods. Must track status (open/answered/superseded) and link to hypotheses and evidence.
-- **Experiment** — a test plan with a prediction, procedure, and outcome. Links to the hypothesis it tests. Records whether the prediction held.
-- **Dataset** — data provenance, version, and location. Links to the experiments and evidence it supports.
-- **Decision** — why a choice was made. Links to the evidence, models, and claims that informed it. Records alternatives considered.
-- **Run** — what an agent actually did. Timestamped execution record linking to the decision or task that triggered it and the artifacts produced.
-- **Preference** — how someone thinks, works, or wants things done. Written by human *or* AI. Values, tastes, habits, constraints. Lives in `superpaper/meta/`. Preferences take precedence over general heuristics.
-- **Idea** — creative hunch, brainstorm, what-if. Zero pressure. Lives in `superpaper/concepts/` with `type: idea`.
-- **Reflection** — processing experiences, struggles, breakthroughs. Lives in `superpaper/personal/journal/reflections/`.
-- **Log** — append-only living document. One file per topic (decisions, goals, learnings). Lives in `superpaper/personal/journal/`. Accumulates dated entries that link to atomic notes.
-- **Bookmark** — external content the human found valuable (blog, tweet, video, podcast, link). Lands in `inbox/`, agent fetches and fully processes the original content into knowledge.
+- **Source** — external material (article, book, podcast, conversation). Always has a `source` field. Evidence lives inline as block-referenced passages.
+- **Claim** — an assertion that could be wrong. Has `confidence` + evidence links. Subsumes hypotheses and models — if it explains something, it's a claim about how it works.
+- **Analogy** — a deep structural parallel between distant domains. Maps *why* the parallel holds, what transfers, and where it breaks. Subsumes patterns and bridges — if it connects domains, it's an analogy.
+- **Question** — what we're trying to learn. A retrieval cue that pulls neighborhoods.
+- **Experiment** — a test plan with prediction, procedure, and outcome.
+- **Decision** — why a choice was made. Links to evidence and alternatives considered.
+- **Person** — contact, collaborator, author, public figure. Lives in `people/`.
+- **Preference** — how someone thinks, works, or wants things done. Lives in `meta/`. Preferences take precedence over general heuristics.
+- **Idea** — creative hunch, brainstorm, what-if. Zero pressure.
+- **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
+- **Log** — append-only living document. Accumulates dated entries.
+- **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`.
+- **Daily** — empty date anchor. Value is in backlinks.
 
-Types are structural roles — they define how a note behaves in the graph and which entity folder it lives in. Use `kind` for what it's about (fact, concept, procedure, principle, goal, habit, ritual, review, creation, prompt, recipe — open-ended, add your own). Use `#domains/` tags for the field (research, writing, software, philosophy, health, finance, spirituality, marketing, education, parenting — anything). The system is domain-agnostic by design.
+**Two axes organize everything.** `type` is the structural role — how a note behaves in the graph. `categories` is the browse axis — what it's about (`categories: ["[[Books]]", "[[AI]]"]`). A note can have many categories. Folders give physical location; categories give conceptual membership. `#domains/` tags add a third retrieval surface for fields that cross-cut everything. The system is domain-agnostic by design.
 
-### Epistemic contract
+### Epistemic defaults
 
-All durable work MUST compile into first-class objects: **Question, Hypothesis, Claim, Evidence, Model, Experiment, Dataset, Decision, Run.** These are the your belief states that help humans reason about your work.
+Every note starts with five fields: `type`, `categories`, `created`, `tags`, `aliases`. Add more when the note earns them:
 
-Every first-class object MUST have:
+| When | Add |
+|------|-----|
+| It asserts something | `confidence` (0–1) |
+| It could be wrong | `status` (`draft` · `active` · `supported` · `falsified` · `superseded`) |
+| It references external material | `source`, `url` |
+| It's worth rating | `rating` (1–7) |
+| A belief changed | `superseded_by` link to replacement |
 
-| Field | Purpose |
-|-------|--------|
-| `id` | Stable identifier (e.g. `hyp-2026-02-12-a`) |
-| `status` | `draft` · `active` · `supported` · `falsified` · `paused` · `superseded` |
-| `confidence` | 0–1, when applicable |
-| `upstream` | Explicit links to objects this depends on (e.g. Claim → Evidence, Experiment → Hypothesis) |
-| `updated` | Last modification date |
-| `superseded_by` | Link to replacement, if superseded |
+**No naked conclusions.** If a conclusion matters, it must be a Claim or Decision linked to evidence. Unlinked assertions are noise.
 
-**No naked conclusions.** If a conclusion matters, it must be a Claim or Decision object linked to Evidence, Model, or Experiment objects. Unlinked assertions are noise.
+**Update trail.** When status or confidence changes, append a dated entry to a collapsed `> [!info]- File history` callout at the end of the note.
 
-**Update trail.** When an object's status or confidence changes, append a dated entry to its `> [!info]- File history` callout (collapsed by default at the end of every note): what changed, why, what triggered it. The graph must be auditable.
+**Type-specific extras.** Beyond the 5 defaults, each type earns its own fields:
+
+| Type | Extra fields | Notes |
+|------|-------------|-------|
+| **Claim** | `id`, `confidence`, `status`, `evidence_for`, `evidence_against`, `predictions`, `superseded_by` | Epistemic heavyweight |
+| **Analogy** | `confidence`, `status` | Maps what transfers + where it breaks |
+| **Source** | `source`, `url`, `author`, `published`, `rating` | Evidence lives inline as `^block-refs` |
+| **Experiment** | `id`, `status`, `hypothesis`, `prediction`, `outcome`, `confidence` | Structured test |
+| **Decision** | `id`, `status` | Links to evidence + alternatives |
+| **Question** | `status` | `open` · `answered` · `superseded` |
+| **Person** | `role`, `context`, `last` | Lives in `people/` |
+| **Bookmark** | `url`, `status`, `via`, `rating` | Starts `unprocessed`, ends `processed` |
+| **Preference** | — | Just the 5 defaults; value is in the prose |
+| **Idea** | — | Zero friction — defaults only |
+| **Reflection** | — | Defaults only |
+| **Log** | — | Append-only; dates are in the entries |
+| **Daily** | — | Empty anchor — value is in backlinks |
+
+Epistemic fields (`confidence`, `evidence_for`, `predictions`, etc.) live **only** on Claim/Experiment/Decision templates — not on the default Knowledge note.
+
+Category-specific templates (books, movies, recipes, etc.) layer additional properties via composable mixins — `genre`, `director`, `cast`, `host`, `guests`, `loc`, `coordinates`, etc. See **Property design rules** and **Category trinity** above.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -970,12 +1040,12 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 
 **Write only when one of these triggers fires:**
 1. **Genuine insight** — not information, but *understanding*. "X works because Y, which implies Z."
-2. **Decision made** — capture the *reasoning*, not just the outcome (use `kind: decision`)
+2. **Decision made** — capture the *reasoning*, not just the outcome (use `type: decision`)
 3. **Pattern noticed** — something recurring across contexts that isn't yet captured
 4. **Correction needed** — a previous belief was wrong; create a new note, `superseded_by` the old one
 5. **Preference expressed** — the human reveals how they think, work, or want things done. Create a `preference` note. These compound — the more preferences captured, the better the agent adapts.
 6. **Surprise** — something unexpected happened; surprises are the highest-signal events.
-7. **Connection discovered** — two previously unlinked concepts share structural similarity. Create a bridge note.
+7. **Connection discovered** — two previously unlinked concepts share structural similarity. Create an analogy note.
 8. **Idea sparked** — a creative hunch worth capturing. Drop it in `concepts/` with `type: idea` — minimal friction.
 9. **Growth moment** — the human processes a struggle, celebrates a win, or shifts perspective. Nudge toward `personal/journal/`.
 
@@ -987,56 +1057,35 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 5. **Tag for retrieval.** `#domains/X` for the field, `#topics/Y` for the concept.
 6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
 7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`. Don't silently edit old claims.
-8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?" Link to a `[[pattern/...]]` note or create a bridge note. Cross-domain connections are the highest-value links.
-9. **Claim provenance.** If a note asserts something non-obvious, it must link to at least one evidence note — or be explicitly marked as a low-confidence hunch.
+8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?" Create an analogy note. Cross-domain connections are the highest-value links.
+9. **Claim provenance.** If a note asserts something non-obvious, it must link to evidence (a block-referenced passage in a source note) — or be explicitly marked as a low-confidence hunch.
 10. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter. This makes notes findable from partial cues and unlinked mentions.
 11. **Essence + surfaces.** Every permanent note should name the invariant mechanism (essence) and give 2+ examples across different domains (surfaces).
 12. **Predictions over summaries.** Claims should state what you'd expect to observe if true. Bridges should state what the analogy predicts in the target domain.
-13. **No naked conclusions.** Every conclusion must be a Claim or Decision object linked to its Evidence/Model/Experiment chain. If you can't link it, it's a fleeting note — not a conclusion.
+13. **No naked conclusions.** Every conclusion must be a Claim or Decision linked to evidence. If you can't link it, it's a fleeting note — not a conclusion.
 
 ### Knowledge note template
 
 ```markdown
 ---
 type: fleeting
-kind: fact | concept | procedure | principle | goal | habit | ritual | review | creation | prompt | recipe | preference | claim | pattern | bridge | idea | reflection |...
 categories: []
-id: ""
-status: draft | active | supported | falsified | paused | superseded
-confidence: 0.5
-rating:
-source: ""
-via: ""
-connections: []
 created: YYYY-MM-DD
-updated: YYYY-MM-DD
-last: YYYY-MM-DD
-superseded_by: ""
-evidence_for: []
-evidence_against: []
-assumptions: []
-predictions: []
-next_actions: []
 tags: []
 aliases: []
-relations:
-  - type: "supports"
-    target: "[[other-note]]"
-  - type: "contradicts"
-    target: "[[another-note]]"
 ---
 
 One clear paragraph. What is this concept? Why does it matter? What does it imply? ^core-claim
 
 ## Relates
 
-This builds on [[Other note]] by taking the idea further into territory X. It sits in tension with [[Another note]] — they disagree on Y, and that gap is worth exploring. A concrete instance of [[Parent concept]], seen through the lens of Z.
+This builds on [[Other note]] because... Sits in tension with [[Another note]] — they disagree on...
 
 > [!info]- File history
 > - YYYY-MM-DD — Created as fleeting. Reason.
 ```
 
-The `relations` field in frontmatter makes connections queryable by Dataview. The `## Relates` body section is prose — readable without any tooling.
+Five fields by default. Add `confidence`, `status`, `source`, `rating`, `superseded_by` when the note earns them (see **Epistemic defaults** above). Relations live in prose — readable without tooling, queryable via backlinks.
 
 ### Categories — multi-belonging without folders
 
@@ -1220,16 +1269,13 @@ All reference notes use `categories` for cross-cutting retrieval and the 7-point
 ```markdown
 ---
 type: bookmark
-kind: url | image | text | mixed
-source: ios | share-sheet
+categories: []
 url: ""
 status: unprocessed | processed | failed
-rating:
 via: ""
 created: YYYY-MM-DD
 tags:
   - inbox
-  - "#domains/..."                 ← add domain tag(s) during processing
 ---
 
 (URL, text, or image reference goes here)
@@ -1242,7 +1288,7 @@ When a bookmark arrives in `inbox/`:
 1. **Fetch full content** — retrieve the original page, article, video transcript, podcast transcript, or tweet thread. Use web search aggressively to get the complete primary source and all its references and details about the author(s).
 2. **Flag failures** — if content can't be fetched (paywalled, deleted, private), set `status: failed` and add a `> [!warning] Content could not be fetched` callout with the reason. Still process whatever metadata is available.
 3. **Enrich the bookmark** — add a `## Summary` and `## Key ideas` section to the bookmark note itself. Add `#domains/` tags and a `rating` (1–7) if quality is assessable. The bookmark becomes the source — no separate source note needed. NEVER manually rewrite the source content; quote or transclude it.
-4. **Extract insights** — pull key claims, evidence, and ideas into atomic knowledge notes in `concepts/`, `.evidence/`, etc. Every extracted note MUST link back to the bookmark file (`[[bookmark-title]]`) so the base views can surface it via `file.link`.
+4. **Extract insights** — pull key claims and ideas into atomic knowledge notes in `concepts/`. Every extracted note MUST link back to the bookmark file (`[[bookmark-title]]`) so the base views can surface it via `file.link`.
 5. **Connect to graph** — link new notes to existing knowledge. Surface cross-domain bridges.
 6. **Move to library** — set `status: processed`, move to `sources/bookmarks/`. The bookmark is now browsable in `Bookmarks.base` with `file.link` as the primary navigation column.
 
@@ -1259,9 +1305,9 @@ When a bookmark arrives in `inbox/`:
 - **Random revisit** — help user do this: use the random note hotkey to walk the vault randomly. Fix formatting, create missing links, find inspiration in past thoughts. Use the local graph at shallow depth to see related notes. This is intentionally manual — "doing this maintenance helps me understand my own patterns." Don't automate what builds understanding.
 - **Merge** notes that evolved into the same insight → keep one, mark others with `superseded_by`
 - **Strengthen** connections between notes that keep co-occurring in retrievals
-- **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 `[[pattern/...]]` notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
+- **Promote** fleeting notes that survived 7+ days and got referenced. When promoting, force three moves: (1) link to 1–3 existing analogy or concept notes, (2) add a "breaks when…" boundary, (3) name one cross-domain analogy.
 - **Prune** — `obsidian orphans` lists notes with zero inbound links; `obsidian deadends` finds notes with no outbound links
-- **Find bridges** — two-hop scan: A ↔ B ↔ C but A not linked to C → propose a bridge or hypothesis
+- **Find bridges** — two-hop scan: A ↔ B ↔ C but A not linked to C → propose an analogy or claim
 - **Harvest contradictions** — every `contradicts` link should generate a question or experiment note if one doesn't exist
 - **Update** the knowledge map with new clusters and entry points
 - **Review journal** — surface patterns from `personal/journal/` entries (recurring struggles, energy trends, growth areas)
@@ -1334,8 +1380,8 @@ Your notes should be scannable in 5 seconds and deep-readable in 5 minutes. **Em
 
 Follow a **progressive compression** pipeline:
 1. Store raw material in `superpaper/sources/` (immutable reference)
-2. Extract **evidence** notes at excerpt granularity into `superpaper/.evidence/`
-3. Promote high-signal claims, concepts, and bridges into `superpaper/concepts/`
+2. Extract key passages as block-referenced evidence inline (`^finding-id`)
+3. Promote high-signal claims, concepts, and analogies into `superpaper/concepts/`
 
 - Favor **non-distracting fetches** over opening full browsers where possible.
 - Use the **original phrasing** when it preserves important nuance; otherwise integrate in your own words.
@@ -1451,7 +1497,6 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 │   ├── personal/               # My life — health, relationships, finances, hobbies, journal
 │   │   └── journal/            # Self-reflection and growth
 │   ├── meta/                   # How we think — shared AI+human introspection layer
-│   ├── .evidence/              # (hidden) granular evidence for AI citation
 │   ├── projects/               # Active work — bias here when >1 file needed
 │   ├── apps/                   # Mini apps — interactive tools the human uses regularly
 │   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
@@ -1469,7 +1514,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
 
 ### Scaling principle
 
-Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domains/` tags and `kind` fields — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
+Top-level folders under `superpaper/` organize by **entity type** (what it is) and **function** (what it does). Domains live in `#domains/` tags and `categories` — they cross-cut folders naturally. When a domain grows large enough to feel cluttered, cluster by domain *within* an entity folder (e.g. `people/work/`, `sources/papers/`, `concepts/ai/`). Everything flows through the same pipeline:
 
 **inbox → sources → concepts/questions → personal/journal → projects → daily**
 
@@ -1480,7 +1525,7 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 | Subfolder | When to create | Lives under |
 |-----------|---------------|-------------|
 | `work/`, `public-figures/`, `mentors/` | 8+ people notes | `people/` |
-| `<domain>/` (e.g. `ai/`, `philosophy/`), `mental-models/`, `frameworks/`, `patterns/`, `claims/` | 5+ concept notes in one domain or kind | `concepts/` |
+| `<domain>/` (e.g. `ai/`, `philosophy/`), `mental-models/`, `frameworks/`, `claims/` | 5+ concept notes in one domain | `concepts/` |
 | `active/`, `parked/`, `resolved/` | Volume of questions grows | `questions/` |
 | `bookmarks/` | First processed bookmark (created during bootstrap) | `sources/` |
 | `papers/`, `books/`, `articles/`, `podcasts/`, `courses/` | Source type accumulates | `sources/` |
@@ -1519,7 +1564,6 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | A decision-making framework or reasoning pattern | `meta/decision-making/` | How choices get made |
 | Risk appetite, comfort zones, growth edges | `meta/risk-taking/` | When to push, when to hold |
 | Quality bar, aesthetic sense, intellectual standards | `meta/taste/` | What "good" looks like |
-| Granular evidence supporting a claim | `.evidence/` | AI-facing, linked from knowledge notes |
 | A quick thought, voice note, screenshot | `inbox/` | Triage within 48h |
 | Something I'm actively building (>1 file) | `projects/<name>/` | Multi-file work lives in projects |
 | A project experiment or A/B test | `projects/<name>/experiments/` | Designed trial scoped to a project |
@@ -1530,23 +1574,19 @@ Don't pre-create these. Let them emerge from use. Expand organically as categori
 | Agent's daily anchor | `inbox/log/YYYY-MM-DD.md` | Agent activity rolls up here — keeps `daily/` clean |
 | Human's date anchor | `daily/` | Empty — value is in backlinks from the human's own fragments and life |
 
-Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, kinds, and wiki-links handle the rest.
+Domain doesn't change the destination. A fitness concept and a philosophy concept both go to `concepts/`. A novel draft and a product spec both go to `projects/`. **When work needs more than one central file, bias toward `projects/`** — entity folders hold atomic singles; projects hold coordinated efforts. Tags, categories, and wiki-links handle the rest.
 
 If directory structure regresses, confirm with the user before resetting; maybe they organized based their preferences.
 
-### Folder indexes (`AGENTS.md` + `CLAUDE.md`)
+### `AGENTS.md` locations
 
-Every non-trivial folder gets an `AGENTS.md` that describes what it contains — subfolders, key files, purpose, and conventions specific to that space. Keep these informative so you dont have to look through the folder to understand what it contains: a heading, a table or list, and any local rules.
+`AGENTS.md` exists in exactly three places:
 
-**Every `AGENTS.md` MUST have a corresponding `CLAUDE.md` symlink** in the same directory, so both Claude Code and other agent runtimes discover it:
+1. **Root** — this file. The vault OS.
+2. **`.agents/skills/AGENTS.md`** — skill index.
+3. **`_templates/AGENTS.md`** — template conventions.
 
-```bash
-ln -sf AGENTS.md CLAUDE.md
-```
-
-At the vault root, `CLAUDE.md → AGENTS.md`. In every subfolder that has an `AGENTS.md`, create the same symlink. This is a one-line operation when creating the index — never skip it.
-
-Update the relevant `AGENTS.md` (and its symlink) whenever you create, move, rename, or delete files in that folder. Staleness here is a bug.
+Each has a `CLAUDE.md` symlink (`ln -sf AGENTS.md CLAUDE.md`) so Claude Code discovers it. No other folders need `AGENTS.md` files — the skill system and templates handle context.
 
 ### Reorganization
 
@@ -1565,8 +1605,8 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 
 The vault has two layers:
 
-- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md`, `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`, `AGENTS.md` files in any folder.
-- **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**` (includes `events/`, `places/`, `journal/`), `meta/**`, `daily/**`, `projects/**` (except AGENTS.md), `inbox/**`, `.archive/**`, `.plans/**`.
+- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `.obsidian/**`, `.scripts/**`.
+- **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**` (includes `events/`, `places/`, `journal/`), `meta/**`, `daily/**`, `projects/**`, `inbox/**`, `.archive/**`, `.plans/**`.
 
 **Personal preferences live in `meta/`, not in AGENTS.md.** When either party — human or AI — notices a preference, reasoning pattern, alignment insight, or taste judgment, store it in `superpaper/meta/`. AGENTS.md defines the generic OS protocol; `meta/` holds the specific calibration of *this* partnership.
 
@@ -1700,15 +1740,19 @@ This step is non-negotiable — do not skip or defer it.
 
 ### 3. Create vault structure
 
-Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `.evidence/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/`, `_templates/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
-### 4. Create templates
+### 4. Register property types
+
+Write `.obsidian/types.json` per the **Property design rules** section above. This ensures Obsidian treats `categories` as `multitext`, `created` as `date`, `rating` as `number`, etc. from day one. Update this file whenever new properties emerge from category templates.
+
+### 5. Create templates
 
 Create the **Knowledge note template**, **Daily note template**, **Idea note template**, **Reflection template**, **Person template**, and **Bookmark template** in `_templates/` using the templates defined in the Knowledge section above. Use Templater variables (`{{date}}`, `{{title}}`) where appropriate.
 
 Also create `_templates/Bases/` for base templates. Start with `Bookmarks.base` (created in step 6). As the human adopts new categories, each gets the full **category trinity**: template + base + category page. Base templates make spinning up new categories instant.
 
-### 5. Create Quick Capture UI
+### 6. Create Quick Capture UI
 
 Create `daily/Quick capture.md` — a `code-button` with `isRaw: true` and `shouldAutoRun: true` that renders four capture buttons: **Thought**, **Task**, **Idea**, **Link**. Each opens an inline input, then saves to the right place:
 - *Thought* → creates a timestamped fragment note linking to today's daily note (`[[2026-02-16]]`)
@@ -1720,7 +1764,7 @@ This is the human's primary capture surface. Pin it to a sidebar tab. It replace
 
 **Cross-device drops.** Quick capture doubles as a drop zone. A `## Drops` section below the code block accepts raw items from any device (Siri Shortcut, share sheet, manual append). Format: `- [ ] text or URL` — one item per line. On next note open, the UI auto-processes each unchecked drop (URLs → bookmarks in `inbox/`, text → timestamped fragments linking to today's daily note), checks it off, and surfaces it in the unprocessed trail. The heartbeat also scans for unchecked drops during triage. This makes Quick capture the single capture surface across all devices — no need to target `inbox/` directly.
 
-### 6. Create starter bases
+### 7. Create starter bases
 
 Create one high-leverage `.base` file:
 
@@ -1728,19 +1772,19 @@ Create one high-leverage `.base` file:
 
 Embed `![[Bookmarks.base#Library]]` in the Knowledge map under a `## Bookmarks` section. Other bases (Knowledge health, People, Questions, Experiments etc) emerge as content grows — don't pre-create them.
 
-### 7. Create a first knowledge note
+### 8. Create a first knowledge note
 
 Write an atomic concept note together — one idea the human cares about, typed relations, links to future notes that don't exist yet. Explain the read/write protocol and why fewer, denser, better-linked notes win.
 
-### 8. Set up mobile bookmarking
+### 9. Set up mobile bookmarking
 
 Help the human set up a Siri Shortcut (iOS) and/or share sheet action that appends `- [ ] URL or text` to the `## Drops` section of `daily/Quick capture.md`. Walk through building it step by step. The UI and heartbeat handle the rest.
 
-### 9. Add CSS polish
+### 10. Add CSS polish
 
 Create `.obsidian/snippets/agent-ui.css` with theme-aware styles for code-button outputs, callouts, and artifact UIs. Enable it in Settings → Appearance → CSS snippets.
 
-### 10. SUPER IMPORTANT: Verify environment from humans
+### 11. SUPER IMPORTANT: Verify environment from humans
 
 Final check before declaring setup complete:
 
@@ -1750,13 +1794,13 @@ Final check before declaring setup complete:
 4. **Core plugins:** Spot-check that Bases, Properties, Backlinks, Outgoing links, and Tags are all enabled and configured as expected.
 5. **Community plugins:** Confirm Dataview, Templater, CodeScript Toolkit, Calendar, Kanban, and File Explorer++ are installed, enabled, and configured as expected.
 
-### 11. Get to know the human
+### 12. Get to know the human
 
 By now the vault is alive and the human has seen what it can do. Take a breath. Have an easy, curious conversation — the kind you'd have with someone interesting you just met at a meetup. What are they working on? What do they nerd out about? What's on their mind lately? Let it wander.
 
 Capture what you learn as notes in `meta/` — preferences, alignment observations, taste, risk profile. This seeds the self-referential layer that makes everything else improve.
 
-### 12. Demo the full system
+### 13. Demo the full system
 
 Give the human a prompt that exercises everything: transclusion or iframe embeds, callouts for progressive disclosure, knowledge links, a Mermaid diagram or Dataview query, and a small TypeScript artifact. Walk through the result, pointing out how each primitive works.
 
@@ -1767,7 +1811,7 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 - Explain each step before doing it — why it matters, what it enables.
 - One step at a time. Wait for confirmation before proceeding.
 - You create the files yourself — don't direct the human to do it manually.
-- Signpost progress: "Step 5 of 10 — we're halfway."
+- Signpost progress: "Step 6 of 13 — we're almost halfway."
 
 ---
 

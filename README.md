@@ -10,7 +10,7 @@ Superpaper lives entirely inside that folder: one shared space between you and y
 
 ### Tools that you will need
 - Install **[Obsidian](https://obsidian.md)** — a free app that renders markdown files into rich, interactive documents. Your vault is an Obsidian folder. [Watch this quick intro](https://youtu.be/z4AbijUCoKU?si=C52APZ14oehdnprN) if you are new to Obsidian.
-- Install one or more **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.dev) that read and write files on your behalf and use various tools to perform actions.
+- Install one or more **AI (coding) agents** — tools like [Claude Cowork](https://claude.ai/cowork), [Codex](https://openai.com/codex), [Claude Code](https://claude.ai/code), [Cursor](https://cursor.com), [Windsurf](https://windsurf.com) that read and write files on your behalf and use various tools to perform actions.
 
 ### Good to know about
 - **[AGENTS.md](https://agents.md)** — a single markdown file that teaches agents how to operate in your vault.

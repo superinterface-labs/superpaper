@@ -1,0 +1,12 @@
+filters:
+  and:
+    - file.hasLink(this.file)
+views:
+  - type: table
+    name: Related
+    order:
+      - file.name
+      - type
+      - kind
+      - tags
+    limit: 100

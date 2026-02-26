@@ -1,0 +1,6 @@
+---
+tags:
+  - categories
+---
+
+![[Trips.base]]
