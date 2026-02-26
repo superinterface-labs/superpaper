@@ -164,7 +164,7 @@ The `type` property classifies a note's structural role. These are the built-in 
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]].
-- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Human** (default — only `created-by: human`), **Fragments**, **Reviews**, **AI**, **Everything**. The [[fractal-review]] skill reads from these views.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Everything** (default — all notes except pure AI-generated), **Human**, **Fragments**, **Reviews**, **AI**. The [[fractal-review]] skill reads from these views.
 
 → Full details: [[references/knowledge-protocol.md]] (templates, rating system, reference templates, categories)
 

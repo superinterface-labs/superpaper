@@ -405,17 +405,18 @@ async function init() {
   Folders and features appear as you need them.
 
   ┌─────────────────────────────────────────────────┐
-  │  AI AGENT: Read the full protocol to bootstrap:  │
-  │                                                   │
+  │  AI AGENT: Read the full protocol to bootstrap: │
+  │                                                 │
   │  ${agentsPath}
-  │                                                   │
-  │  Then read .agents/skills/AGENTS.md for the       │
-  │  skill index and _templates/AGENTS.md for the     │
-  │  template inventory.                              │
-  │                                                   │
-  │  DO NOT create entity folders (people/, concepts/, │
-  │  sources/, etc.) during setup. They are created    │
-  │  on first use only.                               │
+  │                                                 │
+  │  Then read .agents/skills/AGENTS.md for the     │
+  │  skill index and _templates/AGENTS.md for the   │
+  │  template inventory.                            │
+  │                                                 │
+  │  DO NOT create entity folders (people/,         │
+  │  concepts/, sources/, etc.) during setup. They  │
+  │  are created on first use only.                 │
+  │                                                 │
   └─────────────────────────────────────────────────┘
   `);
   } else {
@@ -427,20 +428,21 @@ async function init() {
   New files were added. ${conflicts.length} file(s) had conflicts
   — saved as .new files (existing files untouched).
 
-  ┌─────────────────────────────────────────────────┐
-  │  AI AGENT: Merge guide created at:               │
-  │                                                   │
-  │  superpaper/Superpaper update — merge required.md │
-  │                                                   │
-  │  Read that file and follow its instructions to    │
-  │  merge .new files into existing files. Then read: │
-  │                                                   │
+  ┌────────────────────────────────────────────────────┐
+  │  AI AGENT: Merge guide created at:                 │
+  │                                                    │
+  │  superpaper/Superpaper update — merge required.md  │
+  │                                                    │
+  │  Read that file and follow its instructions to     │
+  │  merge .new files into existing files. Then read:  │
+  │                                                    │
   │  ${agentsPath}
-  │                                                   │
+  │                                                    │
   │  DO NOT create entity folders (people/, concepts/, │
-  │  sources/, etc.) during setup. They are created    │
-  │  on first use only.                               │
-  └─────────────────────────────────────────────────┘
+  │  sources/, etc.) during setup. They are created on │
+  │  first use only.                                  │
+  │                                                    │
+  └────────────────────────────────────────────────────┘
   `);
   }
 }

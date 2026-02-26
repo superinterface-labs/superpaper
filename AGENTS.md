@@ -1069,7 +1069,7 @@ This is counterintuitive but powerful: an empty note with rich backlinks is more
 
 **Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it. (See Kepano's [vault approach](https://stephango.com/vault) for the inspiration behind this pattern.)
 
-**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Human** — only `created-by: human` notes, so the daily note foregrounds the human's life, not agent churn. Four more views are a tab away: **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), **AI** (only `created-by: ai` or `ai-assisted` notes), and **Everything** (all notes regardless of authorship, with a `By` column). This is the primary surface the [[fractal-review]] skill reads from when gathering material for a review.
+**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Everything** — all notes linked to that date *except* pure AI-generated ones (`created-by != "ai"`), so the daily note foregrounds the human's life and ai-assisted work without agent churn. Four more views are a tab away: **Human** (only `created-by: human`), **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), and **AI** (only `created-by: ai` or `ai-assisted` notes). This is the primary surface the [[fractal-review]] skill reads from when gathering material for a review.
 
 ### Fractal journaling
 
@@ -1618,17 +1618,34 @@ Briefly explain the category system: each category is a **trinity** of template 
 
 ### 2. Configure plugins
 
-This step is critical — the vault needs plugins to function well.
+This step is critical — the vault needs plugins to function well. **Configure ALL plugins — both core and community.** Don't skip core plugin settings; defaults are wrong for Superpaper.
 
-0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to `_attachments/`.
-1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
-2. **Install community plugins.** Try Obsidian CLI first (`obsidian install <plugin-id>`). If unavailable, walk the human through: Settings → Community plugins → Browse → search → install → enable. Required: **Dataview**, **Templater**, **CodeScript Toolkit**, **Calendar**, **Kanban**, **File Explorer++**.
-3. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions. Key configs:
-   - **Daily notes (core):** date format `YYYY-MM-DD`, new file location `daily/`, template `_templates/Daily note.md`, **open daily note on startup** enabled. This auto-creates today's daily note when Obsidian launches — fragments always have a backlink target.
-   - **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer). Agents override to `ai` programmatically. Zero friction for the human.
-   - **Dataview:** enable JavaScript queries and inline queries.
-   - **File Explorer++:** see the **Environment & tools** section above for hide/pin filters.
-4. **Verify with human.** Ask: "Can you see any `AGENTS.md` files in your file explorer?" If yes, debug the hide filters. Confirm `_templates` and `inbox` are hidden. Confirm plugins are working. **The human's visual confirmation is the only proof.**
+**Core settings:** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to `_attachments/`.
+
+**Enable core plugins:** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, Daily notes, and all other native features are available.
+
+**Configure core plugins** (non-default settings required):
+
+| Core plugin | Setting | Value |
+|-------------|---------|-------|
+| Daily notes | Date format | `YYYY-MM-DD` |
+| Daily notes | New file location | `daily/` |
+| Daily notes | Template file location | `_templates/Daily note.md` |
+| Daily notes | Open daily note on startup | **enabled** |
+| Templates | Template folder location | `_templates/` |
+| Properties | Properties in document | `hidden` |
+
+**Deploy `Daily.base`:** Copy `_templates/Bases/Daily.base` to `daily/Daily.base`. This is the dashboard embedded on every daily note — its default "Everything" view shows all notes linked to that date except pure AI-generated ones.
+
+**Install community plugins:** Try Obsidian CLI first (`obsidian plugin:install id=<id> enable`). If unavailable, walk the human through: Settings → Community plugins → Browse → search → install → enable. Required: **Dataview**, **Templater**, **CodeScript Toolkit**, **Calendar**, **Kanban**, **File Explorer++**.
+
+**Configure community plugins:** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI:
+- **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates. Agents override to `ai` programmatically.
+- **Dataview:** enable JavaScript queries and inline queries.
+- **CodeScript Toolkit:** scripts folder `.scripts/`, enable invocable scripts.
+- **File Explorer++:** see the **Environment & tools** section above for hide/pin filters.
+
+**Verify with human.** Ask: "Can you see any `AGENTS.md` files in your file explorer?" If yes, debug the hide filters. Confirm `_templates` and `inbox` are hidden. Confirm plugins are working. **The human's visual confirmation is the only proof.**
 
 ### 3. First conversation
 
