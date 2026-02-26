@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { execFileSync, execSync } from "node:child_process";
+import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, readdirSync, statSync, rmSync } from "node:fs";
 import { join, resolve, basename, relative } from "node:path";
 import { createInterface } from "node:readline";
 
@@ -73,9 +73,9 @@ function copyDirRecursive(src, dest, vaultDir) {
 }
 
 function gitCloneSparse(url, tmpDir, paths) {
-  execSync(`git clone --no-checkout --filter=blob:none ${url} ${tmpDir}`, { stdio: "pipe" });
-  execSync(`git sparse-checkout set ${paths.join(" ")}`, { cwd: tmpDir, stdio: "pipe" });
-  execSync("git checkout", { cwd: tmpDir, stdio: "pipe" });
+  execFileSync("git", ["clone", "--no-checkout", "--filter=blob:none", url, tmpDir], { stdio: "pipe" });
+  execFileSync("git", ["sparse-checkout", "set", ...paths], { cwd: tmpDir, stdio: "pipe" });
+  execFileSync("git", ["checkout"], { cwd: tmpDir, stdio: "pipe" });
 }
 
 function generateMergePrompt(conflicts, vaultDir) {
@@ -220,7 +220,7 @@ async function init() {
 
   const tmpDir = join(vaultDir, ".superpaper-tmp");
   try {
-    if (existsSync(tmpDir)) execSync(`rm -rf ${tmpDir}`);
+    if (existsSync(tmpDir)) rmSync(tmpDir, { recursive: true, force: true });
 
     log("Cloning repo (sparse — only infrastructure files)...");
     gitCloneSparse(REPO_URL, tmpDir, [
@@ -300,7 +300,7 @@ async function init() {
       }
     }
   } finally {
-    if (existsSync(tmpDir)) execSync(`rm -rf ${tmpDir}`);
+    if (existsSync(tmpDir)) rmSync(tmpDir, { recursive: true, force: true });
   }
 
   // ── Step 2: Community skills ────────────────────────────────────────────
@@ -309,7 +309,7 @@ async function init() {
 
   const tmpSkills = join(vaultDir, ".skills-tmp");
   try {
-    if (existsSync(tmpSkills)) execSync(`rm -rf ${tmpSkills}`);
+    if (existsSync(tmpSkills)) rmSync(tmpSkills, { recursive: true, force: true });
 
     log("Cloning kepano/obsidian-skills...");
     gitCloneSparse(COMMUNITY_SKILLS_URL, tmpSkills, ["skills"]);
@@ -328,7 +328,7 @@ async function init() {
   } catch (e) {
     warn("Could not fetch community skills (network issue?). Skipping — you can add them later.");
   } finally {
-    if (existsSync(tmpSkills)) execSync(`rm -rf ${tmpSkills}`);
+    if (existsSync(tmpSkills)) rmSync(tmpSkills, { recursive: true, force: true });
   }
 
   // ── Step 3: Create minimal structure ────────────────────────────────────
