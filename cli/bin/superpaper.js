@@ -8,6 +8,16 @@ import { createInterface } from "node:readline";
 const REPO_URL = "https://github.com/superinterface-labs/superpaper.git";
 const COMMUNITY_SKILLS_URL = "https://github.com/kepano/obsidian-skills.git";
 
+const PROTOCOL_OPEN_TAG = "<superpaper-protocol>";
+const PROTOCOL_CLOSE_TAG = "</superpaper-protocol>";
+
+function extractProtocolBlock(fileContent) {
+  const openIdx = fileContent.indexOf(PROTOCOL_OPEN_TAG);
+  const closeIdx = fileContent.indexOf(PROTOCOL_CLOSE_TAG);
+  if (openIdx === -1 || closeIdx === -1) return null;
+  return fileContent.slice(openIdx, closeIdx + PROTOCOL_CLOSE_TAG.length);
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function log(msg) { console.log(`  ${msg}`); }
@@ -117,6 +127,14 @@ For each pair below, do the following:
 Files to merge:
 ${conflicts.map(c => `- ${c.existing} ← ${c.incoming}`).join("\n")}
 
+**Special case — AGENTS.md:** If AGENTS.md is in the list above, the .new file contains ONLY the updated \`<superpaper-protocol>...</superpaper-protocol>\` block, not a full AGENTS.md replacement. To merge it:
+1. Read the new protocol block from AGENTS.md.new
+2. Compare it to the existing \`<superpaper-protocol>...</superpaper-protocol>\` block in AGENTS.md
+3. Show me what changed between the old and new protocol blocks
+4. Replace the old block with the new one, preserving everything OUTSIDE the tags (my own content above/below the protocol block)
+5. If I customized anything INSIDE the protocol block (e.g. personal rules), carry those customizations into the new block where they still make sense
+6. Delete AGENTS.md.new after merging
+
 After merging all files, do a **protocol reindex sweep**:
 - Scan my vault for any notes, templates, bases, or skill files that reference outdated conventions from the previous version.
 - Check for stale folder references, renamed properties, deprecated patterns, or instructions that conflict with the updated protocol.
@@ -136,31 +154,49 @@ After your agent resolves all merges and completes the reindex sweep, you can de
 `;
 }
 
+// ── Mode detection ───────────────────────────────────────────────────────────
+
+function detectMode(vaultDir) {
+  const hasSuperpaperSkill = existsSync(join(vaultDir, ".agents", "skills", "superpaper", "SKILL.md"));
+  const hasAgents = existsSync(join(vaultDir, ".agents"));
+  const hasTemplates = existsSync(join(vaultDir, "_templates"));
+  const hasCategories = existsSync(join(vaultDir, "superpaper", "categories"));
+  const isInstalled = hasAgents && hasTemplates && hasCategories && hasSuperpaperSkill;
+  return { isInstalled, hasAgents, hasTemplates, hasCategories, hasSuperpaperSkill };
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function init() {
   const vaultDir = resolve(process.argv[3] || ".");
 
-  console.log(`
+  const isObsidianVault = existsSync(join(vaultDir, ".obsidian"));
+  const { isInstalled } = detectMode(vaultDir);
+  const isUpgrade = isInstalled;
+
+  if (isUpgrade) {
+    console.log(`
+  ╔═══════════════════════════════════════════════╗
+  ║             Superpaper  ↑ Update              ║
+  ║         An obsidian-native AI workspace       ║
+  ╚═══════════════════════════════════════════════╝
+  `);
+  } else {
+    console.log(`
   ╔═══════════════════════════════════════════════╗
   ║                  Superpaper                   ║
   ║         An obsidian-native AI workspace       ║
   ╚═══════════════════════════════════════════════╝
   `);
-
-  // Detect if this is already a vault
-  const isObsidianVault = existsSync(join(vaultDir, ".obsidian"));
-  const hasAgents = existsSync(join(vaultDir, ".agents"));
-  const hasTemplates = existsSync(join(vaultDir, "_templates"));
-  const hasCategories = existsSync(join(vaultDir, "superpaper", "categories"));
+  }
 
   const forceFlag = process.argv.includes("--force");
 
-  if (hasAgents && hasTemplates && hasCategories) {
-    warn("This vault already has Superpaper installed.");
-    warn("Existing files will NOT be overwritten — conflicts saved as .new files.");
+  if (isUpgrade) {
+    log("Superpaper is already installed — running in upgrade mode.");
+    log("Existing files will NOT be overwritten — conflicts saved as .new files.");
     if (!forceFlag) {
-      const proceed = await ask("Continue? (y/N)");
+      const proceed = await ask("Continue with upgrade? (y/N)");
       if (proceed.toLowerCase() !== "y") {
         log("Aborted.");
         process.exit(0);
@@ -170,16 +206,17 @@ async function init() {
 
   if (!isObsidianVault) {
     log("This folder isn't an Obsidian vault. Open Obsidian,");
-    log("create a new vault pointing to this folder, then re-run: npx superpaper init here");
+    log("create a new vault pointing to this folder, then re-run: npx superpaper init");
     log("or run the command inside an existing Obsidian vault folder you have");
     process.exit(0);
   }
 
   log(`Vault: ${vaultDir}`);
+  if (isUpgrade) log("Mode: upgrade (fetching latest infrastructure)");
 
   // ── Step 1: Clone infrastructure from repo ──────────────────────────────
 
-  header("1/4  Fetching Superpaper infrastructure");
+  header(`1/4  ${isUpgrade ? "Updating" : "Fetching"} Superpaper infrastructure`);
 
   const tmpDir = join(vaultDir, ".superpaper-tmp");
   try {
@@ -218,14 +255,36 @@ async function init() {
       warn("categories not found in repo — skipping");
     }
 
-    // AGENTS.md
+    // AGENTS.md — extract protocol block from repo, append or flag conflict
     const agentsSrc = join(tmpDir, "AGENTS.md");
     const agentsDest = join(vaultDir, "AGENTS.md");
-    const agentsResult = safeCopyFile(agentsSrc, agentsDest, vaultDir);
-    if (agentsResult === "created") {
-      success("AGENTS.md");
+    const repoProtocol = existsSync(agentsSrc)
+      ? extractProtocolBlock(readFileSync(agentsSrc, "utf-8"))
+      : null;
+
+    if (!repoProtocol) {
+      warn("Could not extract <superpaper-protocol> from repo AGENTS.md — skipping");
+    } else if (!existsSync(agentsDest)) {
+      writeFileSync(agentsDest, repoProtocol + "\n");
+      success("AGENTS.md (created with superpaper protocol)");
     } else {
-      conflict("AGENTS.md exists → saved incoming update as AGENTS.md.new");
+      const existing = readFileSync(agentsDest, "utf-8");
+      if (existing.includes(PROTOCOL_OPEN_TAG)) {
+        const existingProtocol = extractProtocolBlock(existing);
+        if (existingProtocol === repoProtocol) {
+          log("AGENTS.md superpaper protocol is up to date");
+        } else {
+          writeFileSync(agentsDest + ".new", repoProtocol + "\n");
+          conflicts.push({
+            existing: "AGENTS.md (superpaper-protocol block)",
+            incoming: "AGENTS.md.new",
+          });
+          conflict("AGENTS.md protocol block changed → saved update as AGENTS.md.new");
+        }
+      } else {
+        writeFileSync(agentsDest, existing.trimEnd() + "\n\n" + repoProtocol + "\n");
+        success("AGENTS.md (appended superpaper protocol)");
+      }
     }
 
     // Property types
@@ -246,7 +305,7 @@ async function init() {
 
   // ── Step 2: Community skills ────────────────────────────────────────────
 
-  header("2/4  Fetching community skills");
+  header(`2/4  ${isUpgrade ? "Updating" : "Fetching"} community skills`);
 
   const tmpSkills = join(vaultDir, ".skills-tmp");
   try {
@@ -274,7 +333,7 @@ async function init() {
 
   // ── Step 3: Create minimal structure ────────────────────────────────────
 
-  header("3/4  Creating minimal vault structure");
+  header(`3/4  ${isUpgrade ? "Verifying" : "Creating"} vault structure`);
 
   const dirs = [
     "superpaper",
@@ -326,7 +385,7 @@ async function init() {
 
   // ── Step 4: Claude Code / agent symlinks ────────────────────────────────
 
-  header("4/4  Setting up agent integrations");
+  header(`4/4  ${isUpgrade ? "Verifying" : "Setting up"} agent integrations`);
 
   // CLAUDE.md symlink
   const claudePath = join(vaultDir, "CLAUDE.md");
@@ -386,7 +445,7 @@ async function init() {
 
   const agentsPath = join(vaultDir, "AGENTS.md");
 
-  if (conflicts.length === 0) {
+  if (conflicts.length === 0 && !isUpgrade) {
     console.log(`
   ${"─".repeat(50)}
   ✓ Superpaper installed!
@@ -419,10 +478,35 @@ async function init() {
   │                                                 │
   └─────────────────────────────────────────────────┘
   `);
+  } else if (conflicts.length === 0 && isUpgrade) {
+    console.log(`
+  ${"─".repeat(50)}
+  ✓ Superpaper upgraded — no conflicts!
+  ${"─".repeat(50)}
+
+  All infrastructure files are up to date.
+  New files were added, no existing files needed merging.
+
+  ┌─────────────────────────────────────────────────┐
+  │  AI AGENT: Superpaper was just upgraded.        │
+  │                                                 │
+  │  Re-read these files for updated instructions:  │
+  │                                                 │
+  │  • ${agentsPath}
+  │  • .agents/skills/AGENTS.md                     │
+  │  • .agents/skills/superpaper/SKILL.md           │
+  │  • _templates/AGENTS.md                         │
+  │                                                 │
+  │  Then run a quick protocol reindex: scan for    │
+  │  stale references, renamed properties, or       │
+  │  deprecated patterns.                           │
+  │                                                 │
+  └─────────────────────────────────────────────────┘
+  `);
   } else {
     console.log(`
   ${"─".repeat(50)}
-  ✓ Superpaper updated!
+  ✓ Superpaper ${isUpgrade ? "upgraded" : "updated"}!
   ${"─".repeat(50)}
 
   New files were added. ${conflicts.length} file(s) had conflicts
@@ -440,7 +524,7 @@ async function init() {
   │                                                    │
   │  DO NOT create entity folders (people/, concepts/, │
   │  sources/, etc.) during setup. They are created on │
-  │  first use only.                                  │
+  │  first use only.                                   │
   │                                                    │
   └────────────────────────────────────────────────────┘
   `);
@@ -451,7 +535,7 @@ async function init() {
 
 const command = process.argv[2];
 
-if (command === "init") {
+if (command === "init" || command === "update" || command === "upgrade") {
   init().catch((e) => {
     console.error(`\n  ✗ Error: ${e.message}`);
     process.exit(1);
@@ -461,11 +545,18 @@ if (command === "init") {
   superpaper — Obsidian-native AI workspace
 
   Usage:
-    npx superpaper init [path]    Set up Superpaper in an Obsidian vault
-                                  (defaults to current directory)
+    npx superpaper init [path]      Install or upgrade Superpaper in a vault
+    npx superpaper update [path]    Same as init (auto-detects mode)
+    npx superpaper upgrade [path]   Same as init (auto-detects mode)
+
+  Options:
+    --force                         Skip confirmation prompts
+
+  All three commands are identical — they auto-detect whether
+  Superpaper is already installed and run in the appropriate mode.
 
   Examples:
-    npx superpaper init           Set up in current directory
-    npx superpaper init ~/vault   Set up in ~/vault
+    npx superpaper init             Set up or upgrade in current directory
+    npx superpaper update ~/vault   Set up or upgrade vault at ~/vault
   `);
 }

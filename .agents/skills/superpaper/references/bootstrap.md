@@ -2,6 +2,8 @@
 
 Four steps to a working vault. **The system starts almost empty** — only `superpaper/` (with `inbox/` and `categories/`), `daily/`, `_templates/`, and infrastructure files exist on day one. Entity folders, bases, and features appear **only when the human first needs them**. Do NOT create folders speculatively.
 
+> [!tip] Already set up? This file is for **first-time bootstrap only.** For upgrading an existing vault, see [[../SKILL.md#Updating Superpaper|the update instructions]] — the human runs `npx superpaper update` and the agent handles the merge.
+
 > [!danger] Before starting bootstrap, you MUST read ALL sibling reference files into context.
 > Bootstrap touches every part of the system. Read these now:
 > 1. [[rendering-guide.md]] — plugins + rendering toolkit
@@ -28,10 +30,11 @@ Four steps to a working vault. **The system starts almost empty** — only `supe
 **If any of these are missing**, ask the human to run the installer:
 
 ```bash
-npx superpaper init
+npx superpaper init          # first-time install (or upgrade if already installed)
+npx superpaper update        # explicit upgrade for existing vaults
 ```
 
-Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates and categories into `superpaper/categories/`, installing skills, setting up property types, creating minimal folders (`superpaper/`, `superpaper/inbox/`, `superpaper/categories/`, `daily/`), and creating agent symlinks.
+Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates and categories into `superpaper/categories/`, installing skills, setting up property types, creating minimal folders (`superpaper/`, `superpaper/inbox/`, `superpaper/categories/`, `daily/`), and creating agent symlinks. The CLI detects upgrade mode by checking for `.agents/skills/superpaper/SKILL.md`.
 
 Once verified, update `.agents/skills/AGENTS.md` to index all installed skills if not already done.
 
@@ -133,6 +136,10 @@ If the vault has existing content — folders, projects, notes — scan them now
 ### Seed the meta layer
 
 Capture what you learned about the human as notes in `superpaper/meta/` (create the folder now) — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve. See [[../SKILL.md#Meta — the introspective core|meta section]] and [[introspect]] for how meta dimensions grow.
+
+### Create the Knowledge map
+
+Create `superpaper/Knowledge map.md` per the [[knowledge-protocol.md#Knowledge map|Knowledge map specification]] — the vault's browsable entry point to the knowledge graph. Include clusters, recent additions (Dataview query), stats, open questions, low-confidence claims, contradictions, and vault health sections.
 
 **Update `AGENTS.md`** with whatever structure and preferences emerged.
 
