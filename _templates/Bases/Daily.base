@@ -24,7 +24,7 @@ views:
     filters:
       and:
         - file.name != this.file.name
-        - created-by != "ai"
+        - 'created-by != "ai" || created-by.isEmpty()'
     order:
       - file.name
       - created-by

@@ -53,12 +53,13 @@ If cadence isn't specified, check what's due:
 
 ### STEP 2 — Gather fragments for the period
 
-Based on the cadence, collect the raw material. The `Daily.base` (embedded on each daily note) provides ready-made views: **Fragments** (journal fragments for that date), **Reviews** (weekly/monthly/yearly reviews covering that date), **Human** / **AI** (split by authorship). Use these as a starting point — they do most of the gathering for you.
+Based on the cadence, collect the raw material. The `Daily.base` (embedded on each daily note) provides ready-made views: **Everything** (default — all notes except pure AI-generated, including notes without metadata), **Human** (only `created-by: human`), **Fragments** (journal fragments for that date), **Reviews** (weekly/monthly/yearly reviews covering that date), **AI** (only `created-by: ai` or `ai-assisted`). Use these as a starting point — they do most of the gathering for you.
 
 **Daily:**
-- The `Daily.base` → Fragments view shows all notes with the `YYYY-MM-DD HHmm` prefix pattern
+- The `Daily.base` → Everything view shows all notes linked to today except pure AI notes (the default tab)
+- The `Daily.base` → Fragments view shows notes with the `YYYY-MM-DD HHmm` prefix pattern
 - Find all notes modified today (check `file.mtime`)
-- Find all links made to today's daily note (`[[YYYY-MM-DD]]` backlinks) — the Everything view
+- Find all links made to today's daily note (`[[YYYY-MM-DD]]` backlinks)
 - List any notes the human touched, bookmarks processed, tasks completed
 
 **Weekly:**
