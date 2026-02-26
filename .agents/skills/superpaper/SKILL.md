@@ -385,28 +385,23 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 /
 ├── AGENTS.md                   # The vault OS — source of truth
 ├── superpaper/
-│   ├── people/                 # Who — contacts, collaborators, public figures
-│   ├── concepts/               # What I understand — ideas, patterns, principles, claims
-│   ├── questions/              # What I'm exploring — open threads, retrieval magnets
-│   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── personal/               # My life — health, relationships, finances, hobbies, journal
-│   │   └── journal/            # Self-reflection and growth
-│   ├── meta/                   # The introspective core — how we think, choose, collaborate
-│   ├── projects/               # Active work — bias here when >1 file needed
-│   ├── apps/                   # Mini apps — interactive tools the human uses regularly
-│   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
+│   ├── categories/             # Category hub pages — each embeds its .base
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
+│   # ── Entity folders below are created ON FIRST USE, never pre-created ──
+│   # people/    concepts/    questions/    sources/
+│   # personal/  meta/        projects/     apps/
+├── daily/                      # Date anchors — each embeds Daily.base
 ├── .archive/                   # Soft-deleted files — never rm, always move here
-├── .scripts/                   # Shared TS/JS modules 
-├── categories/                 # Category hub pages — each embeds its .base
+├── .scripts/                   # Shared TS/JS modules
 ├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
+> [!danger] Only `superpaper/` (with `inbox/` and `categories/`), `daily/`, and infrastructure (`_templates/`, `.agents/`, `.obsidian/`) exist on day one. Entity folders (`people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/`) are created **the first time you write a note that belongs there** — never pre-created. If a folder doesn't have a note going into it *right now*, don't create it.
+
+Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 **Key rules:**
 - Top-level folders organize by **entity type** and **function**. Domains live in tags and `categories`.
@@ -414,7 +409,7 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 - **Never delete files.** Move to `.archive/` instead.
 - **User-written content is sacred.** Never overwrite inbox items. Nothing is written in daily notes — they exist solely to be linked *to*.
 - **Authorship provenance (`created-by`).** Every note carries `created-by: human`, `ai`, or `ai-assisted`. Always set it accurately. Human-written notes are read-only for agents (aside from adding/updating frontmatter properties). To connect or extend human notes, create AI **proxy connection docs** (`created-by: ai`) that link to them.
-- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, categories) vs **Content** (everything else).
+- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, superpaper/categories) vs **Content** (everything else).
 - **Personal preferences live in both `meta/` and `AGENTS.md`.** When a preference changes a convention, update `AGENTS.md` so the protocol evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
 
 → **Full details:** [[references/vault-structure.md]]

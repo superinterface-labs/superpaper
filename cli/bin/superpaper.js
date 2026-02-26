@@ -34,7 +34,12 @@ function safeCopyFile(srcPath, destPath, vaultDir) {
     copyFileSync(srcPath, destPath);
     return "created";
   }
-  // File exists — save incoming version with .new suffix
+  // File exists — compare contents before flagging as conflict
+  const existingContent = readFileSync(destPath);
+  const incomingContent = readFileSync(srcPath);
+  if (existingContent.equals(incomingContent)) {
+    return "identical";
+  }
   const newPath = destPath + ".new";
   copyFileSync(srcPath, newPath);
   conflicts.push({
@@ -138,8 +143,8 @@ async function init() {
 
   console.log(`
   ╔═══════════════════════════════════════════════╗
-  ║           superpaper init                     ║
-  ║   Obsidian-native AI workspace                ║
+  ║                  Superpaper                   ║
+  ║         An obsidian-native AI workspace       ║
   ╚═══════════════════════════════════════════════╝
   `);
 
@@ -147,7 +152,7 @@ async function init() {
   const isObsidianVault = existsSync(join(vaultDir, ".obsidian"));
   const hasAgents = existsSync(join(vaultDir, ".agents"));
   const hasTemplates = existsSync(join(vaultDir, "_templates"));
-  const hasCategories = existsSync(join(vaultDir, "categories"));
+  const hasCategories = existsSync(join(vaultDir, "superpaper", "categories"));
 
   const forceFlag = process.argv.includes("--force");
 
@@ -190,7 +195,7 @@ async function init() {
     ]);
 
     // Copy infrastructure directories — never overwrites, saves .new for conflicts
-    const infraDirs = [".agents", "_templates", "categories"];
+    const infraDirs = [".agents", "_templates"];
     for (const dir of infraDirs) {
       const srcPath = join(tmpDir, dir);
       const destPath = join(vaultDir, dir);
@@ -200,6 +205,17 @@ async function init() {
       } else {
         warn(`${dir} not found in repo — skipping`);
       }
+    }
+
+    // Categories go inside superpaper/ (not vault root)
+    const categoriesSrc = join(tmpDir, "categories");
+    const categoriesDest = join(vaultDir, "superpaper", "categories");
+    if (existsSync(categoriesSrc)) {
+      mkdirSync(join(vaultDir, "superpaper"), { recursive: true });
+      copyDirRecursive(categoriesSrc, categoriesDest, vaultDir);
+      success("superpaper/categories");
+    } else {
+      warn("categories not found in repo — skipping");
     }
 
     // AGENTS.md
@@ -368,32 +384,65 @@ async function init() {
 
   // ── Done ────────────────────────────────────────────────────────────────
 
-  console.log(`
+  const agentsPath = join(vaultDir, "AGENTS.md");
+
+  if (conflicts.length === 0) {
+    console.log(`
   ${"─".repeat(50)}
-  ✓ Superpaper ${conflicts.length > 0 ? "updated" : "installed"}!
+  ✓ Superpaper installed!
   ${"─".repeat(50)}
-${conflicts.length === 0 ? `
+
   Your vault is ready. Here's what to do next:
 
   1. Open this vault in Obsidian
   2. Enable community plugins (Settings → Community plugins → Turn on)
   3. Install: Dataview, Templater, CodeScript Toolkit,
      Calendar, Kanban, File Explorer++
-  4. Start a conversation with your AI agent — ask it to:
-     read AGENTS.md in full and set up Superpaper
+  4. Start a conversation with your AI agent — it will
+     read AGENTS.md and walk you through setup
 
   Superpaper starts almost empty on purpose.
-  Notes will appear as you need them.
-` : `
-  New files were added. Conflicts saved as .new files.
-  See: superpaper/Superpaper update — merge required.md
-`}
-  Documentation:  AGENTS.md (the full protocol)
-  Skills:         .agents/skills/AGENTS.md (skill index)
-  Templates:      _templates/AGENTS.md (template inventory)
+  Folders and features appear as you need them.
 
-  Happy thinking! 🧠
+  ┌─────────────────────────────────────────────────┐
+  │  AI AGENT: Read the full protocol to bootstrap:  │
+  │                                                   │
+  │  ${agentsPath}
+  │                                                   │
+  │  Then read .agents/skills/AGENTS.md for the       │
+  │  skill index and _templates/AGENTS.md for the     │
+  │  template inventory.                              │
+  │                                                   │
+  │  DO NOT create entity folders (people/, concepts/, │
+  │  sources/, etc.) during setup. They are created    │
+  │  on first use only.                               │
+  └─────────────────────────────────────────────────┘
   `);
+  } else {
+    console.log(`
+  ${"─".repeat(50)}
+  ✓ Superpaper updated!
+  ${"─".repeat(50)}
+
+  New files were added. ${conflicts.length} file(s) had conflicts
+  — saved as .new files (existing files untouched).
+
+  ┌─────────────────────────────────────────────────┐
+  │  AI AGENT: Merge guide created at:               │
+  │                                                   │
+  │  superpaper/Superpaper update — merge required.md │
+  │                                                   │
+  │  Read that file and follow its instructions to    │
+  │  merge .new files into existing files. Then read: │
+  │                                                   │
+  │  ${agentsPath}
+  │                                                   │
+  │  DO NOT create entity folders (people/, concepts/, │
+  │  sources/, etc.) during setup. They are created    │
+  │  on first use only.                               │
+  └─────────────────────────────────────────────────┘
+  `);
+  }
 }
 
 // ── CLI routing ──────────────────────────────────────────────────────────────

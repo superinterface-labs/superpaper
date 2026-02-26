@@ -1,6 +1,6 @@
 # Bootstrap — setting up a fresh vault
 
-Four steps to a working vault. The system starts almost empty — folders, bases, and features appear as the human uses it.
+Four steps to a working vault. **The system starts almost empty** — only `superpaper/` (with `inbox/` and `categories/`), `daily/`, `_templates/`, and infrastructure files exist on day one. Entity folders, bases, and features appear **only when the human first needs them**. Do NOT create folders speculatively.
 
 > [!danger] Before starting bootstrap, you MUST read ALL sibling reference files into context.
 > Bootstrap touches every part of the system. Read these now:
@@ -19,7 +19,7 @@ Four steps to a working vault. The system starts almost empty — folders, bases
 |-----------|-------|
 | `.agents/skills/` exists with skill folders | Skills installed |
 | `_templates/` exists with `.md` and `Bases/` | Templates installed |
-| `categories/` exists with hub pages | Category pages installed |
+| `superpaper/categories/` exists with hub pages | Category pages installed |
 | `.obsidian/types.json` exists | Property types copied |
 | `superpaper/inbox/` exists | Minimal structure created |
 | `daily/` exists | Daily notes folder created |
@@ -31,13 +31,16 @@ Four steps to a working vault. The system starts almost empty — folders, bases
 npx superpaper init
 ```
 
-Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates/categories/skills, setting up property types, creating minimal folders, and creating agent symlinks.
+Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates and categories into `superpaper/categories/`, installing skills, setting up property types, creating minimal folders (`superpaper/`, `superpaper/inbox/`, `superpaper/categories/`, `daily/`), and creating agent symlinks.
 
 Once verified, update `.agents/skills/AGENTS.md` to index all installed skills if not already done.
 
+> [!danger] DO NOT create entity folders during bootstrap.
+> After `npx superpaper init`, only these folders should exist inside `superpaper/`: `inbox/` and `categories/`. **Do NOT create** `people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/`, or any other entity folder during setup. Each folder is created **the first time you write a note that belongs in it** — not before. Creating empty folders upfront clutters the vault and overwhelms the human. If a folder doesn't have a note going into it *right now*, it doesn't exist yet.
+
 **What ships with the repo (no need to create):**
 - **Templates** (`_templates/`) — 14 note templates + 36 base templates (including 11 utility bases). Read `_templates/AGENTS.md` for the full inventory.
-- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
+- **Category pages** (`superpaper/categories/`) — 26 hub pages, each embedding its `.base`.
 - **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
 - **Base templates** (`_templates/Bases/`) — deploy bases only when the content they serve exists. Don't copy 36 bases into an empty vault. When the human creates their first bookmark, deploy `Bookmarks.base`. When they write their first concept, deploy `Concepts.base`. Bases earn their place by having something to show.
 

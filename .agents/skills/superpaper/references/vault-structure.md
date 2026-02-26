@@ -10,30 +10,34 @@ Full vault structure for [[../SKILL.md|Superpaper]]: folder tree, scaling princi
 
 ```
 /
-├── AGENTS.md                   # This file
+├── AGENTS.md                   # The vault OS — source of truth
 ├── superpaper/
-│   ├── people/                 # Who — contacts, collaborators, public figures
-│   ├── concepts/               # What I understand — ideas, patterns, principles, claims
-│   ├── questions/              # What I'm exploring — open threads, retrieval magnets
-│   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── personal/               # My life — health, relationships, finances, hobbies, journal
-│   │   └── journal/            # Self-reflection and growth
-│   ├── meta/                   # The introspective core — how we think, choose, collaborate
-│   ├── projects/               # Active work — bias here when >1 file needed
-│   ├── apps/                   # Mini apps — interactive tools the human uses regularly
-│   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
+│   ├── categories/             # Category hub pages — each embeds its .base
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
+│   # ── Entity folders below are created ON FIRST USE, never pre-created ──
+│   # people/                   # Who — contacts, collaborators, public figures
+│   # concepts/                 # What I understand — ideas, patterns, principles
+│   # questions/                # What I'm exploring — open threads
+│   # sources/                  # Where I learned it — articles, books, papers
+│   # personal/                 # My life — health, relationships, finances
+│   #   └── journal/            # Self-reflection and growth
+│   # meta/                     # The introspective core
+│   # projects/                 # Active work — bias here when >1 file needed
+│   # apps/                     # Mini apps — interactive tools
+│   #   └── My tasks.md         # Kanban board
+├── daily/                      # Date anchors — each embeds Daily.base
 ├── .archive/                   # Soft-deleted files — never rm, always move here
 ├── .scripts/                   # Shared TS/JS modules (hidden from Obsidian)
-├── categories/                 # Category hub pages — each embeds its .base
 ├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
 
-**This is a reference map, not a day-one checklist.** Only `superpaper/`, `superpaper/inbox/`, and `daily/` are created during bootstrap. Everything else — `people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/` — appears **the first time the human actually needs it**. Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. If the human prefers a different layout — fewer folders, different names, flat structure — go with it.
+> [!danger] DO NOT pre-create entity folders.
+> **Only three things exist on day one:** `superpaper/` (with `inbox/` and `categories/` inside it) and `daily/`. That's it. Entity folders (`people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/`) are created **the first time the human actually needs one** — when you're about to write the first note of that type. Creating empty folders upfront clutters the vault and overwhelms the human. If a folder doesn't have a note going into it *right now*, don't create it.
+
+Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. If the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 ---
 
@@ -135,7 +139,7 @@ When a folder accumulates too many items (roughly >8–10), cluster them into su
 
 The vault has two layers:
 
-- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `categories/**`, `.obsidian/**`, `.scripts/**`.
+- **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `superpaper/categories/**`, `.obsidian/**`, `.scripts/**`.
 - **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**`, `meta/**`, `daily/**`, `projects/**`, `inbox/**`, `.archive/**`, `.plans/**`.
 
 **Personal preferences live in both `meta/` and `AGENTS.md`.** When a preference changes a convention, update `AGENTS.md` so the protocol evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
