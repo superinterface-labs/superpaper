@@ -73,7 +73,7 @@ Notes belong to categories via a `categories: ["[[Books]]", "[[Places]]"]` [[ren
 
 1. **Template** (`_templates/Book Template.md`) — frontmatter schema. Defines the properties every note in this category starts with.
 2. **Base** (`_templates/Bases/Books.base`) — [[rendering-guide.md#Bases — vault usage patterns|database view]]. Filters on `categories.contains(link("Books"))`, defines columns, sorts, and multiple views (all, top-rated, by-author, by-genre).
-3. **Category page** (`categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point.
+3. **Category page** (`superpaper/categories/Books.md`) — hub note that embeds the base: `![[Books.base]]`. The human's browsable entry point. Lives in `superpaper/categories/`.
 
 The most common trinities (26 categories, 36 bases — including 11 utility bases — and 14 note templates) **ship with the repo** — see `_templates/AGENTS.md` for the full inventory. When a new domain emerges (the human starts rating restaurants, tracking podcasts, logging trips), spin up all three. Base templates in `_templates/Bases/` make this instant — copy, rename, adjust the filter.
 
@@ -142,7 +142,7 @@ This is counterintuitive but powerful: an empty note with rich backlinks is more
 
 **Help the human build this habit.** When they write a journal fragment, link it to today: `[[2026-02-16]]`. When they log a meal, a movie, a workout, a meeting — link the date. Over time, each daily note becomes a dense web of everything that happened, without the human ever writing *in* it.
 
-**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Human** — only `created-by: human` notes, so the daily note foregrounds the human's life, not agent churn. Four more views are a tab away: **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), **AI** (only `created-by: ai` or `ai-assisted` notes), and **Everything** (all notes regardless of authorship, with a `By` column). This is the primary surface for fractal review gathering — the [[fractal-review]] skill reads from these views.
+**`Daily.base` is the daily note's dashboard.** Embed it on every daily note (`![[Daily.base]]`). The default view is **Everything** — all notes linked to that date *except* pure AI-generated ones (`created-by != "ai"`), so the daily note foregrounds the human's life and ai-assisted work without agent churn. Four more views are a tab away: **Human** (only `created-by: human`), **Fragments** (journal fragments with `YYYY-MM-DD HHmm` prefix), **Reviews** (weekly/monthly/yearly reviews covering that date), and **AI** (only `created-by: ai` or `ai-assisted` notes). This is the primary surface for fractal review gathering — the [[fractal-review]] skill reads from these views.
 
 ---
 

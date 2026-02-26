@@ -709,7 +709,32 @@ Any command can be bound to a keyboard shortcut. The goal is flow state — the 
 | File Explorer++ | `file-explorer-plus` |
 | Bases | *(core plugin — enable in Settings → Core plugins)* |
 
-Install all community plugins: `obsidian plugin:install id=<id> enable` for each row above. Enable Bases and Properties in Settings → Core plugins. Then configure to match vault conventions (template folder → `_templates/`, scripts → `.scripts/`, daily notes → `daily/`, Dataview JS queries → enabled, etc.). Look up each plugin's latest docs online for its settings schema.
+Install all community plugins: `obsidian plugin:install id=<id> enable` for each row above. Enable Bases, Properties, and Daily notes in Settings → Core plugins.
+
+### Core plugin configuration
+
+These are Obsidian's built-in plugins — they need non-default settings:
+
+| Core plugin | Setting | Value |
+|-------------|---------|-------|
+| Daily notes | Date format | `YYYY-MM-DD` |
+| Daily notes | New file location | `daily/` |
+| Daily notes | Template file location | `_templates/Daily note.md` |
+| Daily notes | Open daily note on startup | **enabled** |
+| Templates | Template folder location | `_templates/` |
+| Properties | Properties in document | `hidden` |
+
+### Community plugin configuration
+
+Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON.
+
+| Community plugin | Key settings |
+|-----------------|-------------|
+| Templater | `template_folder`: `_templates/`, `trigger_on_file_creation`: **true**, `enable_folder_templates`: **true**, `folder_templates`: `[{"folder": "/", "template": "_templates/Knowledge note.md"}]`, `empty_file_template`: `_templates/Knowledge note.md`, `enable_file_templates`: **false** |
+| Dataview | Enable JavaScript queries: **yes**, enable inline queries: **yes** |
+| CodeScript Toolkit | Scripts folder: `.scripts/`, enable invocable scripts: **yes** |
+| Calendar | Uses daily notes settings from core plugin — no additional config |
+| Kanban | Defaults work — no special config needed |
 
 **File Explorer++:** Write `.obsidian/plugins/file-explorer-plus/data.json` with:
 

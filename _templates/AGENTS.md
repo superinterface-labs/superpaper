@@ -33,7 +33,7 @@ Vault templates used by Templater and other workflows.
 | `Attachments.base` | Image management — contextual, all images, unused attachment detection |
 | `Backlinks.base` | Contextual — shows all notes that link to the current note |
 | `Related.base` | Contextual — related notes for the currently focused note |
-| `Daily.base` | Contextual — everything/fragments/reviews/human/AI linked to a daily note's date |
+| `Daily.base` | Contextual — default view shows everything except pure AI notes; tabs for human-only/fragments/reviews/AI |
 | `Templates.base` | Lists all templates in `_templates/` |
 | `Ratings.base` | Cross-category view of all rated notes |
 | `Genre.base` | Contextual — shows all items sharing a genre with the current note |

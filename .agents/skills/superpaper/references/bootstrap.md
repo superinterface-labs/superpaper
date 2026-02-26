@@ -1,6 +1,8 @@
 # Bootstrap — setting up a fresh vault
 
-Four steps to a working vault. The system starts almost empty — folders, bases, and features appear as the human uses it.
+Four steps to a working vault. **The system starts almost empty** — only `superpaper/` (with `inbox/` and `categories/`), `daily/`, `_templates/`, and infrastructure files exist on day one. Entity folders, bases, and features appear **only when the human first needs them**. Do NOT create folders speculatively.
+
+> [!tip] Already set up? This file is for **first-time bootstrap only.** For upgrading an existing vault, see [[../SKILL.md#Updating Superpaper|the update instructions]] — the human runs `npx superpaper update` and the agent handles the merge.
 
 > [!danger] Before starting bootstrap, you MUST read ALL sibling reference files into context.
 > Bootstrap touches every part of the system. Read these now:
@@ -19,7 +21,7 @@ Four steps to a working vault. The system starts almost empty — folders, bases
 |-----------|-------|
 | `.agents/skills/` exists with skill folders | Skills installed |
 | `_templates/` exists with `.md` and `Bases/` | Templates installed |
-| `categories/` exists with hub pages | Category pages installed |
+| `superpaper/categories/` exists with hub pages | Category pages installed |
 | `.obsidian/types.json` exists | Property types copied |
 | `superpaper/inbox/` exists | Minimal structure created |
 | `daily/` exists | Daily notes folder created |
@@ -28,16 +30,20 @@ Four steps to a working vault. The system starts almost empty — folders, bases
 **If any of these are missing**, ask the human to run the installer:
 
 ```bash
-npx superpaper init
+npx superpaper init          # first-time install (or upgrade if already installed)
+npx superpaper update        # explicit upgrade for existing vaults
 ```
 
-Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates/categories/skills, setting up property types, creating minimal folders, and creating agent symlinks.
+Don't proceed with bootstrap until the infrastructure is confirmed. The CLI handles cloning the repo, copying templates and categories into `superpaper/categories/`, installing skills, setting up property types, creating minimal folders (`superpaper/`, `superpaper/inbox/`, `superpaper/categories/`, `daily/`), and creating agent symlinks. The CLI detects upgrade mode by checking for `.agents/skills/superpaper/SKILL.md`.
 
 Once verified, update `.agents/skills/AGENTS.md` to index all installed skills if not already done.
 
+> [!danger] DO NOT create entity folders during bootstrap.
+> After `npx superpaper init`, only these folders should exist inside `superpaper/`: `inbox/` and `categories/`. **Do NOT create** `people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/`, or any other entity folder during setup. Each folder is created **the first time you write a note that belongs in it** — not before. Creating empty folders upfront clutters the vault and overwhelms the human. If a folder doesn't have a note going into it *right now*, it doesn't exist yet.
+
 **What ships with the repo (no need to create):**
 - **Templates** (`_templates/`) — 14 note templates + 36 base templates (including 11 utility bases). Read `_templates/AGENTS.md` for the full inventory.
-- **Category pages** (`categories/`) — 26 hub pages, each embedding its `.base`.
+- **Category pages** (`superpaper/categories/`) — 26 hub pages, each embedding its `.base`.
 - **Property types** (`obsidian-types-init.json`) — copy to `.obsidian/types.json` so Obsidian knows the correct type for each property.
 - **Base templates** (`_templates/Bases/`) — deploy bases only when the content they serve exists. Don't copy 36 bases into an empty vault. When the human creates their first bookmark, deploy `Bookmarks.base`. When they write their first concept, deploy `Concepts.base`. Bases earn their place by having something to show.
 
@@ -47,17 +53,61 @@ Briefly explain the category system: each category is a [[knowledge-protocol.md#
 
 ## 2. Configure plugins
 
-This step is critical — the vault needs plugins to function well.
+This step is critical — the vault needs plugins to function well. **Configure ALL plugins listed below — both core and community.** Don't skip core plugin settings; defaults are wrong for Superpaper.
 
-0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to `_attachments/`.
-1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
-2. **Install community plugins.** Try Obsidian CLI first (`obsidian install <plugin-id>`). If unavailable, walk the human through: Settings → Community plugins → Browse → search → install → enable. Required: **Dataview**, **Templater**, **CodeScript Toolkit**, **Calendar**, **Kanban**, **File Explorer++**.
-3. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions. Key configs:
-   - **Daily notes (core):** date format `YYYY-MM-DD`, new file location `daily/`, template `_templates/Daily note.md`, **open daily note on startup** enabled. This auto-creates today's daily note when Obsidian launches — fragments always have a backlink target.
-   - **Templater:** template folder `_templates/`, **trigger on new file creation** enabled, **empty file template** `_templates/Knowledge note.md`. This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer). Agents override to `ai` programmatically. Zero friction for the human.
-   - **Dataview:** enable JavaScript queries and inline queries.
-   - **File Explorer++:** see [[../../../AGENTS.md#Environment & tools|AGENTS.md]] for hide/pin filters.
-4. **Verify with human.** Ask: "Can you see any `AGENTS.md` files in your file explorer?" If yes, debug the hide filters. Confirm `_templates` and `inbox` are hidden. Confirm plugins are working. **The human's visual confirmation is the only proof.**
+### 2a. Core settings
+
+Settings → Files & Links:
+- Enable **Automatically update internal links**
+- Set **Default location for new attachments** to `_attachments/`
+
+### 2b. Enable core plugins
+
+Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, Daily notes, and all other native features are available.
+
+### 2c. Configure core plugins
+
+These are Obsidian's built-in plugins — they need non-default settings:
+
+- **Daily notes:**
+  - Date format: `YYYY-MM-DD`
+  - New file location: `daily/`
+  - Template file location: `_templates/Daily note.md`
+  - **Open daily note on startup: enabled** — this auto-creates today's daily note when Obsidian launches, so backlinks always have a target
+- **Templates:**
+  - Template folder location: `_templates/`
+- **Properties:**
+  - Properties in document: `hidden` (collapsed by default — frontmatter doesn't clutter the note)
+
+### 2d. Install community plugins
+
+Try Obsidian CLI first (`obsidian plugin:install id=<id> enable`). If unavailable, walk the human through: Settings → Community plugins → Browse → search → install → enable. Required: **Dataview**, **Templater**, **CodeScript Toolkit**, **Calendar**, **Kanban**, **File Explorer++**.
+
+### 2e. Configure community plugins
+
+Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions:
+
+- **Templater** (`.obsidian/plugins/templater-obsidian/data.json`):
+  - `template_folder`: `_templates/`
+  - `trigger_on_file_creation`: `true`
+  - `enable_folder_templates`: `true`
+  - `folder_templates`: `[{"folder": "/", "template": "_templates/Knowledge note.md"}]` — maps every new file in the vault to the Knowledge note template
+  - `empty_file_template`: `_templates/Knowledge note.md`
+  - `enable_file_templates`: `false`
+  This auto-stamps `created-by: human` on every note the human creates (via hotkey, unique note, file explorer, daily note). Agents override to `ai` programmatically. Combined with the Daily notes core plugin template setting, daily notes get `_templates/Daily note.md` and all other notes get `_templates/Knowledge note.md`.
+- **Dataview:** enable JavaScript queries and inline queries.
+- **CodeScript Toolkit:** scripts folder `.scripts/`, enable invocable scripts.
+- **File Explorer++:** see [[rendering-guide.md#Required plugins|rendering guide]] for hide/pin filters.
+- **Calendar:** uses daily notes settings from core plugin — no additional config needed.
+- **Kanban:** no special config needed — defaults work.
+
+### 2f. Deploy Daily.base
+
+Copy `_templates/Bases/Daily.base` to `daily/Daily.base`. This is the dashboard embedded on every daily note — its default "Everything" view shows all notes linked to that date except pure AI-generated ones.
+
+### 2g. Verify with human
+
+Ask: "Can you see any `AGENTS.md` files in your file explorer?" If yes, debug the hide filters. Confirm `_templates` and `inbox` are hidden. Confirm plugins are working. **The human's visual confirmation is the only proof.**
 
 ---
 
@@ -86,6 +136,10 @@ If the vault has existing content — folders, projects, notes — scan them now
 ### Seed the meta layer
 
 Capture what you learned about the human as notes in `superpaper/meta/` (create the folder now) — preferences, alignment observations, taste signals, reasoning patterns. This seeds the introspective core that makes everything else improve. See [[../SKILL.md#Meta — the introspective core|meta section]] and [[introspect]] for how meta dimensions grow.
+
+### Create the Knowledge map
+
+Create `superpaper/Knowledge map.md` per the [[knowledge-protocol.md#Knowledge map|Knowledge map specification]] — the vault's browsable entry point to the knowledge graph. Include clusters, recent additions (Dataview query), stats, open questions, low-confidence claims, contradictions, and vault health sections.
 
 **Update `AGENTS.md`** with whatever structure and preferences emerged.
 

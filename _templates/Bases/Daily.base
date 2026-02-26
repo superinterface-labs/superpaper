@@ -20,6 +20,28 @@ properties:
     displayName: By
 views:
   - type: table
+    name: Everything
+    filters:
+      and:
+        - file.name != this.file.name
+        - 'created-by != "ai" || created-by.isEmpty()'
+    order:
+      - file.name
+      - created-by
+      - created
+      - categories
+      - tags
+    sort:
+      - property: created
+        direction: DESC
+      - property: file.name
+        direction: DESC
+    columnSize:
+      file.name: 287
+      note.created-by: 80
+      note.created: 128
+      note.categories: 119
+  - type: table
     name: Human
     filters:
       and:
@@ -32,8 +54,6 @@ views:
       - tags
     sort:
       - property: created
-        direction: DESC
-      - property: file.name
         direction: DESC
     columnSize:
       file.name: 287
@@ -77,26 +97,7 @@ views:
       - created
       - tags
     sort:
-      - property: created
-        direction: DESC
-  - type: table
-    name: Everything
-    filters:
-      and:
-        - file.name != this.file.name
-    order:
-      - file.name
-      - created-by
-      - created
-      - categories
-      - tags
-    sort:
-      - property: created
-        direction: DESC
       - property: file.name
+        direction: ASC
+      - property: created
         direction: DESC
-    columnSize:
-      file.name: 287
-      note.created-by: 80
-      note.created: 128
-      note.categories: 119

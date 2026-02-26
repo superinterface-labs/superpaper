@@ -3,11 +3,15 @@ name: superpaper
 description: Core methodology for Superpaper — an AI Agent Swarm interface in Obsidian. Governs the knowledge graph (Zettelkasten), interactive artifacts, vault structure, interaction style, and multi-agent orchestration. Activate when working in a Superpaper vault — reading/writing knowledge notes, processing bookmarks, building artifacts, managing the vault, or bootstrapping a new vault. References obsidian-markdown, obsidian-bases, json-canvas, and obsidian-cli skills for format specifications.
 ---
 
+<!-- by Darshil Dhameliya (@dvrshil) · MIT License · https://github.com/superinterface-labs/superpaper -->
+
 # Superpaper
 
 > You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time. Always read the full root AGENTS.md file when you start working on a user's request.
 
 **This file is a starting point, not a rulebook.** Everything below — folder structure, note types, naming conventions, property schemas, workflows — is a tested default that works well out of the box. But the human's preferences always win. Your job is to learn how *your* human(s) wants to work and evolve the protocol to match. When a convention doesn't fit, change it — in `AGENTS.md`, in the templates, in the vault structure. The system should feel like the human designed it themselves, because over time they did, with your help.
+
+This system is in no way dogmatic, there's no wrong way to use Obsidian with AI agents. Take the parts you like and tailor them to your needs. The vault should be pleasant to maintain, not a chore. If a rule creates friction, change the rule.
 
 **How this protocol evolves:**
 1. **Ask before assuming.** When you encounter a structural choice, present the default and ask if the human wants something different.
@@ -75,13 +79,15 @@ Obsidian renders markdown files into a rich visual experience. You write plain t
 
 ### Format skills (load for syntax details)
 
-| Skill | Covers |
-|-------|--------|
-| `obsidian-markdown` | All Obsidian Flavored Markdown: formatting, wikilinks, embeds, callouts (13 types), properties/frontmatter, tags, math/LaTeX, Mermaid diagrams, footnotes, code blocks, HTML, tables |
-| `obsidian-bases` | `.base` file YAML schema: filters, formulas, views (table/cards/list/map), summaries, all function references |
-| `json-canvas` | JSON Canvas 1.0 spec: node types, edges, colors, layout, validation |
-| `obsidian-cli` | CLI commands: search, read, create, append, move, properties, plugin dev, eval |
-| `defuddle` | Clean markdown extraction from web pages |
+This skill and its references deliberately exclude syntax details to avoid duplication. The syntax lives in these sibling skills — **load them when you need the actual syntax:**
+
+| Skill | Covers | When to load |
+|-------|--------|-------------|
+| **`obsidian-markdown`** | **All Obsidian Flavored Markdown:** formatting, wikilinks, embeds, callouts (13 types), properties/frontmatter, tags, math/LaTeX, Mermaid diagrams, footnotes, code blocks, HTML, tables | **Any time you create or edit a note.** This is the most commonly needed format skill — neither this file nor the rendering guide includes markdown syntax. |
+| `obsidian-bases` | `.base` file YAML schema: filters, formulas, views (table/cards/list/map), summaries, all function references | When creating or editing `.base` files |
+| `json-canvas` | JSON Canvas 1.0 spec: node types, edges, colors, layout, validation | When creating or editing `.canvas` files |
+| `obsidian-cli` | CLI commands: search, read, create, append, move, properties, plugin dev, eval | When you need CLI syntax beyond the quick-reference table at the top of this file |
+| `defuddle` | Clean markdown extraction from web pages | When fetching web content for bookmarks or sources |
 
 ### Reference files — read on activation
 
@@ -89,14 +95,18 @@ When this skill activates, **read these references into context immediately** (d
 
 | Reference | Lines | What it contains | When to read |
 |-----------|-------|-----------------|--------------|
-| `references/rendering-guide.md` | 728 | Dataview (DQL, DataviewJS, native queries), Bases (YAML schema, formulas, views), CodeScript Toolkit (code-button, pattern library, codeButtonContext API, artifact ideas), My Tasks kanban spec, HTML/CSS (grid, variables, snippets), frontmatter (property families, design rules), block IDs, canvas, tags, filenames, Obsidian URI, workspace/navigation, required plugins, File Explorer++ config, Graph View colors | **Always.** This is the rendering bible — you need it for any note creation. |
-| `references/knowledge-protocol.md` | 381 | All note templates (knowledge, daily, journal, idea, reflection, person, place, reference types), categories taxonomy, rating system, tracking properties, bookmark template + lifecycle, consolidation protocol, anti-patterns, meta layer spec, Knowledge map spec | **Always.** You need templates and protocols for any knowledge work. |
-| `references/vault-structure.md` | 151 | Scaling rules, subfolder emergence table, what-goes-where decision table, folder indexes, reorganization protocol, no-deletions policy, infrastructure vs content boundary | **Always.** You need to know where to put things. |
+| `references/rendering-guide.md` | 728 | Dataview (DQL, DataviewJS, native queries), Bases (YAML schema, formulas, views), CodeScript Toolkit (code-button, pattern library, codeButtonContext API, artifact ideas), My Tasks kanban spec, HTML/CSS (grid, variables, snippets), frontmatter (property families, design rules), block IDs, canvas, tags, filenames, Obsidian URI, workspace/navigation, required plugins, File Explorer++ config, Graph View colors. **Note:** does NOT include markdown syntax — that's in the `obsidian-markdown` skill. | **Always.** The rendering bible — you need it for any note creation. |
+| `references/knowledge-protocol.md` | 381 | All note templates (knowledge, daily, journal, idea, reflection, person, place, reference types), categories taxonomy (the category trinity: template + base + category page), rating system (1–7), tracking properties (`last`, `via`), evergreen notes, bookmark template + full processing lifecycle, consolidation protocol, anti-patterns, meta layer spec, Knowledge map spec. **This is the source of truth for how knowledge notes are structured.** | **Always.** The knowledge bible — you need templates, categories, and protocols for any knowledge work. |
+| `references/vault-structure.md` | 151 | Scaling rules, subfolder emergence table, what-goes-where decision table (routes every note type to the right folder), folder indexes, reorganization protocol, no-deletions policy, proxy connection docs for human notes, infrastructure vs content boundary | **Always.** You need to know where to put things. |
 | `references/bootstrap.md` | 161 | Full 10-step vault setup: install skills, index context, environment, customize structure (templates/bases/categories/types ship with repo), Quick Capture UI, first knowledge note, mobile bookmarking, CSS polish, verify with human, get to know human, demo | **On bootstrap only.** Skip if the vault is already set up. |
 
 Interaction style and orchestration protocols are included inline below (not in separate reference files).
 
-**Loading protocol:** On skill activation, read all 3 "Always" references (≈1260 lines total). Read `bootstrap.md` only when setting up a new vault. Format skills (`obsidian-markdown`, `obsidian-bases`, `json-canvas`, `obsidian-cli`) are loaded separately when you need syntax details — they're not bundled here to avoid duplication.
+**Loading protocol:**
+1. **On skill activation, read all 3 "Always" references** (≈1260 lines total). These are non-negotiable — they contain templates, routing rules, plugin config, and rendering patterns you need for *any* vault work.
+2. **Load `obsidian-markdown` for any note creation or editing.** The rendering guide and this file deliberately exclude markdown syntax (formatting, wikilinks, embeds, callouts, Mermaid, footnotes, tables) to avoid duplication. That syntax lives *only* in the `obsidian-markdown` skill. If you're creating or editing a note — which is almost always — you need it.
+3. **Load `obsidian-bases` / `json-canvas` / `obsidian-cli`** when working with `.base` files, `.canvas` files, or CLI commands respectively.
+4. **Read `bootstrap.md` only when setting up a new vault.** Skip if already configured.
 
 > [!abstract]- Rendering guide digest (read [[references/rendering-guide.md|full file]] for syntax)
 > **Dataview:** DQL (`TABLE`/`LIST`/`TASK` + `FROM`/`WHERE`/`SORT`/`GROUP BY`/`FLATTEN`/`LIMIT`); file metadata via `file.name`, `file.ctime`, `file.mtime`, `file.tags`, `file.link`; DataviewJS for custom HTML (`dv.pages()`, `dv.table()`, `dv.el()`); native `query` blocks for plugin-free search. **Bases:** `.base` YAML — filters (`inFolder`, `taggedWith`, `linksTo`, `file.hasLink(this.file)`), formulas (`dateDiff`, `list()`, `if()`, regex), display aliases, views (table with `order`/`sort`/`limit`; cards with `image`; map with `coordinates`/`markerIcon`/`markerColor`), `this` = current note for contextual dynamic views. Use Bases for human-facing dashboards with inline editing; Dataview for complex JS rendering or agent auditing. Key bases: Bookmarks, Knowledge health, People, Questions, Meta dashboard, Related, Ratings, Map. **CodeScript Toolkit:** `code-button` with `isRaw: true` + `shouldAutoRun: true` for seamless UIs; `codeButtonContext` API (`.container` for DOM via `createEl()`/`createDiv()`, `.renderMarkdown()`, `.insertAfterCodeButtonBlock()`, `.replaceCodeButtonBlock()`); `.scripts/` modules via `require()`; heavy apps via `requireAsync()` with cache modes (`always`/`whenPossible`/`never`); invocable scripts (`export function invoke(app)`) for Cmd+P; startup scripts for vault-open hooks. **My Tasks:** Kanban (Todo/In progress/Done/Blocked); lifecycle: capture → pick up → ship (append `@date` + log link) → archive (7 days) → blocked (escalate); execution logs in the vault's log location. **Frontmatter:** property types (text/list/number/checkbox/date/datetime); wikilinks must be quoted (`"[[note]]"`); default to list, short names, five families (Dates, People, Themes, Locations, Ratings); `cssclasses` for per-note styling. **Tags:** `#domains/`, `#topics/` — always plural, kebab-case. **CSS snippets:** tag-based styling (`.tag[href="#important"]`), folder-specific looks, custom callout types (`[data-callout="trace"]`), Obsidian CSS variables (`var(--background-primary)`, `var(--interactive-accent)`). **File Explorer++:** hide `_templates`, `_attachments`, `AGENTS|CLAUDE` (regex), `inbox`; pin `superpaper/`, `apps/`, `personal/`, `projects/`, `My tasks.md`, `.base` files. **Also:** block IDs (`^id`), canvas for spatial thinking, Obsidian URI (`obsidian://open`, `obsidian://new`, `obsidian://search`), saved workspaces (Research/Review/Daily/Build), Graph View color groups per folder/type.
@@ -164,7 +174,7 @@ The `type` property classifies a note's structural role. These are the built-in 
 - **Reflection** — processing experiences, struggles, breakthroughs. Lives in `personal/journal/`.
 - **Log** — append-only living document. Accumulates dated entries.
 - **Bookmark** — external content worth processing. Lands in `inbox/`, gets enriched and moved to `sources/`. See [[references/knowledge-protocol.md#Bookmark processing lifecycle|bookmark lifecycle]].
-- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Human** (default — only `created-by: human`), **Fragments**, **Reviews**, **AI**, **Everything**. The [[fractal-review]] skill reads from these views.
+- **Daily** — nothing is written here. Exists solely to be linked *to*. Value is in backlinks. Each daily note embeds `![[Daily.base]]` — a dashboard with five views: **Everything** (default — all notes except pure AI-generated), **Human**, **Fragments**, **Reviews**, **AI**. The [[fractal-review]] skill reads from these views.
 
 → Full details: [[references/knowledge-protocol.md]] (templates, rating system, reference templates, categories)
 
@@ -183,6 +193,8 @@ Every note begins with six fields: `type`, `categories`, `created`, `created-by`
 **No naked conclusions (recommended).** If a conclusion matters, it should ideally be a Claim or Decision linked to evidence. Unlinked assertions lose value over time.
 
 **Update trail.** When status or confidence changes, append a dated entry to a collapsed `> [!info]- File history` callout at the end of the note.
+
+**Type-specific extras.** Each type earns additional fields beyond the 6 defaults — see `_templates/AGENTS.md` for the full inventory of every template and its properties. Epistemic fields (`confidence`, `evidence_for`, `predictions`, etc.) live **only** on Claim/Experiment/Decision templates — not on the default Knowledge note. Category-specific templates (books, movies, recipes, etc.) layer additional properties via composable mixins.
 
 ### How to read knowledge (neighborhood retrieval)
 
@@ -385,28 +397,23 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 /
 ├── AGENTS.md                   # The vault OS — source of truth
 ├── superpaper/
-│   ├── people/                 # Who — contacts, collaborators, public figures
-│   ├── concepts/               # What I understand — ideas, patterns, principles, claims
-│   ├── questions/              # What I'm exploring — open threads, retrieval magnets
-│   ├── sources/                # Where I learned it — articles, books, papers
-│   ├── personal/               # My life — health, relationships, finances, hobbies, journal
-│   │   └── journal/            # Self-reflection and growth
-│   ├── meta/                   # The introspective core — how we think, choose, collaborate
-│   ├── projects/               # Active work — bias here when >1 file needed
-│   ├── apps/                   # Mini apps — interactive tools the human uses regularly
-│   │   └── My tasks.md         # Kanban board — todo, in progress, done, blocked
+│   ├── categories/             # Category hub pages — each embeds its .base
 │   ├── inbox/                  # Quick capture — triage within 48h
 │   └── Knowledge map.md        # Browsable entry point to the knowledge graph
-├── daily/                      # Date anchors — each embeds Daily.base (human-first dashboard)
+│   # ── Entity folders below are created ON FIRST USE, never pre-created ──
+│   # people/    concepts/    questions/    sources/
+│   # personal/  meta/        projects/     apps/
+├── daily/                      # Date anchors — each embeds Daily.base
 ├── .archive/                   # Soft-deleted files — never rm, always move here
-├── .scripts/                   # Shared TS/JS modules 
-├── categories/                 # Category hub pages — each embeds its .base
+├── .scripts/                   # Shared TS/JS modules
 ├── _templates/                 # Note + base templates (ships with repo)
 └── .obsidian/
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
+> [!danger] Only `superpaper/` (with `inbox/` and `categories/`), `daily/`, and infrastructure (`_templates/`, `.agents/`, `.obsidian/`) exist on day one. Entity folders (`people/`, `concepts/`, `sources/`, `projects/`, `personal/`, `meta/`, `apps/`, `questions/`) are created **the first time you write a note that belongs there** — never pre-created. If a folder doesn't have a note going into it *right now*, don't create it.
+
+Entity folders are broad enough to last forever. Subfolders emerge only when volume demands it — never before. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 **Key rules:**
 - Top-level folders organize by **entity type** and **function**. Domains live in tags and `categories`.
@@ -414,7 +421,7 @@ The layout below is a tested starting point. During bootstrap, **present it to t
 - **Never delete files.** Move to `.archive/` instead.
 - **User-written content is sacred.** Never overwrite inbox items. Nothing is written in daily notes — they exist solely to be linked *to*.
 - **Authorship provenance (`created-by`).** Every note carries `created-by: human`, `ai`, or `ai-assisted`. Always set it accurately. Human-written notes are read-only for agents (aside from adding/updating frontmatter properties). To connect or extend human notes, create AI **proxy connection docs** (`created-by: ai`) that link to them.
-- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, categories) vs **Content** (everything else).
+- **Infrastructure** (AGENTS.md, .agents, _templates, .obsidian, .scripts, superpaper/categories) vs **Content** (everything else).
 - **Personal preferences live in both `meta/` and `AGENTS.md`.** When a preference changes a convention, update `AGENTS.md` so the protocol evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
 
 → **Full details:** [[references/vault-structure.md]]
@@ -474,6 +481,28 @@ If the vault isn't already configured, walk the human through setup one step at 
 Steps: 0. Install skills → 1. Index existing context → 2. Set up environment → 3. Customize and create vault structure (templates, bases, categories, and property types ship with the repo) → 4. Create Quick Capture UI → 5. Create first knowledge note → 6. Set up mobile bookmarking → 7. Add CSS polish → 8. Verify environment from human → 9. Get to know the human → 10. Demo the full system
 
 → **Full step-by-step details:** [[references/bootstrap.md]]
+
+---
+
+## Updating Superpaper
+
+Superpaper's infrastructure evolves. The human can pull the latest version at any time:
+
+```bash
+npx superpaper update       # or: upgrade, init — all three are identical
+```
+
+All three commands (`init`, `update`, `upgrade`) auto-detect whether Superpaper is installed by checking for `.agents/skills/superpaper/SKILL.md`. If found → upgrade mode. If not → fresh install.
+
+**Safety:** Existing files are never overwritten. Conflicts are saved as `.new` files. A merge guide is generated at `superpaper/Superpaper update — merge required.md`.
+
+**After an upgrade, the agent should:**
+1. Check for the merge guide — if it exists, follow its merge instructions first.
+2. Re-read `AGENTS.md`, this skill file, and `_templates/AGENTS.md` for updated protocols.
+3. Run a protocol reindex sweep: scan for stale references, renamed properties, or deprecated patterns.
+4. Log the upgrade in `inbox/log/`.
+
+**When to suggest an upgrade:** If the human mentions wanting new features, if you notice the vault's `AGENTS.md` is missing sections that the skill references, or if the human asks "is there an update?" — suggest running `npx superpaper update`.
 
 ---
 
