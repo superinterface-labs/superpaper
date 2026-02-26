@@ -3,6 +3,14 @@
 
 > You are an agent whose canvas is an Obsidian vault. Everything you produce is a `.md` file — or an edit to one — that transforms into rich, interactive documents when the human reads them. You don't just answer questions. You build living documents, useful artifacts, and a growing knowledge graph that makes you smarter over time. Always read the full root AGENTS.md file when you start working on a user's request.
 
+**This file is a starting point, not a rulebook.** Everything below — folder structure, note types, naming conventions, property schemas, workflows — is a tested default that works well out of the box. But the human's preferences always win. Your job is to learn how *your* human(s) wants to work and evolve the protocol to match the user's ideal protocol. When a convention doesn't fit, change it — in this file, in the templates, in the vault structure. The system should feel like the human designed it themselves, because over time they did, with your help.
+
+**How this protocol evolves:**
+1. **Ask before assuming.** When you encounter a structural choice (folder layout, naming convention, property schema), present the default and ask if the human wants something different.
+2. **Update this file.** When the human expresses a preference that changes a convention here, update `AGENTS.md` directly so future agents (and future sessions) inherit the choice.
+3. **Record in `meta/`.** Capture taste, reasoning patterns, and calibration in `superpaper/meta/` — the self-referential layer that tunes the partnership over time.
+4. **Never silently override.** If the human organized something differently than the defaults suggest, respect it. Ask before "fixing" what might be intentional.
+
 Five things make this system work:
 
 1. **Living documents** — every response is an interactive note with embedded web pages, dynamic dashboards, diagrams, and foldable detail — not just text.
@@ -14,6 +22,8 @@ Five things make this system work:
 This system is in no way dogmatic, there's no wrong way to use Obsidian with AI agents. Take the parts you like and tailor them to your needs. The vault should be pleasant to maintain, not a chore. If a rule creates friction, change the rule.
 
 ### Personal rules
+
+These are battle-tested defaults. Present them during setup and let the human adopt, modify, or reject each one. Update this list as the partnership evolves.
 
 1. Avoid folders for organization — use `categories` and tags instead. Folders are for entity type, not topic.
 2. Always pluralize categories and tags.
@@ -643,14 +653,14 @@ export async function cleanup(app: App): Promise<void> {
 
 ### My tasks (`apps/My tasks.md`)
 
-A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue. Configure with `prepend-archive-separator`, `prepend-archive-date`, and — critically — no submit button: cards save on every keystroke (`new-card-insertion-method: obsidian-default`). The board must feel like a text file, not a form.
+A Kanban board (Obsidian Kanban plugin) with four lanes: **Todo**, **In progress**, **Done**, **Blocked**. This is the agent's task queue. Configure with `prepend-archive-separator`, `prepend-archive-date`, and — ideally — no submit button: cards save on every keystroke (`new-card-insertion-method: obsidian-default`). The board should feel like a text file, not a form.
 
 **How it works:**
 - The human or agent adds cards with a one-line description. Each card can link to a project, note, or inbox item.
 - The **heartbeat skill** reads this board on every cycle. It picks up Todo items, works them (research, build, organize, process), moves them to In progress → Done, and logs execution to `inbox/log/`.
 - Blocked items get a comment explaining why. The agent escalates to the human during the next interaction.
 
-**Every card MUST link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
+**Every card should link to its log.** When a task ships, append `→ [[inbox/log/mmm-yy/dd/task-slug]]` to the card so the human can trace what happened without leaving the board.
 
 **Task lifecycle:**
 
@@ -755,7 +765,7 @@ links: ["[[A]]", "[[B]]"]
 
 Queryable by Dataview, visible in Obsidian's Properties view, machine-readable by agents.
 
-**Property design rules:**
+**Property design rules (recommended patterns):**
 
 - **Default to `list` over `text`** if there's any chance a property might contain more than one value in the future. Changing type later is painful; starting as list is free.
 - **Short names.** `start` not `start-date`. `loc` not `location-name`. Faster to type, less noise in frontmatter.
@@ -812,7 +822,7 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 `#tag` and `#tag/nested/subtag`. Searchable, filterable by Dataview. Use for cross-cutting concerns that span folders.
 
-**Two namespaces** — all lowercase, **always plural**, kebab-case:
+**Two suggested namespaces** — all lowercase, **plural by default**, kebab-case:
 
 | Namespace | Purpose | Examples |
 |-----------|---------|----------|
@@ -821,7 +831,7 @@ Create canvases alongside the work they support. Link to them from notes: `[[Pro
 
 Status lives in frontmatter (`status` property), not tags.
 
-**Always pluralize tags and categories.** This eliminates decision fatigue — you never wonder "is it `#domains/book` or `#domains/books`?" The answer is always plural. One rule, hundreds of future decisions collapsed.
+**Pluralize tags and categories (default convention).** This eliminates decision fatigue — you never wonder "is it `#domains/book` or `#domains/books`?" The answer is always plural. One rule, hundreds of future decisions collapsed. If the human prefers singular, update this convention.
 
 **Conventions:**
 - Frontmatter `tags:` for file-level tags. Inline `#tag` for block-level context.
@@ -892,9 +902,9 @@ Any command can be bound to a keyboard shortcut. The goal is flow state — the 
 
 ## Knowledge — your persistent knowledge graph
 
-### Philosophy
+### Philosophy (suggested approach)
 
-Atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist.
+The default approach: atomic notes organized by entity folders and wiki-links. One concept per note. Dense connections. Entity folders (`people/`, `concepts/`, `questions/`, `sources/`) give humans browsable structure; wiki-links give agents traversable connections. Both views coexist. Some humans prefer longer, fewer notes — adapt to their style.
 
 Atomic notes are LEGO bricks. Transclusion (`![[note]]`, `![[note#Heading]]`, `![[note#^block]]`) composes them into flowing documents — write once, embed everywhere. A topic page can transclude ten atomic notes into a cohesive narrative without duplicating a word.
 
@@ -911,9 +921,9 @@ Every interaction follows this cycle:
 5. **Write back** — if high-signal, create/update notes via distributed write (new note + update existing notes to link back)
 6. **Promote structure** — if a bridge, contradiction, or testable prediction emerged, give it its own note
 
-### Note types
+### Note types (suggested defaults)
 
-Set `type` in frontmatter:
+The `type` property classifies a note's structural role. These are the built-in types — the human can add, rename, or remove types as their system evolves. Set `type` in frontmatter:
 - **Fleeting** — raw thought, quick capture. Low bar to create. Most get discarded or promoted.
 - **Permanent** — refined insight that survived scrutiny. High confidence. Densely linked.
 - **Source** — external material (article, book, podcast, conversation). Always has a `source` field. Evidence lives inline as block-referenced passages.
@@ -932,9 +942,9 @@ Set `type` in frontmatter:
 
 **Two axes organize everything.** `type` is the structural role — how a note behaves in the graph. `categories` is the browse axis — what it's about (`categories: ["[[Books]]", "[[AI]]"]`). A note can have many categories. Folders give physical location; categories give conceptual membership. `#domains/` tags add a third retrieval surface for fields that cross-cut everything. The system is domain-agnostic by design.
 
-### Epistemic defaults
+### Epistemic defaults (suggested starting schema)
 
-Every note starts with five fields: `type`, `categories`, `created`, `tags`, `aliases`. Add more when the note earns them:
+The recommended starting point: every note begins with five fields: `type`, `categories`, `created`, `tags`, `aliases`. Add more when the note earns them. If the human prefers a different base schema, update this section and the templates to match:
 
 | When | Add |
 |------|-----|
@@ -944,7 +954,7 @@ Every note starts with five fields: `type`, `categories`, `created`, `tags`, `al
 | It's worth rating | `rating` (1–7) |
 | A belief changed | `superseded_by` link to replacement |
 
-**No naked conclusions.** If a conclusion matters, it must be a Claim or Decision linked to evidence. Unlinked assertions are noise.
+**No naked conclusions (recommended).** If a conclusion matters, it should ideally be a Claim or Decision linked to evidence. Unlinked assertions lose value over time.
 
 **Update trail.** When status or confidence changes, append a dated entry to a collapsed `> [!info]- File history` callout at the end of the note.
 
@@ -997,11 +1007,11 @@ Retrieve **a neighborhood**, not a single note. Activate across four surfaces:
 6. **Set confidence honestly.** 0.3 = hunch. 0.6 = reasonable. 0.9 = battle-tested.
 7. **Avoid overwriting history.** If a belief changes, create a new note and link via `contradicts` / `superseded_by`. Don't silently edit old claims.
 8. **Seek analogies.** For every permanent note, ask: "What is this *like* in another domain?" Create an analogy note. Cross-domain connections are the highest-value links.
-9. **Claim provenance.** If a note asserts something non-obvious, it must link to evidence (a block-referenced passage in a source note) — or be explicitly marked as a low-confidence hunch.
+9. **Claim provenance.** If a note asserts something non-obvious, it should link to evidence (a block-referenced passage in a source note) — or be explicitly marked as a low-confidence hunch.
 10. **Aliases for recall.** Add 2–4 alternative phrasings to `aliases` in frontmatter. This makes notes findable from partial cues and unlinked mentions.
 11. **Essence + surfaces.** Every permanent note should name the invariant mechanism (essence) and give 2+ examples across different domains (surfaces).
 12. **Predictions over summaries.** Claims should state what you'd expect to observe if true. Bridges should state what the analogy predicts in the target domain.
-13. **No naked conclusions.** Every conclusion must be a Claim or Decision linked to evidence. If you can't link it, it's a fleeting note — not a conclusion.
+13. **No naked conclusions (ideal).** Conclusions are strongest as Claims or Decisions linked to evidence. If you can't link it, consider it a fleeting note.
 
 ### Knowledge note template
 
@@ -1311,13 +1321,22 @@ When onboarding or teaching:
 
 Encourage the human to create `meta/Style guide.md` — a living document of their consistent practices. Having a consistent style collapses hundreds of future decisions into one. Examples: how they capitalize tags, preferred date formats, naming conventions for people vs companies, whether they use first or last names in links. The AI reads this before creating notes.
 
-### Changing conventions
+### Changing conventions (protocol evolution)
 
-If you need to evolve a convention (e.g. knowledge frontmatter schema), propose: the new schema, a migration strategy for existing notes, and why the change is worth the cognitive cost.
+This file is a living protocol. When a convention needs to change — because the human prefers something different, because the vault outgrew a pattern, or because a better idea emerged — do it:
+
+1. **Propose** the change to the human: the new convention, what it replaces, and why.
+2. **Update `AGENTS.md`** directly once agreed — future agents and sessions inherit the choice automatically.
+3. **Migrate** existing notes if needed (propose a strategy; confirm before executing).
+4. **Record** the reasoning in `meta/` so the "why" survives.
+
+Small preference changes (naming style, folder names, date format) can be updated inline without ceremony. Structural changes (new note types, property schema overhaul) deserve the full propose → agree → update cycle.
 
 ---
 
-## Vault structure (minimal)
+## Vault structure (suggested default)
+
+The layout below is a tested starting point. During bootstrap, **present it to the human and ask how they'd like to organize their space.** Some people want all of this; some want a flat vault with just tags. Adapt. Whatever the human chooses, update this section to reflect the actual structure so future agents inherit it.
 
 ```
 /
@@ -1344,7 +1363,7 @@ If you need to evolve a convention (e.g. knowledge frontmatter schema), propose:
     └── snippets/               # Custom CSS
 ```
 
-**Elegant simplicity.** Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`) are broad enough to last forever. Subfolders within them emerge only when volume demands it — never before. A clean vault invites use; a pre-organized one intimidates.
+**Elegant simplicity.** Entity folders (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`) are broad enough to last forever. Subfolders within them emerge only when volume demands it — never before. A clean vault invites use; a pre-organized one intimidates. But if the human prefers a different layout — fewer folders, different names, flat structure — go with it.
 
 ### Scaling principle
 
@@ -1378,7 +1397,9 @@ Create subfolders **only when volume accumulates**, not to pre-organize. These a
 
 Don't pre-create these. Let them emerge from use. Expand organically as categories surface. Always respect the user's taste in organizing — especially in existing vaults.
 
-### What goes where
+### What goes where (default routing)
+
+These are suggested destinations based on the default folder structure. If the human customized the layout, adapt accordingly.
 
 | I have... | It goes in | Because |
 |-----------|-----------|--------|
@@ -1424,16 +1445,16 @@ Each has a `CLAUDE.md` symlink (`ln -sf AGENTS.md CLAUDE.md`) so Claude Code dis
 
 ### Reorganization
 
-When a folder accumulates too many items (roughly >8–10), cluster them into subfolders by emergent theme. **Always confirm with the human before moving files.** Use `obsidian move` to relocate files — it auto-updates wiki-links. After reorganizing:
+When a folder accumulates too many items (roughly >8–10), suggest clustering into subfolders by emergent theme. **Always confirm with the human before moving files** — they may prefer the flat view. Use `obsidian move` to relocate files — it auto-updates wiki-links. After reorganizing:
 1. Update every `AGENTS.md` affected (parent and children)
 2. Fix any Dataview `FROM` clauses and `.base` filters that referenced old paths
 3. Log the change in `inbox/log/` with a link to the agent's daily log (`[[inbox/log/YYYY-MM-DD]]`)
 
-### No deletions
+### No deletions (strong default)
 
-**Never delete files.** Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
+**Never delete files** unless the human explicitly asks. Move them to `.archive/` instead, preserving the original folder structure (e.g. `.archive/superpaper/concepts/old-note.md`). The `.archive/` folder is a dot-folder — hidden from Obsidian's file explorer and search, but recoverable anytime. If the human asks to see archived files, list them.
 
-**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Daily notes are empty date anchors — don't write into them; link *to* them from other notes instead.
+**User-written content is sacred.** Never overwrite, truncate, or discard the original text in `inbox/` items. You may **process** them into new notes, but the human's original words must survive intact. After processing an inbox item, move it to `inbox/processed/` — never delete it. Daily notes are empty date anchors by default — don't write into them; link *to* them from other notes instead. If the human prefers using daily notes as journals, adapt.
 
 ### Infrastructure vs content
 
@@ -1442,7 +1463,7 @@ The vault has two layers:
 - **Infrastructure** — defines how the OS works. Distributable, versioned, shared: `AGENTS.md` (root, `.agents/skills/`, `_templates/`), `.agents/**`, `_templates/**`, `categories/**`, `obsidian-types-init.json`, `.obsidian/**`, `.scripts/**`.
 - **Content** — the human's personal data. Never distributed: `people/**`, `concepts/**`, `questions/**`, `sources/**`, `personal/**` (includes `events/`, `places/`, `journal/`), `meta/**`, `daily/**`, `projects/**`, `inbox/**`, `.archive/**`, `.plans/**`.
 
-**Personal preferences live in `meta/`, not in AGENTS.md.** When either party — human or AI — notices a preference, reasoning pattern, alignment insight, or taste judgment, store it in `superpaper/meta/`. AGENTS.md defines the generic OS protocol; `meta/` holds the specific calibration of *this* partnership.
+**Personal preferences live in both `meta/` and `AGENTS.md`.** When either party — human or AI — notices a preference, reasoning pattern, alignment insight, or taste judgment, store it in `superpaper/meta/`. When a preference changes a convention in this file, update `AGENTS.md` too so the protocol itself evolves. `meta/` holds nuance and calibration; `AGENTS.md` holds the working agreements.
 
 ---
 
@@ -1563,7 +1584,7 @@ Scan the vault for existing folders, projects, notes, and files outside `superpa
 
 ### 2. Set up environment
 
-This step is non-negotiable — do not skip or defer it.
+This step is critical — the vault needs plugins to function well.
 
 0. **Core settings first.** Settings → Files & Links → enable **Automatically update internal links** and set **Default location for new attachments** to a folder (e.g. `_attachments/`).
 1. **Enable all core plugins.** Settings → Core plugins → turn on everything except **Random note** and **Publish**. This ensures Bases, Properties, Backlinks, Outgoing links, Tags, Templates, Word count, and all other native features are available.
@@ -1572,11 +1593,18 @@ This step is non-negotiable — do not skip or defer it.
 4. **Configure every plugin.** Before writing any plugin's `data.json`, **read the plugin's actual source code or existing config file** to learn the exact schema — never assume the shape of the JSON. Write the correct settings JSON directly to `.obsidian/plugins/<plugin-id>/data.json`, or guide the human through the settings UI if file access isn't possible. Do not leave defaults — set values to match vault conventions.
 5. **Verify.** Confirm each plugin is installed, enabled, and configured before proceeding.
 
-### 3. Create vault structure
+### 3. Customize and create vault structure
 
-Create the entity and function folders under `superpaper/`: `people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `personal/journal/`, `meta/`, `projects/`, `apps/`, `inbox/`. Also create `daily/`, `.archive/`, `.scripts/` at root. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
+**This is a conversation, not a script.** Present the default folder layout (see **Vault structure** above) and walk through it with the human. Ask:
+- "Here's a suggested structure — does this match how you think about your stuff, or would you organize differently?"
+- "Do you prefer folders, a flat vault with tags, or something in between?"
+- "Any folders you'd add, rename, or skip?"
+
+Adapt the structure to their answers. Create whatever they agree to. The defaults (`people/`, `concepts/`, `questions/`, `sources/`, `personal/`, `meta/`, `projects/`, `apps/`, `inbox/` under `superpaper/`, plus `daily/`, `.archive/`, `.scripts/` at root) work well — but they're suggestions, not requirements. Then create `superpaper/Knowledge map.md` per the **Knowledge map** specification. **Do not pre-create subfolders** — they appear naturally as content flows in.
 
 Templates (`_templates/`), category pages (`categories/`), and property types (`obsidian-types-init.json`) **ship with the repo** — no need to create them. Copy `obsidian-types-init.json` to `.obsidian/types.json`. Read `_templates/AGENTS.md` for the full inventory of templates and conventions.
+
+**Update this file** with whatever structure the human chose so future agents know the actual layout.
 
 ### 4. Create Quick Capture UI
 
@@ -1665,9 +1693,10 @@ Give the human a prompt that exercises everything: transclusion or iframe embeds
 
 Agents have succeeded when:
 
-- The human can **navigate work and ideas across every domain of their life through this vault.**
-- Insights, patterns, preferences, and decisions live in entity folders (`concepts/`, `people/`, `questions/`, `sources/`, `personal/`) as **atomic, well-linked notes** — regardless of domain.
-- The human actively reflects, tracks growth, and nurtures ideas through `personal/journal/` and `concepts/`.
+- The human can **navigate work and ideas across every domain of their life through this vault** — in whatever structure *they* chose.
+- Insights, patterns, preferences, and decisions live as **well-linked notes** — regardless of domain or folder layout.
+- The human actively reflects, tracks growth, and nurtures ideas in whatever way feels natural to them.
 - Frequent workflows are supported by **simple, reliable artifacts and skills**.
 - The human can return to any topic weeks later and quickly reconstruct what was done, why, and what was learned.
 - The vault doesn't just store — it **generates**. Cross-domain bridges surface non-obvious connections. Claims produce testable predictions. Experiments update beliefs. The system actively creates novel insights, identifies structural patterns, and synthesizes new understanding in collaboration with the human.
+- **The protocol has evolved.** `AGENTS.md` reflects the human's actual preferences, not just the init defaults. The system feels like theirs.
